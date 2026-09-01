@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Elman - Dashboard Executivo</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts (Inter & Outfit for headings) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        brand: { 50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 300: '#5eead4', 400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e', 800: '#115e59', 900: '#134e4a', 950: '#042f2e' },
+                        slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+                    },
+                    boxShadow: {
+                        'premium': '0 4px 24px -8px rgba(0,0,0,0.05)',
+                        'premium-hover': '0 10px 40px -10px rgba(0,0,0,0.08)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f8;
+            /* Cor de fundo off-white mais executiva */
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 flex h-screen overflow-hidden antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside
+        class="w-72 bg-slate-950 flex flex-col text-slate-300 transition-all duration-300 z-40 shrink-0 border-r border-slate-900">
+
+        <!-- Logo Area -->
+        <div class="h-24 flex items-center px-8">
+            <div class="text-2xl font-bold font-heading tracking-tight text-white flex items-center gap-2">
+                <div
+                    class="w-8 h-8 rounded-lg bg-brand-500 flex items-center justify-center shadow-lg shadow-brand-500/30">
+                    <i class="ph ph-heartbeats text-white text-xl"></i>
+                </div>
+                Elman<span class="text-brand-400 font-normal">.</span>
+            </div>
+        </div>
+
+        <!-- User Profile -->
+        <div class="px-6 mb-6">
+            <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-900/50 border border-slate-800/50">
+                <div
+                    class="h-10 w-10 rounded-full bg-brand-100 flex items-center justify-center text-brand-700 font-bold text-sm shrink-0">
+                    IC
+                </div>
+                <div class="overflow-hidden">
+                    <p class="text-sm font-semibold text-white truncate">Ilsa Carla</p>
+                    <p class="text-xs text-slate-400 truncate">Consultora Financeira</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-2 space-y-1.5 overflow-y-auto hide-scrollbar">
+            <p class="px-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3 mt-2">Principal</p>
+
+            <a href="#"
+                class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 text-white bg-brand-500/10 text-brand-400">
+                <i class="ph-fill ph-squares-four text-xl"></i> Dashboard
+            </a>
+            <a href="#"
+                class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all duration-200">
+                <i class="ph ph-stethoscope text-xl"></i> Atendimento
+            </a>
+            <a href="#"
+                class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all duration-200">
+                <i class="ph ph-receipt text-xl"></i> Faturamento TISS
+            </a>
+            <a href="#"
+                class="nav-link w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-all duration-200">
+                <div class="flex items-center gap-3">
+                    <i class="ph ph-shield-check text-xl"></i> Auditoria
+                </div>
+                <span class="bg-brand-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">3</span>
+            </a>
+
+            <div class="pt-6 mt-6 border-t border-slate-800">
+                <p class="px-4 text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3">Relatórios
+                    Gerenciais</p>
+                <button
+                    class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-colors">
+                    <i class="ph ph-chart-line-up text-lg"></i> Repasse Médico
+                </button>
+                <button
+                    class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-900 transition-colors">
+                    <i class="ph ph-calendar-blank text-lg"></i> Programação
+                </button>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+
+        <!-- Premium Header -->
+        <header class="h-24 px-8 flex items-center justify-between z-30 shrink-0 bg-transparent">
+
+            <!-- Refined Search Bar -->
+            <div
+                class="group flex items-center gap-3 bg-white border border-slate-200 shadow-sm rounded-2xl px-5 py-3 transition-all w-[400px] focus-within:border-brand-500 focus-within:ring-4 focus-within:ring-brand-500/10">
+                <i
+                    class="ph ph-magnifying-glass text-slate-400 group-focus-within:text-brand-500 text-lg transition-colors"></i>
+                <input type="text" placeholder="Buscar paciente, guia ou procedimento..."
+                    class="bg-transparent border-none outline-none text-sm w-full placeholder:text-slate-400 text-slate-700 font-medium">
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center gap-4">
+                <div
+                    class="flex items-center gap-1.5 px-4 py-2 bg-white rounded-xl border border-slate-200 shadow-sm text-sm font-medium text-slate-600 mr-2">
+                    <i class="ph ph-calendar text-brand-600"></i>
+                    <span>Agosto 2026</span>
+                    <i class="ph ph-caret-down text-slate-400 ml-1"></i>
+                </div>
+
+                <button
+                    class="relative p-3 text-slate-500 hover:text-brand-600 transition-colors bg-white rounded-xl shadow-sm border border-slate-200 hover:border-brand-200">
+                    <i class="ph ph-bell text-xl"></i>
+                    <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+                </button>
+                <button
+                    class="p-3 text-slate-500 hover:text-brand-600 transition-colors bg-white rounded-xl shadow-sm border border-slate-200 hover:border-brand-200">
+                    <i class="ph ph-gear text-xl"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="flex-1 overflow-y-auto px-8 pb-12 pt-2" id="views-container">
+            <div id="view-dashboard" class="view-section fade-in">
+
+                <!-- Page Header -->
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h1 class="text-3xl font-bold font-heading text-slate-900 tracking-tight">Dashboard Executivo
+                        </h1>
+                        <p class="text-slate-500 mt-1.5 text-sm font-medium">Visão geral do faturamento e atendimentos
+                            da clínica.</p>
+                    </div>
+                    <button
+                        class="bg-slate-900 hover:bg-slate-800 text-white font-medium py-3 px-6 rounded-xl shadow-md transition-all text-sm flex items-center gap-2 group">
+                        <i class="ph ph-check-circle text-lg text-brand-400"></i>
+                        Auditar Lotes TISS
+                    </button>
+                </div>
+
+                <!-- SOLID KPI CARDS (No borders, premium shadow) -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="dashboard-kpis">
+                    <!-- Gerado via JS abaixo -->
+                </div>
+
+                <!-- CHARTS SECTION -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <!-- Chart 1: Volume por Convênio -->
+                    <div
+                        class="lg:col-span-2 bg-white p-7 rounded-3xl shadow-premium border border-slate-100 flex flex-col">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold font-heading text-slate-900">Volume Financeiro</h3>
+                                <p class="text-xs text-slate-400 mt-1 font-medium uppercase tracking-wider">Por Convênio
+                                    Principal</p>
+                            </div>
+                            <button
+                                class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"><i
+                                    class="ph ph-dots-three text-2xl"></i></button>
+                        </div>
+                        <div class="relative flex-1 min-h-[300px] w-full">
+                            <canvas id="convenioChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Chart 2: Glosas Evitadas -->
+                    <div class="bg-white p-7 rounded-3xl shadow-premium border border-slate-100 flex flex-col">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold font-heading text-slate-900">Glosas Evitadas</h3>
+                                <p class="text-xs text-slate-400 mt-1 font-medium uppercase tracking-wider">Distribuição
+                                </p>
+                            </div>
+                            <button
+                                class="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"><i
+                                    class="ph ph-dots-three text-2xl"></i></button>
+                        </div>
+                        <div class="relative h-56 flex justify-center w-full">
+                            <canvas id="glosaChart"></canvas>
+                        </div>
+                        <div class="mt-8 space-y-3" id="glosa-legend">
+                            <!-- Gerado via JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- LOGIC & CHARTS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. RENDERIZAR KPIs ---
+            const kpiContainer = document.getElementById('dashboard-kpis');
+            const kpiData = [
+                {
+                    title: "Faturamento Bruto",
+                    value: "R$ 1.240.500",
+                    trend: "+12.5%",
+                    isPositive: true,
+                    icon: "ph-money",
+                    colorClass: "text-emerald-600",
+                    bgClass: "bg-emerald-50"
+                },
+                {
+                    title: "Glosas Retidas (Auditoria)",
+                    value: "R$ 45.200",
+                    trend: "-3.2%",
+                    isPositive: true, // Queda de glosa é positivo
+                    icon: "ph-shield-check",
+                    colorClass: "text-brand-600",
+                    bgClass: "bg-brand-50"
+                },
+                {
+                    title: "Atendimentos Realizados",
+                    value: "3.450",
+                    trend: "+8.1%",
+                    isPositive: true,
+                    icon: "ph-users",
+                    colorClass: "text-blue-600",
+                    bgClass: "bg-blue-50"
+                }
+            ];
+
+            kpiContainer.innerHTML = kpiData.map((kpi, index) => `
+                <div class="bg-white rounded-3xl p-6 shadow-premium border border-slate-100 flex flex-col justify-between hover:shadow-premium-hover transition-shadow duration-300" style="animation-delay: ${index * 100}ms">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-12 h-12 rounded-2xl ${kpi.bgClass} flex items-center justify-center">
+                            <i class="ph ${kpi.icon} text-2xl ${kpi.colorClass}"></i>
+                        </div>
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${kpi.isPositive ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-700'}">
+                            <i class="ph ${kpi.isPositive ? 'ph-trend-up' : 'ph-trend-down'}"></i>
+                            ${kpi.trend}
+                        </span>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-semibold text-slate-500 mb-1">${kpi.title}</h4>
+                        <p class="text-3xl font-bold font-heading text-slate-900">${kpi.value}</p>
+                    </div>
+                </div>
+            `).join('');
+
+
+            // --- 2. CONFIGURAR GRÁFICOS (CHART.JS) ---
+
+            // Configurações globais Premium para Chart.js
+            Chart.defaults.font.family = "'Inter', sans-serif";
+            Chart.defaults.color = '#64748b'; // slate-500
+
+            // Gráfico 1: Volume por Convênio (Barra)
+            const ctxConvenio = document.getElementById('convenioChart').getContext('2d');
+
+            // Criar gradiente para as barras
+            const gradientBrand = ctxConvenio.createLinearGradient(0, 0, 0, 400);
+            gradientBrand.addColorStop(0, '#0d9488'); // brand-600
+            gradientBrand.addColorStop(1, '#5eead4'); // brand-300
+
+            new Chart(ctxConvenio, {
+                type: 'bar',
+                data: {
+                    labels: ['Unimed', 'Bradesco Saúde', 'SulAmérica', 'Amil', 'Particular', 'Outros'],
+                    datasets: [{
+                        label: 'Valor Faturado (R$)',
+                        data: [450000, 320000, 210000, 150000, 80000, 30500],
+                        backgroundColor: gradientBrand,
+                        borderRadius: 8, // Bordas arredondadas nas barras
+                        borderSkipped: false,
+                        barThickness: 32
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleFont: { family: 'Outfit', size: 14, weight: '600' },
+                            bodyFont: { family: 'Inter', size: 13 },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#f1f5f9', // slate-100
+                                drawBorder: false,
+                            },
+                            border: { display: false },
+                            ticks: {
+                                padding: 10,
+                                callback: function (value) {
+                                    return 'R$ ' + (value / 1000) + 'k';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            border: { display: false },
+                            ticks: {
+                                font: { weight: '500' },
+                                padding: 10
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico 2: Glosas Evitadas (Doughnut)
+            const ctxGlosa = document.getElementById('glosaChart').getContext('2d');
+            const glosaData = [25000, 15200, 5000];
+            const glosaLabels = ['Administrativas', 'Técnicas', 'Elegibilidade'];
+            const glosaColors = ['#0d9488', '#3b82f6', '#cbd5e1']; // Brand, Blue, Slate
+
+            new Chart(ctxGlosa, {
+                type: 'doughnut',
+                data: {
+                    labels: glosaLabels,
+                    datasets: [{
+                        data: glosaData,
+                        backgroundColor: glosaColors,
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%', // Buraco maior para design premium
+                    plugins: {
+                        legend: { display: false }, // Legenda customizada em HTML
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            padding: 12,
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function (context) {
+                                    return ' ' + new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Renderizar legenda customizada do Doughnut
+            const legendContainer = document.getElementById('glosa-legend');
+            const totalGlosas = glosaData.reduce((a, b) => a + b, 0);
+
+            legendContainer.innerHTML = glosaLabels.map((label, index) => {
+                const value = glosaData[index];
+                const percentage = Math.round((value / totalGlosas) * 100);
+                const formatBRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+
+                return `
+                    <div class="flex items-center justify-between text-sm">
+                        <div class="flex items-center gap-2 text-slate-600 font-medium">
+                            <span class="w-3 h-3 rounded-full" style="background-color: ${glosaColors[index]}"></span>
+                            ${label}
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-slate-800">${percentage}%</span>
+                            <span class="text-xs text-slate-400 block">${formatBRL}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        });
+    </script>
+</body>
+
+</html>

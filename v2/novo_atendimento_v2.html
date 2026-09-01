@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Elman - Atendimento</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts (Inter & Outfit for headings) -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], heading: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f2f7f6', 100: '#dcebe8', 200: '#b7d6cf', 300: '#8bbdb2', 400: '#5c9e91', 500: '#3d8074', 600: '#2f695f', 700: '#26544c', 800: '#1f433d', 900: '#193631', 950: '#0e1f1c' },
+                        gold: { 400: '#c7a468', 500: '#b3915a', 600: '#96794a' },
+                        ink: { 50: '#f6f7f6', 100: '#eceef0', 200: '#d7dbdf', 300: '#a9b1ba', 400: '#727d89', 500: '#4c5560', 600: '#333b45', 700: '#232931', 800: '#161b21', 900: '#0d1116', 950: '#080a0d' }
+                    },
+                    boxShadow: {
+                        'soft': '0 1px 2px rgba(13,17,22,0.04), 0 12px 32px -12px rgba(13,17,22,0.10)',
+                        'card': '0 1px 2px rgba(13,17,22,0.05), 0 1px 0 rgba(13,17,22,0.03)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f6f5;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .glass-sidebar {
+            background: linear-gradient(175deg, #0d1116 0%, #193631 130%);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-pill {
+            border-radius: 999px;
+            background: #eef0ef;
+            border: 1px solid transparent;
+            transition: all 180ms ease;
+        }
+
+        .search-pill:focus-within {
+            background: #ffffff;
+            border-color: #d7dbdf;
+            box-shadow: 0 0 0 4px rgba(47, 105, 95, 0.08);
+        }
+
+        /* Form Inputs Customization */
+        .form-input {
+            width: 100%;
+            background-color: #f6f7f6;
+            border: 1px solid #eceef0;
+            border-radius: 10px;
+            padding: 0.625rem 0.875rem;
+            font-size: 0.875rem;
+            color: #232931;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .form-input:focus {
+            background-color: #ffffff;
+            border-color: #8bbdb2;
+            box-shadow: 0 0 0 3px rgba(47, 105, 95, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: #a9b1ba;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #4c5560;
+            margin-bottom: 0.375rem;
+        }
+
+        /* Active Navigation indicator */
+        .nav-link.active {
+            position: relative;
+        }
+
+        .nav-link.active::before {
+            content: '';
+            position: absolute;
+            left: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 22px;
+            background: #c7a468;
+            border-radius: 2px;
+        }
+
+        /* Segmented Control / Radio Toggle */
+        .segmented-control input[type="radio"] {
+            display: none;
+        }
+
+        .segmented-control label {
+            flex: 1;
+            text-align: center;
+            padding: 0.5rem;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            color: #727d89;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            border-radius: 8px;
+        }
+
+        .segmented-control input[type="radio"]:checked+label {
+            background-color: #ffffff;
+            color: #2f695f;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            border-color: #eceef0;
+        }
+    </style>
+</head>
+
+<body class="text-ink-800 flex h-screen overflow-hidden">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside
+        class="w-72 glass-sidebar flex flex-col text-white transition-all duration-300 z-40 relative shadow-2xl shrink-0">
+        <div class="h-20 flex items-center px-7 border-b border-white/10 relative">
+            <img src="logo-elman.png" alt="Clínica Elman" class="h-8 w-auto object-contain relative z-10"
+                onerror="this.outerHTML='<div class=\'text-xl font-semibold font-heading tracking-tight relative z-10\'>CLÍNICA <span class=\'text-brand-200 font-light\'>elman</span></div>'">
+        </div>
+        <div class="px-7 py-6 border-b border-white/10 flex items-center gap-4">
+            <div
+                class="h-11 w-11 rounded-full bg-ink-800 border border-white/10 flex items-center justify-center text-brand-100 font-semibold text-sm">
+                IC
+            </div>
+            <div>
+                <p class="text-sm font-semibold font-heading text-white leading-tight">Ilsa Carla</p>
+                <p class="text-xs text-brand-200/60 mt-0.5">Consultora Financeira</p>
+            </div>
+        </div>
+        <nav class="flex-1 px-8 py-7 space-y-1 overflow-y-auto hide-scrollbar">
+            <p class="text-[11px] font-medium text-brand-200/40 tracking-wide mb-4">Menu principal</p>
+
+            <a href="dashboard.html"
+                class="nav-link w-full flex items-center gap-3 py-3 text-sm font-medium text-brand-100/50 hover:text-white transition-colors duration-200">
+                <i class="ph ph-squares-four text-lg"></i> Dashboard
+            </a>
+            <!-- SET ACTIVE STATE HERE -->
+            <a href="atendimento.html"
+                class="nav-link active w-full flex items-center gap-3 py-3 text-sm font-medium text-white transition-colors duration-200">
+                <i class="ph ph-stethoscope text-lg"></i> Atendimento
+            </a>
+            <a href="faturamento.html"
+                class="nav-link w-full flex items-center gap-3 py-3 text-sm font-medium text-brand-100/50 hover:text-white transition-colors duration-200">
+                <i class="ph ph-receipt text-lg"></i> Faturamento TISS
+            </a>
+            <a href="auditoria.html"
+                class="nav-link w-full flex items-center justify-between py-3 text-sm font-medium text-brand-100/50 hover:text-white transition-colors duration-200">
+                <div class="flex items-center gap-3">
+                    <i class="ph ph-shield-check text-lg"></i> Auditoria
+                </div>
+                <span
+                    class="bg-gold-500 text-ink-900 text-[10px] font-semibold w-5 h-5 flex items-center justify-center rounded-full"
+                    id="sidebar-badge-erros">3</span>
+            </a>
+
+            <div class="pt-7 mt-7 border-t border-white/10">
+                <p class="text-[11px] font-medium text-brand-200/40 tracking-wide mb-4">Mais relatórios</p>
+                <button
+                    class="w-full flex items-center gap-3 py-2.5 text-sm font-medium text-brand-100/50 hover:text-white transition-colors"><i
+                        class="ph ph-money text-base"></i> Repasse médico</button>
+                <button
+                    class="w-full flex items-center gap-3 py-2.5 text-sm font-medium text-brand-100/50 hover:text-white transition-colors"><i
+                        class="ph ph-calendar text-base"></i> Programação</button>
+                <button
+                    class="w-full flex items-center gap-3 py-2.5 text-sm font-medium text-brand-100/50 hover:text-white transition-colors"><i
+                        class="ph ph-key text-base"></i> Autorizações</button>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden bg-[#f5f6f5] relative">
+
+        <header
+            class="h-20 px-8 flex items-center justify-between bg-white/80 backdrop-blur-md z-30 sticky top-0 border-b border-ink-100/70 shrink-0">
+            <div class="search-pill flex items-center gap-2.5 px-4 py-2.5 w-80">
+                <i class="ph ph-magnifying-glass text-base text-ink-400"></i>
+                <input type="text" placeholder="Buscar paciente..."
+                    class="bg-transparent border-none outline-none text-sm w-full placeholder:text-ink-400 text-ink-700">
+            </div>
+            <div class="flex items-center gap-3">
+                <button
+                    class="relative p-2.5 text-ink-400 hover:text-brand-700 transition-colors bg-white rounded-full border border-ink-100">
+                    <i class="ph ph-bell text-lg"></i>
+                    <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-gold-500 rounded-full"></span>
+                </button>
+                <button
+                    class="p-2.5 text-ink-400 hover:text-brand-700 transition-colors bg-white rounded-full border border-ink-100">
+                    <i class="ph ph-gear text-lg"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- PAGE CONTENT -->
+        <div class="flex-1 overflow-y-auto p-8 relative z-10" id="views-container">
+            <div class="fade-in max-w-5xl mx-auto">
+
+                <!-- Page Header -->
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <div class="flex items-center gap-2 text-ink-400 text-sm mb-1.5">
+                            <i class="ph ph-house"></i>
+                            <i class="ph ph-caret-right text-xs"></i>
+                            <span>Atendimento</span>
+                            <i class="ph ph-caret-right text-xs"></i>
+                            <span class="text-brand-700 font-medium">Novo Atendimento</span>
+                        </div>
+                        <h1 class="text-[28px] font-semibold font-heading text-ink-900 tracking-tight">Registro de
+                            Atendimento</h1>
+                    </div>
+                    <div class="flex gap-3">
+                        <button
+                            class="px-5 py-2.5 rounded-full text-sm font-medium text-ink-600 bg-white border border-ink-200 hover:bg-ink-50 transition-colors">
+                            Cancelar
+                        </button>
+                        <button
+                            class="bg-ink-900 hover:bg-ink-800 text-white font-medium py-2.5 px-6 rounded-full transition-all text-sm flex items-center gap-2 shadow-soft">
+                            <i class="ph ph-check-circle text-lg text-brand-300"></i> Salvar e Gerar Guia
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FORM GRID -->
+                <div class="space-y-6">
+
+                    <!-- SECTION 1: Identificação do Paciente -->
+                    <div class="bg-white p-7 rounded-[20px] shadow-card">
+                        <div class="flex items-center gap-2.5 mb-6 pb-4 border-b border-ink-100/60">
+                            <div class="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center text-brand-600">
+                                <i class="ph ph-user text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-semibold font-heading text-ink-900">Identificação e Elegibilidade
+                            </h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                            <!-- Busca Rápida -->
+                            <div class="col-span-1 md:col-span-4">
+                                <label class="form-label">Buscar Paciente (Nome, CPF ou Prontuário)</label>
+                                <div class="relative">
+                                    <i
+                                        class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400"></i>
+                                    <input type="text" class="form-input pl-10" placeholder="Digite para buscar..."
+                                        value="Mariana Costa e Silva (CPF: 123.456.789-00)">
+                                </div>
+                            </div>
+
+                            <!-- Convênio -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Operadora / Convênio</label>
+                                <select class="form-input appearance-none">
+                                    <option value="">Selecione...</option>
+                                    <option value="bradesco" selected>Bradesco Saúde</option>
+                                    <option value="cassi">CASSI</option>
+                                    <option value="unimed">Unimed</option>
+                                </select>
+                            </div>
+
+                            <!-- Plano -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Plano</label>
+                                <select class="form-input appearance-none">
+                                    <option value="">Selecione...</option>
+                                    <option value="top">Top Nacional</option>
+                                    <option value="efetivo" selected>Efetivo Prata</option>
+                                    <option value="basico">Básico</option>
+                                </select>
+                            </div>
+
+                            <!-- Carteirinha -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Matrícula / Carteirinha</label>
+                                <input type="text" class="form-input font-mono text-sm" placeholder="000.000.000000.00"
+                                    value="738.992.102345.01">
+                            </div>
+
+                            <!-- Validade -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Validade da Carteira</label>
+                                <input type="month" class="form-input text-ink-700" value="2027-12">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 2: Agendamento e Contexto -->
+                    <div class="bg-white p-7 rounded-[20px] shadow-card">
+                        <div class="flex items-center gap-2.5 mb-6 pb-4 border-b border-ink-100/60">
+                            <div class="w-8 h-8 rounded-lg bg-ink-50 flex items-center justify-center text-ink-600">
+                                <i class="ph ph-calendar-check text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-semibold font-heading text-ink-900">Dados do Agendamento</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                            <!-- Data/Hora -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Data e Hora do Atendimento</label>
+                                <input type="datetime-local" class="form-input text-ink-700" value="2026-09-01T14:30">
+                            </div>
+
+                            <!-- Unidade -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Local de Atendimento</label>
+                                <select class="form-input appearance-none">
+                                    <option value="clinica" selected>Clínica Principal (Matriz)</option>
+                                    <option value="domiciliar">Atendimento Domiciliar</option>
+                                </select>
+                            </div>
+
+                            <!-- Caráter do Atendimento -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Caráter do Atendimento</label>
+                                <div class="segmented-control flex p-1 bg-ink-50 rounded-lg border border-ink-100">
+                                    <input type="radio" name="carater" id="carater_eletivo" checked>
+                                    <label for="carater_eletivo">Eletivo</label>
+
+                                    <input type="radio" name="carater" id="carater_urgencia">
+                                    <label for="carater_urgencia">Urgência</label>
+                                </div>
+                            </div>
+
+                            <!-- Tipo de Atendimento -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Tipo de Atendimento</label>
+                                <select class="form-input appearance-none">
+                                    <option value="primeira">Primeira Consulta</option>
+                                    <option value="seguimento" selected>Seguimento / Sessão</option>
+                                    <option value="retorno">Retorno</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 3: Profissional -->
+                    <div class="bg-white p-7 rounded-[20px] shadow-card">
+                        <div class="flex items-center gap-2.5 mb-6 pb-4 border-b border-ink-100/60">
+                            <div
+                                class="w-8 h-8 rounded-lg bg-gold-500/10 flex items-center justify-center text-gold-600">
+                                <i class="ph ph-stethoscope text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-semibold font-heading text-ink-900">Profissional e Regulação</h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <!-- Profissional Executante -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Profissional Executante</label>
+                                <select class="form-input appearance-none"
+                                    onchange="updateProfessionalData(this.value)">
+                                    <option value="">Selecione...</option>
+                                    <option value="dr_carlos" selected>Dr. Carlos Mendes</option>
+                                    <option value="dra_luciana">Dra. Luciana Silva</option>
+                                    <option value="dr_roberto">Dr. Roberto Almeida</option>
+                                </select>
+                            </div>
+
+                            <!-- Especialidade (Readonly mockup) -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Especialidade / Conselho</label>
+                                <input type="text" class="form-input bg-ink-50/50 text-ink-500" id="prof_conselho"
+                                    value="Ortopedia (CRM-RJ 44556)" readonly>
+                            </div>
+
+                            <!-- Médico Solicitante -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Médico Solicitante <span
+                                        class="text-ink-300 font-normal">(Opcional)</span></label>
+                                <input type="text" class="form-input" placeholder="Nome ou CRM do solicitante">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 4: Autorização e Dados Clínicos -->
+                    <div class="bg-white p-7 rounded-[20px] shadow-card">
+                        <div class="flex items-center gap-2.5 mb-6 pb-4 border-b border-ink-100/60">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                                <i class="ph ph-file-text text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-semibold font-heading text-ink-900">Autorização e Dados Clínicos
+                            </h3>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
+                            <!-- Guia -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Nº da Guia Prestador/Op.</label>
+                                <input type="text" class="form-input font-mono" placeholder="Ex: 889922001"
+                                    value="38291040">
+                            </div>
+
+                            <!-- Senha -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Senha / Token de Liberação</label>
+                                <input type="text" class="form-input font-mono text-brand-700 font-medium"
+                                    placeholder="Código liberado" value="X88A-92P">
+                            </div>
+
+                            <!-- Validade da Senha -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Validade da Senha</label>
+                                <input type="date" class="form-input" value="2026-09-15">
+                            </div>
+
+                            <!-- Indicação Acidente -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Indicação de Acidente</label>
+                                <select class="form-input appearance-none">
+                                    <option value="nao_acidente" selected>Não Acidente</option>
+                                    <option value="trabalho">Trabalho</option>
+                                    <option value="transito">Trânsito</option>
+                                    <option value="outros">Outros</option>
+                                </select>
+                            </div>
+
+                            <!-- Diagnóstico -->
+                            <div class="col-span-1 md:col-span-4">
+                                <label class="form-label">Diagnóstico (CID-10 Principal)</label>
+                                <div class="relative">
+                                    <input type="text" class="form-input font-medium"
+                                        placeholder="Buscar por código ou descrição..."
+                                        value="M54.5 - Dor lombar baixa">
+                                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
+                                        <span
+                                            class="bg-ink-100 text-ink-600 text-[10px] font-semibold px-2 py-1 rounded">M54.5</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Observações -->
+                            <div class="col-span-1 md:col-span-4">
+                                <label class="form-label">Observações da Recepção</label>
+                                <textarea class="form-input resize-none h-20"
+                                    placeholder="Anotações adicionais relevantes para o faturamento ou corpo clínico..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SECTION 5: Histórico do Paciente -->
+                    <div class="bg-white p-7 rounded-[20px] shadow-card mb-10">
+                        <div class="flex justify-between items-center mb-6 pb-4 border-b border-ink-100/60">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-ink-50 flex items-center justify-center text-ink-500">
+                                    <i class="ph ph-clock-counter-clockwise text-lg"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-semibold font-heading text-ink-900">Histórico de
+                                        Atendimentos</h3>
+                                    <p class="text-[11px] text-ink-400">Últimos registros para Mariana Costa e Silva</p>
+                                </div>
+                            </div>
+                            <button
+                                class="text-sm font-medium text-brand-600 hover:text-brand-800 transition-colors">Ver
+                                prontuário completo</button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-ink-600">
+                                <thead>
+                                    <tr
+                                        class="text-xs font-semibold text-ink-400 uppercase tracking-wider border-b border-ink-100">
+                                        <th class="pb-3 font-medium">Data</th>
+                                        <th class="pb-3 font-medium">Profissional</th>
+                                        <th class="pb-3 font-medium">Tipo / Guia</th>
+                                        <th class="pb-3 font-medium text-right">Status Faturamento</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-ink-100">
+                                    <tr class="hover:bg-ink-50/50 transition-colors group">
+                                        <td class="py-3.5 whitespace-nowrap text-ink-900 font-medium">25 Ago 2026</td>
+                                        <td class="py-3.5">Dra. Luciana Silva <span
+                                                class="text-ink-400 text-xs block">Fisioterapia</span></td>
+                                        <td class="py-3.5">Sessão Tratamento <span
+                                                class="text-ink-400 text-xs font-mono block">#38291039</span></td>
+                                        <td class="py-3.5 text-right">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-50 text-green-700 border border-green-200/60">
+                                                <i class="ph-fill ph-check-circle text-green-500"></i> Autorizado
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-ink-50/50 transition-colors group">
+                                        <td class="py-3.5 whitespace-nowrap text-ink-900 font-medium">18 Ago 2026</td>
+                                        <td class="py-3.5">Dr. Carlos Mendes <span
+                                                class="text-ink-400 text-xs block">Ortopedia</span></td>
+                                        <td class="py-3.5">Primeira Consulta <span
+                                                class="text-ink-400 text-xs font-mono block">#38291012</span></td>
+                                        <td class="py-3.5 text-right">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-green-50 text-green-700 border border-green-200/60">
+                                                <i class="ph-fill ph-check-circle text-green-500"></i> Faturado
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-ink-50/50 transition-colors group">
+                                        <td class="py-3.5 whitespace-nowrap text-ink-900 font-medium">10 Jan 2026</td>
+                                        <td class="py-3.5">Dr. Roberto Almeida <span
+                                                class="text-ink-400 text-xs block">Clínica Geral</span></td>
+                                        <td class="py-3.5">Primeira Consulta <span
+                                                class="text-ink-400 text-xs font-mono block">#37102944</span></td>
+                                        <td class="py-3.5 text-right">
+                                            <span
+                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-red-50 text-red-700 border border-red-200/60">
+                                                <i class="ph-fill ph-x-circle text-red-500"></i> Glosado (Elegibilidade)
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Fake logic to update professional specialty based on selection
+        function updateProfessionalData(professionalValue) {
+            const conselhoInput = document.getElementById('prof_conselho');
+
+            if (professionalValue === 'dr_carlos') {
+                conselhoInput.value = 'Ortopedia (CRM-RJ 44556)';
+            } else if (professionalValue === 'dra_luciana') {
+                conselhoInput.value = 'Fisioterapia (CREFITO-2 18299)';
+            } else if (professionalValue === 'dr_roberto') {
+                conselhoInput.value = 'Clínica Geral (CRM-RJ 22310)';
+            } else {
+                conselhoInput.value = '';
+            }
+        }
+    </script>
+</body>
+
+</html>
