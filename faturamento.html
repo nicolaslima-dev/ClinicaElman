@@ -151,9 +151,9 @@
     <!-- SIDEBAR NAVIGATION -->
     <aside
         class="w-72 glass-sidebar flex flex-col text-white transition-all duration-300 z-40 relative shadow-2xl shrink-0">
-        <div class="h-20 flex items-center px-7 border-b border-white/10 relative">
-            <img src="logo-elman.png" alt="Clínica Elman" class="h-8 w-auto object-contain relative z-10"
-                onerror="this.outerHTML='<div class=\'text-xl font-semibold font-heading tracking-tight relative z-10\'>CLÍNICA <span class=\'text-brand-200 font-light\'>elman</span></div>'">
+        <div class="h-24 flex items-center px-7 border-b border-white/10 relative">
+            <img src="logo-elman.png" alt="Clínica Elman" class="h-14 w-auto max-w-[200px] object-contain relative z-10"
+                onerror="this.outerHTML='<div class=\'text-2xl font-semibold font-heading tracking-tight relative z-10\'>CLÍNICA <span class=\'text-brand-200 font-light\'>elman</span></div>'">
         </div>
         <div class="px-7 py-6 border-b border-white/10 flex items-center gap-4">
             <div
@@ -161,13 +161,12 @@
                 IC</div>
             <div>
                 <p class="text-sm font-semibold font-heading text-white leading-tight">Ilsa Carla</p>
-                <p class="text-xs text-brand-200/60 mt-0.5">Consultora Financeira</p>
             </div>
         </div>
         <nav class="flex-1 px-8 py-7 space-y-1 overflow-y-auto hide-scrollbar">
             <p class="text-[11px] font-medium text-brand-200/40 tracking-wide mb-4">Menu principal</p>
 
-            <a href="dashboard.html"
+            <a href="index.html"
                 class="nav-link w-full flex items-center gap-3 py-3 text-sm font-medium text-brand-100/50 hover:text-white transition-colors duration-200">
                 <i class="ph ph-squares-four text-lg"></i> Dashboard
             </a>
@@ -207,12 +206,7 @@
     <main class="flex-1 flex flex-col h-screen overflow-hidden bg-[#f5f6f5] relative">
 
         <header
-            class="h-20 px-8 flex items-center justify-between bg-white/80 backdrop-blur-md z-30 sticky top-0 border-b border-ink-100/70 shrink-0">
-            <div class="search-pill flex items-center gap-2.5 px-4 py-2.5 w-80">
-                <i class="ph ph-magnifying-glass text-base text-ink-400"></i>
-                <input type="text" placeholder="Buscar paciente, guia ou procedimento"
-                    class="bg-transparent border-none outline-none text-sm w-full placeholder:text-ink-400 text-ink-700">
-            </div>
+            class="h-20 px-8 flex items-center justify-end bg-white/80 backdrop-blur-md z-30 sticky top-0 border-b border-ink-100/70 shrink-0">
             <div class="flex items-center gap-3">
                 <button
                     class="relative p-2.5 text-ink-400 hover:text-brand-700 transition-colors bg-white rounded-full border border-ink-100"><i
@@ -230,7 +224,7 @@
                 <div class="flex justify-between items-end mb-8">
                     <div>
                         <div class="flex items-center gap-2 text-ink-400 text-sm mb-1.5">
-                            <i class="ph ph-house"></i>
+                            <a href="index.html" class="hover:text-brand-700 transition-colors"><i class="ph ph-house"></i></a>
                             <i class="ph ph-caret-right text-xs"></i>
                             <span>Faturamento</span>
                             <i class="ph ph-caret-right text-xs"></i>
@@ -374,9 +368,12 @@
 
         function confirmarGeracaoXML() {
             fecharModalGeracao();
-            // Lógica para gerar XML
-            alert('XML Gerado com sucesso!');
+            mostrarToast('Lote XML Gerado com Sucesso!', 'Lote 302026 exportado no padrão TISS 4.03.00. Redirecionando para Auditoria...', 'success');
+            setTimeout(() => {
+                window.location.href = 'auditoria.html';
+            }, 1200);
         }
     </script>
+    <script src="app.js"></script>
 </body>
 </html>

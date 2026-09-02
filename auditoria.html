@@ -1,25 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clínica Elman - Dashboard Executivo</title>
-
-    <!-- Tailwind CSS -->
+    <title>Clínica Elman - Auditoria TISS</title>
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- Google Fonts (Inter & Outfit for headings) -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
-        rel="stylesheet">
-
-    <!-- Phosphor Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
     <script>
         tailwind.config = {
             theme: {
@@ -43,82 +31,18 @@
             }
         }
     </script>
-
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f5f6f5;
-        }
-
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-            font-family: 'Outfit', sans-serif;
-        }
-
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .hide-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
+        body { font-family: 'Inter', sans-serif; background-color: #f5f6f5; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Outfit', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
         .glass-sidebar {
             background: linear-gradient(175deg, #0d1116 0%, #193631 130%);
             border-right: 1px solid rgba(255, 255, 255, 0.05);
         }
-
-        .fade-in {
-            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Search bar — a single deliberate pill, quiet by default, defined on focus */
-        .search-pill {
-            border-radius: 999px;
-            background: #eef0ef;
-            border: 1px solid transparent;
-            transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
-        }
-
-        .search-pill:focus-within {
-            background: #ffffff;
-            border-color: #d7dbdf;
-            box-shadow: 0 0 0 4px rgba(47, 105, 95, 0.08);
-        }
-
-        /* KPI cards — solid surface, no outline, hierarchy from shadow + a single accent bar */
-        .kpi-card {
-            background: #ffffff;
-            border-radius: 18px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .kpi-card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-        }
+        .fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .nav-link.active {
             position: relative;
@@ -137,7 +61,6 @@
         }
     </style>
 </head>
-
 <body class="text-ink-800 flex h-screen overflow-hidden">
 
     <!-- SIDEBAR NAVIGATION -->
@@ -159,7 +82,7 @@
             <p class="text-[11px] font-medium text-brand-200/40 tracking-wide mb-4">Menu principal</p>
 
             <a href="index.html"
-                class="nav-link active w-full flex items-center gap-3 py-3 text-sm font-medium text-white">
+                class="nav-link w-full flex items-center gap-3 py-3 text-sm font-medium text-brand-100/50 hover:text-white transition-colors duration-200">
                 <i class="ph ph-squares-four text-lg"></i> Dashboard
             </a>
             <a href="atendimento.html"
@@ -171,7 +94,7 @@
                 <i class="ph ph-receipt text-lg"></i> Faturamento TISS
             </a>
             <a href="auditoria.html"
-                class="nav-link w-full flex items-center justify-between py-3 text-sm font-medium text-brand-100/50 hover:text-white transition-colors duration-200">
+                class="nav-link active w-full flex items-center justify-between py-3 text-sm font-medium text-white">
                 <div class="flex items-center gap-3">
                     <i class="ph ph-shield-check text-lg"></i> Auditoria
                 </div>
@@ -211,62 +134,71 @@
         </header>
 
         <div class="flex-1 overflow-y-auto p-8 relative z-10" id="views-container">
-            <div id="view-dashboard" class="view-section fade-in">
+            <div id="view-auditoria" class="view-section fade-in">
                 <div class="flex justify-between items-end mb-8">
                     <div>
-                        <h1 class="text-[28px] font-semibold font-heading text-ink-900 tracking-tight">Dashboard
-                            executivo</h1>
-                        <p class="text-sm text-ink-400 mt-2 flex items-center gap-2"><i
-                                class="ph ph-calendar-blank"></i> Agosto de 2026</p>
+                        <h1 class="text-3xl font-bold font-heading text-slate-900 tracking-tight">Central de Auditoria</h1>
+                        <p class="text-sm text-slate-500 mt-2">Resolução de glosas prévias antes do envio Orizon</p>
                     </div>
-                    <a href="auditoria.html"
-                        class="bg-ink-900 hover:bg-ink-800 text-white font-medium py-2.5 px-6 rounded-full transition-all text-sm flex items-center gap-2 group">
-                        Auditar lotes
-                        <i class="ph ph-arrow-right group-hover:translate-x-0.5 transition-transform"></i>
-                    </a>
+                    <div class="flex items-center gap-3">
+                        <button onclick="restaurarEstadoPadrao()" title="Restaurar os 3 erros para novos testes" class="px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow-xs transition-colors">
+                            <i class="ph ph-arrows-clockwise text-sm"></i>
+                            Restaurar Testes
+                        </button>
+                        <span class="bg-red-50 border border-red-100 text-red-600 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 shadow-sm transition-all">
+                            <i class="ph ph-warning-circle text-lg"></i>
+                            <span id="contador-erros-tela">3 Erros Pendentes</span>
+                        </span>
+                    </div>
                 </div>
 
-                <!-- SOLID KPI CARDS (No borders, premium shadow) -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="dashboard-kpis">
-                    <!-- Gerado via JS abaixo -->
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                    <div class="lg:col-span-2 bg-white p-7 rounded-[20px] shadow-card">
-                        <div class="flex justify-between items-start mb-7">
-                            <div>
-                                <h3 class="text-base font-semibold font-heading text-ink-900">Volume financeiro por
-                                    convênio</h3>
-                                <p class="text-xs text-ink-400 mt-1">Valores faturados no mês, em milhares de reais</p>
-                            </div>
-                            <button class="text-ink-300 hover:text-ink-600 transition-colors"><i
-                                    class="ph ph-dots-three-bold text-xl"></i></button>
-                        </div>
-                        <div class="relative h-72"><canvas id="convenioChart"></canvas></div>
-                    </div>
-                    <div class="bg-white p-7 rounded-[20px] shadow-card">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <h3 class="text-base font-semibold font-heading text-ink-900">Glosas evitadas</h3>
-                                <p class="text-xs text-ink-400 mt-1">Auditoria prévia TISS</p>
-                            </div>
-                            <button class="text-ink-300 hover:text-ink-600 transition-colors"><i
-                                    class="ph ph-dots-three-bold text-xl"></i></button>
-                        </div>
-                        <div class="relative h-52 flex justify-center items-center">
-                            <canvas id="glosaChart"></canvas>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
-                                id="glosa-center"></div>
-                        </div>
-                        <div class="mt-5 space-y-3 pt-5 border-t border-ink-100" id="glosa-legend"></div>
-                    </div>
+                <div class="bg-white rounded-3xl shadow-premium border border-slate-100 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/80 border-b border-slate-100 text-xs text-slate-400 uppercase tracking-wider">
+                                <th class="p-5 font-semibold">Data</th>
+                                <th class="p-5 font-semibold">Paciente</th>
+                                <th class="p-5 font-semibold">Convênio</th>
+                                <th class="p-5 font-semibold">Status Auditoria</th>
+                                <th class="p-5 font-semibold text-right">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm" id="tbodyAuditoria">
+                            <!-- Gerado via JS para suportar mocks -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- DRAWER CORREÇÃO -->
+    <div id="drawerOverlay" onclick="fecharDrawer()" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 z-50"></div>
+
+    <div id="drawerPanel" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl transform translate-x-full transition-transform duration-400 ease-out z-[60] flex flex-col border-l border-slate-100">
+        <div class="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-white">
+            <div>
+                <h2 class="text-xl font-bold font-heading text-slate-800">Resolução de Glosa</h2>
+                <p class="text-xs text-brand-600 font-semibold mt-1 flex items-center gap-1"><i class="ph ph-shield-check"></i> Validação TISS 4.03.00</p>
+            </div>
+            <button onclick="fecharDrawer()" class="text-slate-400 hover:text-slate-700 p-2 rounded-full hover:bg-slate-100 transition-colors">
+                <i class="ph ph-x text-xl"></i>
+            </button>
+        </div>
+
+        <div class="p-8 flex-1 overflow-y-auto" id="drawerContent">
+            <!-- Dinâmico via JS -->
+        </div>
+
+        <div class="px-8 py-5 border-t border-slate-100 bg-slate-50 flex justify-end gap-3">
+            <button onclick="fecharDrawer()" class="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors shadow-sm">Cancelar</button>
+            <button onclick="salvarCorrecao()" class="px-5 py-2.5 bg-brand-600 rounded-xl text-sm font-semibold text-white hover:bg-brand-700 shadow-lg shadow-brand-500/30 flex items-center gap-2 transition-all hover:-translate-y-0.5">
+                <i class="ph ph-floppy-disk text-lg"></i>
+                Validar e Salvar
+            </button>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
-
 </html>
