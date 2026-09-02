@@ -1,3 +1,6 @@
+// --- CONFIGURAÇÃO SUPABASE ---
+// (O cliente supabaseClient está sendo inicializado no arquivo .env)
+
 // --- ESTADO GLOBAL (MOCK SUPABASE com LocalStorage) ---
 function getInitialState() {
     const saved = localStorage.getItem('clinica_elman_state');
@@ -265,16 +268,16 @@ async function fetchAndRenderAuditorias() {
         const badgeClass = isErro ? 'bg-red-100 text-red-700 border-red-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200';
         const badgeText = isErro ? 'Erro Cadastral' : 'Validado TISS';
         const btnHtml = isErro 
-            ? `<button onclick="abrirDrawer(${item.id})" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300 font-semibold py-1.5 px-4 rounded-xl shadow-sm text-xs transition-all flex items-center gap-1.5 ml-auto hover:scale-105 active:scale-95"><i class="ph ph-wrench text-sm"></i> Corrigir</button>`
-            : `<span class="text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-lg text-xs font-semibold flex items-center justify-end gap-1.5 w-max ml-auto shadow-xs"><i class="ph ph-check-circle-bold text-emerald-600"></i> Aprovado (${formatCurrency(item.valor)})</span>`;
+            ? `<button id="btnCorrigir-${item.id}" onclick="abrirDrawer(${item.id})" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300 font-semibold py-1.5 px-4 rounded-xl shadow-sm text-xs transition-all flex items-center gap-1.5 ml-auto hover:scale-105 active:scale-95"><i class="ph ph-wrench text-sm"></i> Corrigir</button>`
+            : `<span id="btnCorrigir-${item.id}" class="text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-lg text-xs font-semibold flex items-center justify-end gap-1.5 w-max ml-auto shadow-xs"><i class="ph ph-check-circle-bold text-emerald-600"></i> Aprovado (${formatCurrency(item.valor)})</span>`;
 
         html += `
-            <tr class="border-b border-slate-100 transition-colors duration-300 ${rowClass}">
+            <tr id="linhaGuiaErro-${item.id}" class="border-b border-slate-100 transition-colors duration-300 ${rowClass}">
                 <td class="p-5 text-slate-500 font-mono text-xs">${item.data}</td>
                 <td class="p-5 font-bold font-heading text-slate-800">${item.paciente}</td>
                 <td class="p-5"><span class="bg-white border border-slate-200 text-slate-700 px-2.5 py-1 rounded-md text-xs font-bold shadow-xs">${item.convenio}</span></td>
                 <td class="p-5">
-                    <span class="px-3 py-1.5 rounded-md text-xs font-bold border shadow-xs flex items-center gap-1.5 w-max ${badgeClass}">
+                    <span id="badgeStatusErro-${item.id}" class="px-3 py-1.5 rounded-md text-xs font-bold border shadow-xs flex items-center gap-1.5 w-max ${badgeClass}">
                         <i class="ph ${isErro ? 'ph-warning-circle' : 'ph-check-circle'}"></i> 
                         ${badgeText}
                     </span>
@@ -461,8 +464,7 @@ function validarMatriculaDrawer(input) {
     }
 }
 
-function salvarCorrecao() {
-    // Guarda o ID atual antes de qualquer alteração
+async function salvarCorrecao() {
     const currentId = activeAuditoriaId;
     if (!currentId) return;
 
@@ -472,37 +474,90 @@ function salvarCorrecao() {
         return;
     }
 
-    // Validação de formulário
-    if (item.tipoErro === 'cbo_matricula' || item.id === 1) {
+    try {
+        const inputConselho = document.getElementById('inputConselho');
         const inputMatricula = document.getElementById('inputMatricula');
-        if (inputMatricula && inputMatricula.value.trim().length < 14) {
-            mostrarToast('Atenção na Matrícula', 'A matrícula da CASSI precisa conter 14 dígitos numéricos.', 'warning');
+
+        const payload = {
+            conselhoProfissional: inputConselho ? inputConselho.value : '',
+            matricula: inputMatricula ? inputMatricula.value.trim() : '',
+            convenio: 'CASSI',
+            versaoTiss: '4.03.00',
+            codigoTuss: '50000250',
+            dataAutorizacao: '2026-06-01',
+            dataExecucao: '2026-06-01'
+        };
+
+        const { data, error } = await supabaseClient.rpc('auditar_guia_completa', { guia: payload });
+
+        if (error) {
+            throw error;
+        }
+
+        if (data && data.aprovado === false) {
+            const mensagens = (data.criticas && data.criticas.length > 0) ? data.criticas.map(c => c.mensagem).join(', ') : 'Rejeição na validação.';
+            mostrarToast('Falha na Validação', mensagens, 'error');
             return;
         }
+
+        if (data && data.aprovado === true) {
+            fecharDrawer();
+
+            const linha = document.getElementById(`linhaGuiaErro-${currentId}`);
+            if (linha) {
+                linha.className = "border-b border-slate-100 transition-colors duration-300 bg-green-50";
+            }
+
+            const badge = document.getElementById(`badgeStatusErro-${currentId}`);
+            if (badge) {
+                badge.className = "px-3 py-1.5 rounded-md text-xs font-bold border shadow-xs flex items-center gap-1.5 w-max bg-green-100 text-green-700 border-green-200";
+                badge.innerHTML = '<i class="ph ph-check-circle"></i> Validado (Orizon OK)';
+            }
+
+            const btn = document.getElementById(`btnCorrigir-${currentId}`);
+            if (btn) {
+                btn.outerHTML = `<span id="btnCorrigir-${currentId}" class="text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-lg text-xs font-semibold flex items-center justify-end gap-1.5 w-max ml-auto shadow-xs"><i class="ph ph-check-circle-bold text-emerald-600"></i> Aprovado</span>`;
+            }
+
+            const dashRetido = document.getElementById('dash-retido');
+            const dashAprovado = document.getElementById('dash-aprovado');
+            if (dashRetido && dashAprovado) {
+                state.kpis.retido = Math.max(0, state.kpis.retido - item.valor);
+                state.kpis.aprovado += item.valor;
+                
+                dashRetido.textContent = formatCurrency(state.kpis.retido);
+                dashAprovado.textContent = formatCurrency(state.kpis.aprovado);
+                
+                dashRetido.classList.add('scale-105');
+                dashAprovado.classList.add('scale-105');
+                setTimeout(() => {
+                    dashRetido.classList.remove('scale-105');
+                    dashAprovado.classList.remove('scale-105');
+                }, 300);
+            }
+
+            if (charts.glosa) {
+                charts.glosa.data.datasets[0].data[0] = Math.max(0, charts.glosa.data.datasets[0].data[0] - 1);
+                charts.glosa.update();
+            }
+
+            item.status = 'validado';
+            item.resolvidoEm = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            saveState();
+
+            // Optionally call fetchAndRenderAuditorias() but the instructions said to manually manipulate the DOM for these elements, so we skip it to not overwrite our animations.
+            
+            mostrarToast(
+                'Glosa Resolvida com Sucesso!', 
+                `A guia de ${item.paciente} (${item.convenio}) foi validada e ${formatCurrency(item.valor)} foram liberados.`, 
+                'success'
+            );
+        }
+
+    } catch (err) {
+        console.error('Erro de API:', err);
+        mostrarToast('Erro de Conexão', 'Não foi possível validar a guia. Interface continua operando normalmente.', 'error');
     }
-
-    // Aplica a correção ao item
-    item.status = 'validado';
-    item.resolvidoEm = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-    
-    // Atualiza os valores financeiros nos KPIs
-    state.kpis.retido = Math.max(0, state.kpis.retido - item.valor);
-    state.kpis.aprovado += item.valor;
-    
-    saveState();
-
-    // Fecha o drawer
-    fecharDrawer();
-
-    // Re-renderiza a tabela e badges imediatamente
-    fetchAndRenderAuditorias();
-
-    // Notificação Toast personalizada e elegante
-    mostrarToast(
-        'Glosa Resolvida com Sucesso!', 
-        `A guia de ${item.paciente} (${item.convenio}) foi validada e ${formatCurrency(item.valor)} foram liberados para faturamento.`, 
-        'success'
-    );
 }
 
 // --- CHARTS CONFIG ---

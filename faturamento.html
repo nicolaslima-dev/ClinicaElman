@@ -234,7 +234,7 @@
                         <p class="text-sm text-ink-400 mt-2">Filtre guias para processamento de Remessa ou Geração de XML</p>
                     </div>
                     <div class="flex gap-3">
-                        <button class="px-5 py-2.5 rounded-full text-sm font-medium text-ink-600 bg-white border border-ink-200 hover:bg-ink-50 transition-colors flex items-center gap-2">
+                        <button onclick="window.print()" class="px-5 py-2.5 rounded-full text-sm font-medium text-ink-600 bg-white border border-ink-200 hover:bg-ink-50 transition-colors flex items-center gap-2">
                             <i class="ph ph-printer text-lg"></i> Imprimir Relatório
                         </button>
                         <button onclick="abrirModalGeracao()" class="bg-ink-900 hover:bg-ink-800 text-white font-medium py-2.5 px-6 rounded-full transition-all text-sm flex items-center gap-2 shadow-soft">
@@ -368,12 +368,40 @@
 
         function confirmarGeracaoXML() {
             fecharModalGeracao();
+            
+            // Gerar e baixar arquivo XML fake
+            const xmlContent = `<?xml version="1.0" encoding="ISO-8859-1"?>
+<ans:mensagemTISS xmlns:ans="http://www.ans.gov.br/padroes/tiss/schemas">
+    <ans:cabecalho>
+        <ans:identificacaoTransacao>
+            <ans:tipoTransacao>ENVIO_LOTE_GUIAS</ans:tipoTransacao>
+            <ans:dataRegistroTransacao>2026-09-02</ans:dataRegistroTransacao>
+            <ans:horaRegistroTransacao>14:30:00</ans:horaRegistroTransacao>
+        </ans:identificacaoTransacao>
+    </ans:cabecalho>
+    <ans:prestadorParaOperadora>
+        <ans:loteGuias>
+            <ans:numeroLote>302026</ans:numeroLote>
+        </ans:loteGuias>
+    </ans:prestadorParaOperadora>
+</ans:mensagemTISS>`;
+            const blob = new Blob([xmlContent], { type: 'application/xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'LOTE_302026_TISS_4.03.00.xml';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
             mostrarToast('Lote XML Gerado com Sucesso!', 'Lote 302026 exportado no padrão TISS 4.03.00. Redirecionando para Auditoria...', 'success');
             setTimeout(() => {
                 window.location.href = 'auditoria.html';
-            }, 1200);
+            }, 2500);
         }
     </script>
+    <script src=".env"></script>
     <script src="app.js"></script>
 </body>
 </html>

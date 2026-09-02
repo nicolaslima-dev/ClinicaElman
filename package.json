@@ -1,0 +1,8 @@
+{
+  "name": "clinica-elman",
+  "version": "1.0.0",
+  "description": "Frontend Clínica Elman",
+  "scripts": {
+    "dev": "npx serve ."
+  }
+}

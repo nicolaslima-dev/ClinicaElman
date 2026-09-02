@@ -281,8 +281,8 @@
                     </div>
 
                     <!-- Card 4: Relatórios Rápidos -->
-                    <div
-                        class="action-card bg-white p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between bg-gradient-to-br from-brand-900 to-ink-900 text-white">
+                    <div onclick="exportarAgenda()"
+                        class="action-card cursor-pointer bg-white p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between bg-gradient-to-br from-brand-900 to-ink-900 text-white">
                         <div>
                             <p class="text-xs font-medium text-brand-200 uppercase tracking-wide">Relatórios</p>
                             <p class="text-sm font-medium mt-1 leading-snug">Exportar agenda<br>e listagem diária</p>
@@ -530,6 +530,30 @@
         </div>
     </main>
 
+    <script>
+        function exportarAgenda() {
+            const csvContent = "Paciente,Horario,Data,Profissional,Convenio,Status\n" +
+                "Mariana Costa e Silva,14:30,01 Set 2026,Dr. Carlos Mendes,Bradesco,Agendado\n" +
+                "João Pedro Alves,15:00,01 Set 2026,Dra. Luciana Silva,Unimed,Aguardando\n" +
+                "Ana Beatriz Nogueira,09:15,01 Set 2026,Dr. Roberto Almeida,Particular,Realizado\n" +
+                "Carlos Eduardo Silva,08:00,01 Set 2026,Dr. Carlos Mendes,CASSI,Cancelado\n";
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "agenda_01_set_2026.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            if (typeof mostrarToast === 'function') {
+                mostrarToast('Agenda Exportada', 'O arquivo CSV foi baixado com sucesso.', 'success');
+            } else {
+                alert('Agenda Exportada com sucesso!');
+            }
+        }
+    </script>
+    <script src=".env"></script>
     <script src="app.js"></script>
 </body>
 
