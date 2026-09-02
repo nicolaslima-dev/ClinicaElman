@@ -277,6 +277,20 @@
                 <!-- FORM GRID -->
                 <div class="space-y-6">
 
+                    <!-- Tipo de Guia -->
+                    <div class="bg-white p-6 rounded-[20px] shadow-card">
+                        <div class="flex items-center gap-4">
+                            <h3 class="text-base font-semibold font-heading text-ink-900 w-32">Tipo de Guia:</h3>
+                            <div class="segmented-control flex p-1 bg-ink-50 rounded-lg border border-ink-100 flex-1 max-w-sm">
+                                <input type="radio" name="tipo_guia" id="guia_consulta" value="GUIA_CONSULTA" checked onchange="toggleGuiaFields()">
+                                <label for="guia_consulta">Consulta</label>
+
+                                <input type="radio" name="tipo_guia" id="guia_sadt" value="GUIA_SP_SADT" onchange="toggleGuiaFields()">
+                                <label for="guia_sadt">SP / SADT</label>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- SECTION 1: Identificação do Paciente -->
                     <div class="bg-white p-7 rounded-[20px] shadow-card">
                         <div class="flex items-center gap-2.5 mb-6 pb-4 border-b border-ink-100/60">
@@ -358,12 +372,6 @@
                                 <input type="text" class="form-input" placeholder="Autor">
                             </div>
 
-                            <!-- Senha -->
-                            <div class="col-span-1 md:col-span-1">
-                                <label class="form-label">Senha</label>
-                                <input type="text" class="form-input" placeholder="Senha do Agendamento">
-                            </div>
-
                             <!-- Tipo Doença -->
                             <div class="col-span-1 md:col-span-1">
                                 <label class="form-label">Tipo Doença</label>
@@ -411,10 +419,16 @@
                                 </select>
                             </div>
 
-                            <!-- Lote -->
-                            <div class="col-span-1 md:col-span-1">
-                                <label class="form-label">Lote</label>
-                                <input type="text" class="form-input font-mono" placeholder="Nº do Lote">
+                            <!-- Lote e Data do Lote -->
+                            <div class="col-span-1 md:col-span-1 flex gap-2">
+                                <div class="w-1/2">
+                                    <label class="form-label">Lote</label>
+                                    <input type="number" id="numeroLote" class="form-input font-mono" placeholder="Ex: 302026">
+                                </div>
+                                <div class="w-1/2">
+                                    <label class="form-label">Data Lote</label>
+                                    <input type="date" id="dataLote" class="form-input text-ink-700">
+                                </div>
                             </div>
 
                             <!-- Unidade -->
@@ -460,31 +474,90 @@
                             <h3 class="text-base font-semibold font-heading text-ink-900">Profissional e Regulação</h3>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                            <!-- Profissional Executante -->
-                            <div class="col-span-1 md:col-span-1">
-                                <label class="form-label">Profissional Executante</label>
-                                <select class="form-input appearance-none"
-                                    onchange="updateProfessionalData(this.value)">
-                                    <option value="">Selecione...</option>
-                                    <option value="dr_carlos" selected>Dr. Carlos Mendes</option>
-                                    <option value="dra_luciana">Dra. Luciana Silva</option>
-                                    <option value="dr_roberto">Dr. Roberto Almeida</option>
-                                </select>
+                        <!-- Profissional Executante -->
+                        <div class="mb-3">
+                            <h4 class="text-sm font-medium text-ink-700 mb-3">Profissional Executante</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="form-label">Nome do Profissional</label>
+                                    <input type="text" id="exec_nome" class="form-input" value="Dr. Carlos Mendes">
+                                </div>
+                                <div class="col-span-1 md:col-span-1">
+                                    <label class="form-label">Cód. Operadora</label>
+                                    <input type="text" id="exec_cod_operadora" class="form-input" value="489">
+                                </div>
+                                <div class="col-span-1 md:col-span-1">
+                                    <label class="form-label">Conselho</label>
+                                    <select id="exec_conselho" class="form-input appearance-none">
+                                        <option value="CRM" selected>CRM</option>
+                                        <option value="CREFITO">CREFITO</option>
+                                        <option value="CRO">CRO</option>
+                                        <option value="CRP">CRP</option>
+                                        <option value="RMS">RMS</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-1 md:col-span-1">
+                                    <label class="form-label">Número</label>
+                                    <input type="text" id="exec_num_conselho" class="form-input" value="44556">
+                                </div>
+                                <div class="col-span-1 md:col-span-1">
+                                    <label class="form-label">UF</label>
+                                    <select id="exec_uf_conselho" class="form-input appearance-none">
+                                        <option value="RJ" selected>RJ</option>
+                                        <option value="SP">SP</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-1 md:col-span-6">
+                                    <label class="form-label">CBO (Classificação Brasileira de Ocupações)</label>
+                                    <select id="exec_cbo" class="form-input appearance-none">
+                                        <option value="225125" selected>225125 - Médico Clínico</option>
+                                        <option value="223605">223605 - Fisioterapeuta Geral</option>
+                                    </select>
+                                </div>
                             </div>
+                        </div>
 
-                            <!-- Especialidade (Readonly mockup) -->
-                            <div class="col-span-1 md:col-span-1">
-                                <label class="form-label">Especialidade / Conselho</label>
-                                <input type="text" class="form-input bg-ink-50/50 text-ink-500" id="prof_conselho"
-                                    value="Ortopedia (CRM-RJ 44556)" readonly>
-                            </div>
-
-                            <!-- Médico Solicitante -->
-                            <div class="col-span-1 md:col-span-1">
-                                <label class="form-label">Médico Solicitante <span
-                                        class="text-ink-300 font-normal">(Opcional)</span></label>
-                                <input type="text" class="form-input" placeholder="Nome ou CRM do solicitante">
+                        <!-- Profissional Solicitante (Condicional) -->
+                        <div id="bloco_solicitante" class="mt-6 pt-5 border-t border-ink-100 hidden">
+                            <h4 class="text-sm font-medium text-ink-700 mb-3">Profissional Solicitante (Para SP/SADT)</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                                <div class="col-span-1 md:col-span-2">
+                                    <label class="form-label">Nome do Profissional</label>
+                                    <input type="text" id="solic_nome" class="form-input" placeholder="Opcional na consulta">
+                                </div>
+                                <div class="col-span-1 md:col-span-1">
+                                    <label class="form-label">Cód. Operadora</label>
+                                    <input type="text" id="solic_cod_operadora" class="form-input">
+                                </div>
+                                <div class="col-span-1 md:col-span-1">
+                                    <label class="form-label">Conselho</label>
+                                    <select id="solic_conselho" class="form-input appearance-none">
+                                        <option value="CRM">CRM</option>
+                                        <option value="CREFITO">CREFITO</option>
+                                        <option value="CRO">CRO</option>
+                                        <option value="CRP">CRP</option>
+                                        <option value="RMS">RMS</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-1 md:col-span-1">
+                                    <label class="form-label">Número</label>
+                                    <input type="text" id="solic_num_conselho" class="form-input">
+                                </div>
+                                <div class="col-span-1 md:col-span-1">
+                                    <label class="form-label">UF</label>
+                                    <select id="solic_uf_conselho" class="form-input appearance-none">
+                                        <option value="RJ">RJ</option>
+                                        <option value="SP">SP</option>
+                                    </select>
+                                </div>
+                                <div class="col-span-1 md:col-span-6">
+                                    <label class="form-label">CBO</label>
+                                    <select id="solic_cbo" class="form-input appearance-none">
+                                        <option value="">Selecione...</option>
+                                        <option value="225125">225125 - Médico Clínico</option>
+                                        <option value="223605">223605 - Fisioterapeuta Geral</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -500,24 +573,34 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
-                            <!-- Guia -->
-                            <div class="col-span-1 md:col-span-1">
-                                <label class="form-label">Nº da Guia Prestador/Op.</label>
-                                <input type="text" class="form-input font-mono" placeholder="Ex: 889922001"
-                                    value="38291040">
+                            <!-- Datas (3 marcos) -->
+                            <div class="col-span-1 md:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-5">
+                                <div>
+                                    <label class="form-label">Data Solicitação Guia</label>
+                                    <input type="date" id="dataSolicitacaoGuia" class="form-input" value="2026-07-01">
+                                </div>
+                                <div>
+                                    <label class="form-label">Data Autorização Senha</label>
+                                    <input type="date" id="dataAutorizacaoSenha" class="form-input" value="2026-07-01">
+                                </div>
+                                <div>
+                                    <label class="form-label">Validade da Senha</label>
+                                    <input type="date" id="validadeSenha" class="form-input" value="2026-09-15">
+                                </div>
                             </div>
 
-                            <!-- Senha -->
+                            <!-- Guias e Senha -->
+                            <div class="col-span-1 md:col-span-2">
+                                <label class="form-label">Nº Guia Operadora</label>
+                                <input type="text" id="numeroGuiaOperadora" class="form-input font-mono" placeholder="Guia gerada pelo convênio">
+                            </div>
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Nº Guia Prestador</label>
+                                <input type="text" id="numeroGuiaPrestador" class="form-input font-mono" placeholder="Guia do prestador" value="38291040">
+                            </div>
                             <div class="col-span-1 md:col-span-1">
                                 <label class="form-label">Senha / Token de Liberação</label>
-                                <input type="text" class="form-input font-mono text-brand-700 font-medium"
-                                    placeholder="Código liberado" value="X88A-92P">
-                            </div>
-
-                            <!-- Validade da Senha -->
-                            <div class="col-span-1 md:col-span-1">
-                                <label class="form-label">Validade da Senha</label>
-                                <input type="date" class="form-input" value="2026-09-15">
+                                <input type="text" id="numeroSenhaAutorizada" class="form-input font-mono text-brand-700 font-medium" placeholder="Código liberado" value="X88A-92P">
                             </div>
 
                             <!-- Indicação Acidente -->
@@ -551,6 +634,115 @@
                                 <textarea class="form-input resize-none h-20"
                                     placeholder="Anotações adicionais relevantes para o faturamento ou corpo clínico..."></textarea>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Tratamento Continuado e Sessões Seriadas -->
+                    <div id="secao_sessoes" class="bg-white p-7 rounded-[20px] shadow-card hidden">
+                        <div class="flex items-center justify-between mb-6 pb-4 border-b border-ink-100/60">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
+                                    <i class="ph ph-calendar-plus text-lg"></i>
+                                </div>
+                                <h3 class="text-base font-semibold font-heading text-ink-900">Tratamento Continuado (Sessões)</h3>
+                            </div>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="checkbox" id="isSessaoSeriada" class="w-4 h-4 text-brand-600 rounded border-ink-300 focus:ring-brand-500" onchange="toggleSessaoFields()">
+                                <span class="text-sm font-medium text-ink-700">Ativar Controle de Sessões</span>
+                            </label>
+                        </div>
+                        <div id="campos_sessao" class="grid grid-cols-1 md:grid-cols-5 gap-5 hidden">
+                            <div class="col-span-1">
+                                <label class="form-label">Sessões Autorizadas</label>
+                                <input type="number" id="sessoesAutorizadas" class="form-input" value="55">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="form-label">Freq. Semanal</label>
+                                <input type="number" id="frequenciaSemanal" class="form-input" value="5">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="form-label">Início Tratamento</label>
+                                <input type="date" id="dataInicioTratamento" class="form-input" value="2026-05-29">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="form-label">Fim Tratamento</label>
+                                <input type="date" id="dataFimTratamento" class="form-input" value="2026-08-26">
+                            </div>
+                            <div class="col-span-1">
+                                <label class="form-label">Nº Sessão Atual</label>
+                                <input type="number" id="numeroSessaoAtual" class="form-input font-medium text-brand-700" value="1">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Procedimentos Realizados (Tabela TUSS) -->
+                    <div class="bg-white p-7 rounded-[20px] shadow-card">
+                        <div class="flex items-center gap-2.5 mb-6 pb-4 border-b border-ink-100/60">
+                            <div class="w-8 h-8 rounded-lg bg-brand-50 flex items-center justify-center text-brand-600">
+                                <i class="ph ph-list-numbers text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-semibold font-heading text-ink-900">Procedimentos Realizados (TUSS)</h3>
+                        </div>
+
+                        <div class="mb-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                            <div class="md:col-span-3">
+                                <label class="form-label">Cód. Tabela</label>
+                                <input type="text" id="proc_tabela" class="form-input" value="22" placeholder="Ex: 22">
+                            </div>
+                            <div class="md:col-span-3">
+                                <label class="form-label">Cód. Procedimento</label>
+                                <input type="text" id="proc_codigo" class="form-input" placeholder="Ex: 10101012">
+                            </div>
+                            <div class="md:col-span-4">
+                                <label class="form-label">Descrição</label>
+                                <input type="text" id="proc_desc" class="form-input" placeholder="Descrição (readonly)" readonly>
+                            </div>
+                            <div class="md:col-span-1">
+                                <label class="form-label">Qtd</label>
+                                <input type="number" id="proc_qtd" class="form-input" value="1" min="1">
+                            </div>
+                            <div class="md:col-span-1">
+                                <button type="button" onclick="adicionarProcedimento()" class="w-full bg-ink-900 hover:bg-ink-800 text-white p-2.5 rounded-lg transition-colors flex items-center justify-center h-[42px]">
+                                    <i class="ph ph-plus font-bold"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Campos Condicionais SADT -->
+                        <div id="campos_proc_sadt" class="mb-5 grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+                            <div>
+                                <label class="form-label">Via de Acesso (Condicional)</label>
+                                <select id="proc_via" class="form-input appearance-none">
+                                    <option value="">Selecione...</option>
+                                    <option value="1">1 - Única</option>
+                                    <option value="2">2 - Mesma Via</option>
+                                    <option value="3">3 - Diferentes Vias</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Técnica Utilizada (Condicional)</label>
+                                <select id="proc_tecnica" class="form-input appearance-none">
+                                    <option value="">Selecione...</option>
+                                    <option value="convencional">Convencional</option>
+                                    <option value="videolaparoscopia">Videolaparoscopia</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="border border-ink-100 rounded-xl overflow-hidden">
+                            <table class="w-full text-left text-sm text-ink-600">
+                                <thead class="bg-ink-50">
+                                    <tr class="text-xs font-semibold text-ink-400 uppercase tracking-wider">
+                                        <th class="px-4 py-3">Tabela</th>
+                                        <th class="px-4 py-3">Código</th>
+                                        <th class="px-4 py-3">Descrição</th>
+                                        <th class="px-4 py-3 text-center">Qtd</th>
+                                        <th class="px-4 py-3 text-right">Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela_procedimentos" class="divide-y divide-ink-100">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
@@ -634,26 +826,170 @@
     </main>
 
     <script>
-        // Fake logic to update professional specialty based on selection
-        function updateProfessionalData(professionalValue) {
-            const conselhoInput = document.getElementById('prof_conselho');
+        // Array de Procedimentos
+        let procedimentosRealizados = [];
 
-            if (professionalValue === 'dr_carlos') {
-                conselhoInput.value = 'Ortopedia (CRM-RJ 44556)';
-            } else if (professionalValue === 'dra_luciana') {
-                conselhoInput.value = 'Fisioterapia (CREFITO-2 18299)';
-            } else if (professionalValue === 'dr_roberto') {
-                conselhoInput.value = 'Clínica Geral (CRM-RJ 22310)';
+        // Ao carregar a página
+        document.addEventListener('DOMContentLoaded', () => {
+            toggleGuiaFields();
+            
+            // Mock de descrição para códigos TUSS
+            const inputCodigo = document.getElementById('proc_codigo');
+            if (inputCodigo) {
+                inputCodigo.addEventListener('input', (e) => {
+                    const desc = document.getElementById('proc_desc');
+                    if (e.target.value === '10101012') desc.value = 'Consulta em consultório';
+                    else if (e.target.value === '20103471') desc.value = 'Fisioterapia p/ distúrbios osteomioarticulares';
+                    else desc.value = e.target.value.length >= 4 ? 'Procedimento Genérico TUSS' : '';
+                });
+            }
+        });
+
+        // Alterna entre Guia de Consulta e SP/SADT
+        function toggleGuiaFields() {
+            const sadtCheckbox = document.getElementById('guia_sadt');
+            const isSadt = sadtCheckbox ? sadtCheckbox.checked : false;
+            
+            const blocoSolicitante = document.getElementById('bloco_solicitante');
+            const secaoSessoes = document.getElementById('secao_sessoes');
+            const camposProcSadt = document.getElementById('campos_proc_sadt');
+
+            if (isSadt) {
+                if (blocoSolicitante) blocoSolicitante.classList.remove('hidden');
+                if (secaoSessoes) secaoSessoes.classList.remove('hidden');
+                if (camposProcSadt) camposProcSadt.classList.remove('hidden');
             } else {
-                conselhoInput.value = '';
+                if (blocoSolicitante) blocoSolicitante.classList.add('hidden');
+                if (secaoSessoes) secaoSessoes.classList.add('hidden');
+                if (camposProcSadt) camposProcSadt.classList.add('hidden');
             }
         }
 
+        // Alterna campos da Sessão Seriada
+        function toggleSessaoFields() {
+            const isActive = document.getElementById('isSessaoSeriada').checked;
+            const camposSessao = document.getElementById('campos_sessao');
+            if (isActive) {
+                camposSessao.classList.remove('hidden');
+            } else {
+                camposSessao.classList.add('hidden');
+            }
+        }
+
+        // Adiciona um procedimento à tabela
+        function adicionarProcedimento() {
+            const tabela = document.getElementById('proc_tabela').value;
+            const codigo = document.getElementById('proc_codigo').value;
+            const desc = document.getElementById('proc_desc').value;
+            const qtd = document.getElementById('proc_qtd').value;
+
+            if (!codigo) {
+                alert("Preencha o código do procedimento.");
+                return;
+            }
+
+            procedimentosRealizados.push({
+                codigoTabela: tabela,
+                codigoProcedimento: codigo,
+                descricao: desc,
+                quantidade: parseInt(qtd)
+            });
+
+            renderizarTabela();
+            
+            // Clear inputs
+            document.getElementById('proc_codigo').value = '';
+            document.getElementById('proc_desc').value = '';
+            document.getElementById('proc_qtd').value = '1';
+        }
+
+        function removerProcedimento(index) {
+            procedimentosRealizados.splice(index, 1);
+            renderizarTabela();
+        }
+
+        function renderizarTabela() {
+            const tbody = document.getElementById('tabela_procedimentos');
+            tbody.innerHTML = '';
+            procedimentosRealizados.forEach((proc, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-ink-50/50 transition-colors';
+                tr.innerHTML = `
+                    <td class="px-4 py-3">${proc.codigoTabela}</td>
+                    <td class="px-4 py-3 font-mono">${proc.codigoProcedimento}</td>
+                    <td class="px-4 py-3">${proc.descricao}</td>
+                    <td class="px-4 py-3 text-center">${proc.quantidade}</td>
+                    <td class="px-4 py-3 text-right">
+                        <button type="button" onclick="removerProcedimento(${index})" class="text-red-500 hover:text-red-700 p-1">
+                            <i class="ph ph-trash text-lg"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Função de Salvamento (JSON TISS)
         function salvarNovoAtendimento() {
-            mostrarToast('Atendimento Salvo com Sucesso!', 'Guia SP/SADT gerada para Mariana Costa e Silva. Redirecionando para a lista...', 'success');
+            const tipoGuia = document.getElementById('guia_sadt').checked ? 'SPSADT' : 'Consulta';
+            
+            // Construção do payload JSON conforme solicitado
+            const payload = {
+                cabecalhoGuia: {
+                    registroANS: "000000",
+                    numeroGuiaPrestador: document.getElementById('numeroGuiaPrestador')?.value || "",
+                    tipoGuia: tipoGuia,
+                    numeroLote: document.getElementById('numeroLote')?.value || "",
+                    dataLote: document.getElementById('dataLote')?.value || ""
+                },
+                dadosBeneficiario: {
+                    numeroCarteira: "738.992.102345.01",
+                    validadeCarteira: "2027-12-31",
+                    atendimentoRN: "N"
+                },
+                dadosSolicitacao: {
+                    dataSolicitacao: document.getElementById('dataSolicitacaoGuia')?.value || "",
+                    caraterAtendimento: document.getElementById('carater_urgencia')?.checked ? "2" : "1",
+                    diagnosticoCID10: "M54.5",
+                    indicacaoAcidente: "9"
+                },
+                dadosAutorizacao: {
+                    numeroSenha: document.getElementById('numeroSenhaAutorizada')?.value || "",
+                    dataAutorizacao: document.getElementById('dataAutorizacaoSenha')?.value || "",
+                    validadeSenha: document.getElementById('validadeSenha')?.value || ""
+                },
+                profissionais: {
+                    executante: {
+                        codigoPrestadorOperadora: document.getElementById('exec_cod_operadora')?.value || "",
+                        nomeProfissional: document.getElementById('exec_nome')?.value || "",
+                        conselho: document.getElementById('exec_conselho')?.value || "",
+                        numeroRegistro: document.getElementById('exec_num_conselho')?.value || "",
+                        uf: document.getElementById('exec_uf_conselho')?.value || "",
+                        cbo: document.getElementById('exec_cbo')?.value || ""
+                    }
+                },
+                sessaoSeriada: {
+                    ativo: document.getElementById('isSessaoSeriada')?.checked || false,
+                    sessoesAutorizadas: parseInt(document.getElementById('sessoesAutorizadas')?.value) || 0,
+                    frequenciaSemanal: parseInt(document.getElementById('frequenciaSemanal')?.value) || 0,
+                    dataInicial: document.getElementById('dataInicioTratamento')?.value || "",
+                    dataFinal: document.getElementById('dataFimTratamento')?.value || ""
+                },
+                procedimentosRealizados: procedimentosRealizados
+            };
+
+            // Log no console
+            console.log("PAYLOAD TISS GERADO:", JSON.stringify(payload, null, 2));
+
+            if (typeof mostrarToast === 'function') {
+                mostrarToast('Atendimento Salvo com Sucesso!', 'Guia ' + tipoGuia + ' gerada. Payload TISS logado no console.', 'success');
+            } else {
+                alert('Atendimento Salvo! Payload logado no console.');
+            }
+            
             setTimeout(() => {
                 window.location.href = 'atendimento.html';
-            }, 1200);
+            }, 2500);
         }
     </script>
     <script src="app.js"></script>
