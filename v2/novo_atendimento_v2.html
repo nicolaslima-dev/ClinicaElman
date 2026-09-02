@@ -358,6 +358,71 @@
                                 <input type="datetime-local" class="form-input text-ink-700" value="2026-09-01T14:30">
                             </div>
 
+                            <!-- Autor -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Autor</label>
+                                <input type="text" class="form-input" placeholder="Autor">
+                            </div>
+
+                            <!-- Senha -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Senha</label>
+                                <input type="text" class="form-input" placeholder="Senha do Agendamento">
+                            </div>
+
+                            <!-- Tipo Doença -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Tipo Doença</label>
+                                <select class="form-input appearance-none">
+                                    <option value="">Selecione...</option>
+                                    <option value="aguda">Aguda</option>
+                                    <option value="cronica">Crônica</option>
+                                </select>
+                            </div>
+
+                            <!-- Tempo Doença -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Tempo Doença</label>
+                                <div class="flex gap-2">
+                                    <input type="number" class="form-input w-20" placeholder="0">
+                                    <select class="form-input appearance-none flex-1">
+                                        <option value="dias">Dias</option>
+                                        <option value="meses">Meses</option>
+                                        <option value="anos">Anos</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Tipo Saída -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Tipo Saída</label>
+                                <select class="form-input appearance-none">
+                                    <option value="">Selecione...</option>
+                                    <option value="alta">Alta</option>
+                                    <option value="retorno">Retorno</option>
+                                    <option value="transferencia">Transferência</option>
+                                    <option value="obito">Óbito</option>
+                                </select>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Status</label>
+                                <select class="form-input appearance-none">
+                                    <option value="agendado">Agendado</option>
+                                    <option value="em_espera">Em Espera</option>
+                                    <option value="em_atendimento">Em Atendimento</option>
+                                    <option value="finalizado">Finalizado</option>
+                                    <option value="cancelado">Cancelado</option>
+                                </select>
+                            </div>
+
+                            <!-- Lote -->
+                            <div class="col-span-1 md:col-span-1">
+                                <label class="form-label">Lote</label>
+                                <input type="text" class="form-input font-mono" placeholder="Nº do Lote">
+                            </div>
+
                             <!-- Unidade -->
                             <div class="col-span-1 md:col-span-1">
                                 <label class="form-label">Local de Atendimento</label>
