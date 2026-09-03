@@ -1,5 +1,5 @@
 // --- CONFIGURAÇÃO SUPABASE ---
-// (O cliente supabaseClient está sendo inicializado no arquivo .env)
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- ESTADO GLOBAL (MOCK SUPABASE com LocalStorage) ---
 function getInitialState() {
