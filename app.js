@@ -1,8 +1,8 @@
 // --- CONFIGURAÇÃO SUPABASE ---
 let supabaseClient = null;
 try {
-    if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
-        throw new Error("As variáveis do .env não foram carregadas. O navegador pode ter bloqueado o arquivo .env devido ao MIME type ou erro 404.");
+    if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined' || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
+        throw new Error("As chaves do Supabase (URL ou KEY) estão vazias ou não definidas. Verifique se o env.js foi gerado corretamente (e limpe o cache do navegador).");
     }
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 } catch (err) {
