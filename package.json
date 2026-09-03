@@ -1,0 +1,13 @@
+{
+  "name": "clinica-elman",
+  "version": "1.0.0",
+  "description": "Dashboard de Clínica Médica",
+  "main": "index.html",
+  "scripts": {
+    "dev": "serve .",
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}

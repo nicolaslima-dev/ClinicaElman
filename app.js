@@ -1,82 +1,122 @@
 // --- CONFIGURAÇÃO SUPABASE ---
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-// --- ESTADO GLOBAL (MOCK SUPABASE com LocalStorage) ---
-function getInitialState() {
-    const saved = localStorage.getItem('clinica_elman_state');
-    if (saved) {
-        try {
-            return JSON.parse(saved);
-        } catch (e) {
-            console.error('Erro ao ler estado do localStorage:', e);
-        }
+let supabaseClient = null;
+try {
+    if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined') {
+        throw new Error("As variáveis do .env não foram carregadas. O navegador pode ter bloqueado o arquivo .env devido ao MIME type ou erro 404.");
     }
-    
-    return {
-        kpis: { faturado: 142850, aprovado: 124300, retido: 18550 },
-        auditorias: [
-            { 
-                id: 1, 
-                data: '01/06/2026', 
-                paciente: 'Ana Maria da Silva', 
-                convenio: 'CASSI', 
-                proc: '50000250 (Fisioterapia Motora)', 
-                valor: 74.02, 
-                status: 'erro', 
-                tipoErro: 'cbo_matricula',
-                mensagem: 'Profissional CBO Fisioterapia faturado sob CRM. Matrícula CASSI exige 14 dígitos.',
-                conselhoAtual: 'CRM',
-                matriculaAtual: '0001234567'
-            },
-            { 
-                id: 2, 
-                data: '02/06/2026', 
-                paciente: 'João Pedro Costa', 
-                convenio: 'BRADESCO', 
-                proc: '10101012 (Consulta Médica)', 
-                valor: 120.00, 
-                status: 'erro', 
-                tipoErro: 'senha_autorizacao',
-                mensagem: 'Ausência de senha/token de autorização prévia da operadora Bradesco Saúde.',
-                senhaAtual: ''
-            },
-            { 
-                id: 3, 
-                data: '03/06/2026', 
-                paciente: 'Maria Eduarda', 
-                convenio: 'SULAMERICA', 
-                proc: '20104097 (Exame Especial)', 
-                valor: 350.50, 
-                status: 'erro', 
-                tipoErro: 'validade_carteira',
-                mensagem: 'Data de validade da carteira do beneficiário expirada no cadastro original.',
-                validadeAtual: '2026-05-31'
-            }
-        ]
-    };
+    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch (err) {
+    console.error("Falha ao inicializar Supabase:", err);
+    window.addEventListener('DOMContentLoaded', () => {
+        mostrarToast('Erro Crítico', err.message, 'error', 10000);
+    });
 }
 
-let state = getInitialState();
+// --- ESTADO GLOBAL (Integração Supabase) ---
+let state = {
+    kpis: { faturado: 0, aprovado: 0, retido: 0 },
+    auditorias: [],
+    chartsData: { convenios: [], glosas: [] }
+};
 const charts = { convenio: null, glosa: null };
 let activeAuditoriaId = null;
 
-function saveState() {
-    localStorage.setItem('clinica_elman_state', JSON.stringify({
-        kpis: state.kpis,
-        auditorias: state.auditorias
-    }));
+async function loadStateFromSupabase() {
+    try {
+        if (!supabaseClient) throw new Error("Supabase não inicializado devido a erro no .env");
+        const { data: kpisData, error: kpisError } = await supabaseClient.from('kpis').select('*').single();
+        if (kpisError) throw kpisError;
+
+        const { data: audData, error: audError } = await supabaseClient.from('auditorias').select('*').order('id', { ascending: true });
+        if (audError) throw audError;
+
+        const { data: convData, error: convError } = await supabaseClient.from('dashboard_convenios').select('*').order('ordem', { ascending: true });
+        if (convError && convError.code !== '42P01') console.error(convError);
+
+        const { data: glosaData, error: glosaError } = await supabaseClient.from('dashboard_glosas').select('*').order('ordem', { ascending: true });
+        if (glosaError && glosaError.code !== '42P01') console.error(glosaError);
+
+        if (kpisData) {
+            state.kpis = {
+                faturado: kpisData.faturado,
+                aprovado: kpisData.aprovado,
+                retido: kpisData.retido
+            };
+        }
+        
+        if (convData) {
+            state.chartsData.convenios = convData;
+        }
+
+        if (glosaData) {
+            state.chartsData.glosas = glosaData;
+        }
+
+        if (audData) {
+            state.auditorias = audData.map(item => ({
+                id: item.id,
+                data: item.data,
+                paciente: item.paciente,
+                convenio: item.convenio,
+                proc: item.proc,
+                valor: item.valor,
+                status: item.status,
+                tipoErro: item.tipo_erro,
+                mensagem: item.mensagem,
+                conselhoAtual: item.conselho_atual,
+                matriculaAtual: item.matricula_atual,
+                senhaAtual: item.senha_atual,
+                validadeAtual: item.validade_atual,
+                resolvidoEm: item.resolvido_em
+            }));
+        }
+
+        fetchAndRenderDashboard();
+        fetchAndRenderAuditorias();
+        renderCharts();
+
+        if (document.getElementById('tbodyAtendimentos')) {
+            initFiltrosAtendimentos();
+            fetchAndRenderAtendimentos(1);
+            fetchAtendimentosKPIs();
+        }
+
+        if (document.getElementById('tbodyFaturamento')) {
+            fetchAndRenderFaturamento();
+        }
+    } catch (e) {
+        console.error('Erro ao buscar dados do Supabase:', e);
+        mostrarToast('Erro de Conexão', 'Não foi possível carregar os dados do banco.', 'error');
+    }
 }
 
-function restaurarEstadoPadrao() {
-    localStorage.removeItem('clinica_elman_state');
-    state = getInitialState();
-    saveState();
-    
-    fetchAndRenderDashboard();
-    fetchAndRenderAuditorias();
-    renderCharts();
-    
-    mostrarToast('Dados Restaurados', 'O lote de auditoria voltou ao estado inicial com 3 erros para testes.', 'info');
+async function restaurarEstadoPadrao() {
+    try {
+        mostrarToast('Restaurando...', 'O lote de auditoria está voltando ao estado inicial...', 'info');
+
+        // Atualiza KPI
+        await supabaseClient.from('kpis').upsert({
+            id: 1, faturado: 142850, aprovado: 124300, retido: 18550
+        });
+
+        // Deleta as auditorias existentes (limpa tabela) para evitar sujeira,
+        // mas como a política pode não permitir DELETE livremente dependendo de como foi criada,
+        // faremos upsert sobrescrevendo os 3 ids originais.
+        const mockAuditorias = [
+            { id: 1, data: '01/06/2026', paciente: 'Ana Maria da Silva', convenio: 'CASSI', proc: '50000250 (Fisioterapia Motora)', valor: 74.02, status: 'erro', tipo_erro: 'cbo_matricula', mensagem: 'Profissional CBO Fisioterapia faturado sob CRM. Matrícula CASSI exige 14 dígitos.', conselho_atual: 'CRM', matricula_atual: '0001234567', senha_atual: null, validade_atual: null },
+            { id: 2, data: '02/06/2026', paciente: 'João Pedro Costa', convenio: 'BRADESCO', proc: '10101012 (Consulta Médica)', valor: 120.00, status: 'erro', tipo_erro: 'senha_autorizacao', mensagem: 'Ausência de senha/token de autorização prévia da operadora Bradesco Saúde.', conselho_atual: null, matricula_atual: null, senha_atual: '', validade_atual: null },
+            { id: 3, data: '03/06/2026', paciente: 'Maria Eduarda', convenio: 'SULAMERICA', proc: '20104097 (Exame Especial)', valor: 350.50, status: 'erro', tipo_erro: 'validade_carteira', mensagem: 'Data de validade da carteira do beneficiário expirada no cadastro original.', conselho_atual: null, matricula_atual: null, senha_atual: null, validade_atual: '2026-05-31' }
+        ];
+
+        const { error } = await supabaseClient.from('auditorias').upsert(mockAuditorias);
+        if (error) throw error;
+        
+        await loadStateFromSupabase();
+        mostrarToast('Dados Restaurados', 'O estado foi resetado com 3 erros para testes.', 'success');
+    } catch (e) {
+        console.error('Erro ao restaurar:', e);
+        mostrarToast('Erro', 'Falha ao restaurar banco de dados. Verifique a permissão do Supabase.', 'error');
+    }
 }
 
 // --- UTILITÁRIOS ---
@@ -290,31 +330,6 @@ async function fetchAndRenderAuditorias() {
 }
 
 // --- MODALS & DRAWERS ---
-function abrirModalGeracao() {
-    const modal = document.getElementById('modalConfirmacao');
-    const box = document.getElementById('modalBox');
-    if (!modal) return;
-    modal.classList.remove('opacity-0', 'pointer-events-none');
-    box.classList.remove('scale-95', 'opacity-0');
-    box.classList.add('scale-100', 'opacity-100');
-}
-
-function fecharModalGeracao() {
-    const modal = document.getElementById('modalConfirmacao');
-    const box = document.getElementById('modalBox');
-    if (!modal) return;
-    modal.classList.add('opacity-0', 'pointer-events-none');
-    box.classList.remove('scale-100', 'opacity-100');
-    box.classList.add('scale-95', 'opacity-0');
-}
-
-function confirmarGeracaoXML() {
-    fecharModalGeracao();
-    mostrarToast('Lote XML 302026 Gerado!', 'Arquivo XML exportado no padrão TISS 4.03.00. Redirecionando para Auditoria...', 'success');
-    setTimeout(() => {
-        window.location.href = 'auditoria.html';
-    }, 1200);
-}
 
 function abrirDrawer(id) {
     activeAuditoriaId = id;
@@ -477,18 +492,18 @@ async function salvarCorrecao() {
     try {
         const inputConselho = document.getElementById('inputConselho');
         const inputMatricula = document.getElementById('inputMatricula');
+        const inputSenhaAuth = document.getElementById('inputSenhaAuth');
+        const inputNovaValidade = document.getElementById('inputNovaValidade');
 
         const payload = {
+            id: currentId,
             conselhoProfissional: inputConselho ? inputConselho.value : '',
             matricula: inputMatricula ? inputMatricula.value.trim() : '',
-            convenio: 'CASSI',
-            versaoTiss: '4.03.00',
-            codigoTuss: '50000250',
-            dataAutorizacao: '2026-06-01',
-            dataExecucao: '2026-06-01'
+            senhaAuth: inputSenhaAuth ? inputSenhaAuth.value.trim() : '',
+            novaValidade: inputNovaValidade ? inputNovaValidade.value : ''
         };
 
-        const { data, error } = await supabaseClient.rpc('auditar_guia_completa', { guia: payload });
+        const { data, error } = await supabaseClient.rpc('auditar_guia_completa', { payload: payload });
 
         if (error) {
             throw error;
@@ -503,6 +518,7 @@ async function salvarCorrecao() {
         if (data && data.aprovado === true) {
             fecharDrawer();
 
+            // Atualização visual otimista
             const linha = document.getElementById(`linhaGuiaErro-${currentId}`);
             if (linha) {
                 linha.className = "border-b border-slate-100 transition-colors duration-300 bg-green-50";
@@ -522,12 +538,6 @@ async function salvarCorrecao() {
             const dashRetido = document.getElementById('dash-retido');
             const dashAprovado = document.getElementById('dash-aprovado');
             if (dashRetido && dashAprovado) {
-                state.kpis.retido = Math.max(0, state.kpis.retido - item.valor);
-                state.kpis.aprovado += item.valor;
-                
-                dashRetido.textContent = formatCurrency(state.kpis.retido);
-                dashAprovado.textContent = formatCurrency(state.kpis.aprovado);
-                
                 dashRetido.classList.add('scale-105');
                 dashAprovado.classList.add('scale-105');
                 setTimeout(() => {
@@ -536,20 +546,12 @@ async function salvarCorrecao() {
                 }, 300);
             }
 
-            if (charts.glosa) {
-                charts.glosa.data.datasets[0].data[0] = Math.max(0, charts.glosa.data.datasets[0].data[0] - 1);
-                charts.glosa.update();
-            }
+            // Recarrega o estado real do banco de dados silenciosamente
+            await loadStateFromSupabase();
 
-            item.status = 'validado';
-            item.resolvidoEm = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-            saveState();
-
-            // Optionally call fetchAndRenderAuditorias() but the instructions said to manually manipulate the DOM for these elements, so we skip it to not overwrite our animations.
-            
             mostrarToast(
                 'Glosa Resolvida com Sucesso!', 
-                `A guia de ${item.paciente} (${item.convenio}) foi validada e ${formatCurrency(item.valor)} foram liberados.`, 
+                `A guia de ${item.paciente} (${item.convenio}) foi validada e liberada.`, 
                 'success'
             );
         }
@@ -569,11 +571,11 @@ function renderCharts() {
     
     // 1. Bar Chart: Volume por Convênio
     const ctxConv = document.getElementById('convenioChart');
-    if (ctxConv) {
+    if (ctxConv && state.chartsData.convenios.length > 0) {
         if (charts.convenio) charts.convenio.destroy();
         
-        const convenioLabels = ['Bradesco', 'Amil', 'SulAmérica', 'Unimed', 'Hapvida', 'Particular'];
-        const convenioValues = [186, 142, 118, 205, 97, 64];
+        const convenioLabels = state.chartsData.convenios.map(c => c.convenio);
+        const convenioValues = state.chartsData.convenios.map(c => c.valor_faturado);
 
         charts.convenio = new Chart(ctxConv, {
             type: 'bar',
@@ -610,26 +612,29 @@ function renderCharts() {
 
     // 2. Doughnut Chart: Glosas Evitadas
     const ctxGlosa = document.getElementById('glosaChart');
-    if (ctxGlosa) {
+    if (ctxGlosa && state.chartsData.glosas.length > 0) {
         if (charts.glosa) charts.glosa.destroy();
         
-        // Simulação dinâmica baseada no estado
+        // Se houver auditorias pendentes, deduzimos dinamicamente das glosas corrigidas
         const errosPendentes = state.auditorias.filter(a => a.status === 'erro').length;
-        const corrigidas = 18 + ((3 - errosPendentes) * 2); 
         
-        const glosaData = [
-            { label: 'Evitadas na pré-auditoria', value: 74, color: '#2f695f' },
-            { label: 'Corrigidas antes do envio', value: corrigidas, color: '#8bbdb2' },
-            { label: 'Glosadas pela operadora', value: Math.max(1, 8 - (3 - errosPendentes)), color: '#e2e5e2' }
-        ];
+        // Deep copy para manipular valores sem afetar o array original
+        const glosaData = JSON.parse(JSON.stringify(state.chartsData.glosas));
+        
+        // Ajuste dinâmico (opcional) se o label 2 for "Corrigidas antes do envio"
+        if (glosaData[1] && glosaData[2]) {
+             const resolvidasAgora = (3 - errosPendentes); 
+             glosaData[1].quantidade = Number(glosaData[1].quantidade) + (resolvidasAgora * 2);
+             glosaData[2].quantidade = Math.max(1, Number(glosaData[2].quantidade) - resolvidasAgora);
+        }
         
         charts.glosa = new Chart(ctxGlosa, {
             type: 'doughnut',
             data: {
                 labels: glosaData.map(d => d.label),
                 datasets: [{
-                    data: glosaData.map(d => d.value),
-                    backgroundColor: glosaData.map(d => d.color),
+                    data: glosaData.map(d => d.quantidade),
+                    backgroundColor: glosaData.map(d => d.cor),
                     borderWidth: 3,
                     borderColor: '#ffffff',
                     hoverOffset: 4
@@ -654,44 +659,256 @@ function renderCharts() {
 
         const centerEl = document.getElementById('glosa-center');
         if (centerEl) {
-            const totalEvitado = Math.min(99, 74 + corrigidas);
+            const sumEvitadas = glosaData[0].quantidade + (glosaData[1] ? glosaData[1].quantidade : 0);
+            const total = glosaData.reduce((acc, val) => acc + Number(val.quantidade), 0);
+            const pct = Math.round((sumEvitadas / total) * 100);
+            
             centerEl.innerHTML = `
-                <p class="text-2xl font-semibold font-heading text-ink-900">${totalEvitado}%</p>
-                <p class="text-[11px] text-ink-400 mt-0.5">evitadas</p>
+                <span class="text-[32px] font-bold font-heading text-ink-900 leading-none">${pct}%</span>
+                <span class="text-[10px] font-semibold text-brand-500 uppercase tracking-widest mt-1">Recuperado</span>
             `;
         }
 
         const legendEl = document.getElementById('glosa-legend');
         if (legendEl) {
+            const total = glosaData.reduce((acc, val) => acc + Number(val.quantidade), 0);
             legendEl.innerHTML = glosaData.map(d => `
                 <div class="flex items-center justify-between text-sm">
                     <div class="flex items-center gap-2.5">
-                        <span class="w-2.5 h-2.5 rounded-full" style="background:${d.color}"></span>
+                        <span class="w-2.5 h-2.5 rounded-full" style="background:${d.cor}"></span>
                         <span class="text-ink-500">${d.label}</span>
                     </div>
-                    <span class="font-medium text-ink-800">${d.value}%</span>
+                    <span class="font-medium text-ink-800">${Math.round((d.quantidade/total)*100)}%</span>
                 </div>
             `).join('');
         }
     }
 }
 
-// --- INIT GLOBAL ---
-window.addEventListener('DOMContentLoaded', () => {
-    // Atualizar badge do sidebar logo no início em todas as páginas
-    const totalErros = state.auditorias.filter(a => a.status === 'erro').length;
-    const sidebarBadge = document.getElementById('sidebar-badge-erros');
-    if (sidebarBadge) {
-        if (totalErros === 0) {
-            sidebarBadge.className = "bg-emerald-500 text-white text-[10px] font-semibold w-5 h-5 flex items-center justify-center rounded-full transition-all";
-            sidebarBadge.textContent = "✓";
+// --- FATURAMENTO E RELATÓRIOS ---
+function fetchAndRenderFaturamento() {
+    const tbody = document.getElementById('tbodyFaturamento');
+    if (!tbody) return;
+
+    // Para o faturamento, vamos listar as auditorias (pode ser as resolvidas/validadas ou todas para gerar XML)
+    // Para ter volume na tela, vamos pegar as que estão no estado e simular uma carteirinha aleatoria se não tiver matricula
+    const guiasFaturamento = state.auditorias;
+
+    if (guiasFaturamento.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-ink-400">Nenhum lote de guias encontrado para o período.</td></tr>';
+        return;
+    }
+
+    let html = '';
+    guiasFaturamento.forEach(guia => {
+        // Usa a matriculaAtual se existir, senao inventa uma pro demonstrativo baseado no id
+        const matricula = guia.matriculaAtual || (16500000000 + (guia.id * 13)).toString();
+        
+        html += `
+            <tr class="hover:bg-ink-50/50 transition-colors group cursor-pointer">
+                <td class="p-4 whitespace-nowrap text-ink-500 group-hover:text-brand-700 transition-colors">${guia.data || '01/06/2026'}</td>
+                <td class="p-4 font-medium text-ink-900">${guia.paciente}</td>
+                <td class="p-4"><span class="bg-ink-100 text-ink-600 px-2.5 py-1 rounded-md text-[11px] font-semibold">${guia.convenio}</span></td>
+                <td class="p-4 text-ink-400 font-mono text-xs">${matricula}</td>
+                <td class="p-4 text-right font-semibold text-ink-900">${formatCurrency(Number(guia.valor))}</td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+
+    // Atualiza badge de quantidade
+    const badge = document.getElementById('resultado-filtragem-badge');
+    if (badge) {
+        badge.innerText = `${guiasFaturamento.length} registro${guiasFaturamento.length !== 1 ? 's' : ''}`;
+    }
+}
+
+// --- ATENDIMENTOS (PAGINAÇÃO E FILTROS) ---
+let pageAtendimentos = 1;
+const ITEMS_PER_PAGE = 4;
+
+async function fetchAtendimentosKPIs() {
+    if (!document.getElementById('kpi-para-hoje')) return;
+    
+    const filterDate = document.getElementById('filter-date')?.value;
+    if (!filterDate) return;
+
+    try {
+        // KPI Para Hoje
+        const { count: countHoje } = await supabaseClient
+            .from('atendimentos')
+            .select('*', { count: 'exact', head: true })
+            .eq('data_registro', filterDate);
+        
+        // KPI Em Consultório
+        const { count: countCons } = await supabaseClient
+            .from('atendimentos')
+            .select('*', { count: 'exact', head: true })
+            .eq('data_registro', filterDate)
+            .eq('status', 'em_atendimento');
+            
+        // KPI Alertas
+        const { count: countAlertas } = await supabaseClient
+            .from('atendimentos')
+            .select('*', { count: 'exact', head: true })
+            .eq('data_registro', filterDate)
+            .eq('alerta', true);
+
+        document.getElementById('kpi-para-hoje').innerHTML = `${countHoje || 0} <span class="text-sm font-medium text-ink-400 font-sans">pacientes</span>`;
+        document.getElementById('kpi-em-consultorio').innerHTML = `${countCons || 0} <span class="text-sm font-medium text-ink-400 font-sans">agora</span>`;
+        document.getElementById('kpi-alertas').innerHTML = `${countAlertas || 0} <span class="text-sm font-medium text-red-500 font-sans">alertas</span>`;
+        
+    } catch (e) {
+        console.error('Erro ao buscar KPIs', e);
+    }
+}
+
+async function fetchAndRenderAtendimentos(page = 1) {
+    pageAtendimentos = page;
+    const tbody = document.getElementById('tbodyAtendimentos');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-ink-400"><i class="ph ph-spinner animate-spin text-2xl"></i> Carregando atendimentos...</td></tr>';
+
+    const filterSearch = document.getElementById('filter-search')?.value.toLowerCase() || '';
+    const filterDate = document.getElementById('filter-date')?.value;
+    const filterStatus = document.getElementById('filter-status')?.value;
+    const filterProf = document.getElementById('filter-prof')?.value;
+
+    try {
+        let query = supabaseClient.from('atendimentos').select('*', { count: 'exact' });
+        
+        if (filterDate) query = query.eq('data_registro', filterDate);
+        if (filterStatus) query = query.eq('status', filterStatus);
+        if (filterProf) query = query.eq('profissional', filterProf);
+        if (filterSearch) {
+            query = query.or(`paciente.ilike.%${filterSearch}%,guia_info.ilike.%${filterSearch}%`);
+        }
+
+        const start = (page - 1) * ITEMS_PER_PAGE;
+        const end = start + ITEMS_PER_PAGE - 1;
+
+        query = query.range(start, end).order('id', { ascending: true });
+
+        const { data, count, error } = await query;
+        if (error) throw error;
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-ink-400">Nenhum atendimento encontrado.</td></tr>';
         } else {
-            sidebarBadge.textContent = totalErros;
+            let html = '';
+            data.forEach(item => {
+                let badgeStatus = '';
+                if (item.status === 'aguardando') {
+                    badgeStatus = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium bg-gold-50 text-gold-700 border border-gold-100/50"><span class="w-1.5 h-1.5 rounded-full bg-gold-500"></span> Aguardando Recepção</span>`;
+                } else if (item.status === 'em_atendimento') {
+                    badgeStatus = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100"><span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> Em Atendimento</span>`;
+                } else if (item.status === 'realizado') {
+                    badgeStatus = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200/60"><i class="ph-fill ph-check-circle text-green-500"></i> Realizado</span>`;
+                } else if (item.status === 'cancelado') {
+                    badgeStatus = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium bg-ink-100 text-ink-600 border border-ink-200"><i class="ph-fill ph-x-circle text-ink-400"></i> Cancelado</span>`;
+                }
+
+                html += `
+                <tr class="hover:bg-ink-50/50 transition-colors group ${item.status === 'cancelado' ? 'opacity-75' : ''}">
+                    <td class="py-4 px-6">
+                        <p class="text-ink-900 font-semibold font-heading text-base ${item.status === 'cancelado' ? 'line-through text-ink-400' : ''}">${item.paciente}</p>
+                        <p class="text-[11px] ${item.alerta ? 'text-red-500 font-bold' : 'text-ink-400 font-mono'} mt-0.5">${item.guia_info}</p>
+                    </td>
+                    <td class="py-4 px-6">
+                        <p class="text-ink-900 font-medium">${item.horario}</p>
+                        <p class="text-[11px] text-ink-400 mt-0.5">${item.data_registro.split('-').reverse().join('/')}</p>
+                    </td>
+                    <td class="py-4 px-6">
+                        <p class="text-ink-900 font-medium">${item.profissional}</p>
+                        <p class="text-[11px] text-ink-400 mt-0.5">${item.local_atendimento}</p>
+                    </td>
+                    <td class="py-4 px-6">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-ink-50 text-ink-700 text-[11px] font-medium border border-ink-100">
+                            ${item.convenio}
+                        </span>
+                    </td>
+                    <td class="py-4 px-6">${badgeStatus}</td>
+                    <td class="py-4 px-6 text-right">
+                        <button class="p-2 text-ink-400 hover:text-ink-900 hover:bg-ink-100 rounded-lg transition-colors"><i class="ph ph-dots-three-bold text-lg"></i></button>
+                    </td>
+                </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        renderPagination(count, page);
+
+    } catch (e) {
+        console.error('Erro ao buscar atendimentos', e);
+        tbody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-red-500">Erro ao carregar atendimentos do banco.</td></tr>';
+    }
+}
+
+function renderPagination(totalItens, paginaAtual) {
+    const container = document.getElementById('pagination-container');
+    if (!container) return;
+
+    const startItem = totalItens === 0 ? 0 : ((paginaAtual - 1) * ITEMS_PER_PAGE) + 1;
+    const endItem = Math.min(paginaAtual * ITEMS_PER_PAGE, totalItens);
+    const totalPages = Math.ceil(totalItens / ITEMS_PER_PAGE);
+
+    let botoes = '';
+    
+    // Anterior
+    if (paginaAtual > 1) {
+        botoes += `<button onclick="fetchAndRenderAtendimentos(${paginaAtual - 1})" class="px-3 py-1.5 rounded-lg border border-ink-200 text-ink-600 hover:bg-ink-50 transition-colors shadow-sm">Anterior</button>`;
+    } else {
+        botoes += `<button class="px-3 py-1.5 rounded-lg border border-ink-200 text-ink-400 cursor-not-allowed bg-ink-50">Anterior</button>`;
+    }
+
+    // Números
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === paginaAtual) {
+            botoes += `<button class="px-3 py-1.5 rounded-lg bg-brand-600 text-white font-medium shadow-sm">${i}</button>`;
+        } else {
+            botoes += `<button onclick="fetchAndRenderAtendimentos(${i})" class="px-3 py-1.5 rounded-lg border border-ink-200 text-ink-600 hover:bg-ink-50 transition-colors shadow-sm">${i}</button>`;
         }
     }
 
-    fetchAndRenderDashboard();
-    fetchAndRenderAuditorias();
-    renderCharts();
+    // Próxima
+    if (paginaAtual < totalPages) {
+        botoes += `<button onclick="fetchAndRenderAtendimentos(${paginaAtual + 1})" class="px-3 py-1.5 rounded-lg border border-ink-200 text-ink-600 hover:bg-ink-50 transition-colors shadow-sm">Próxima</button>`;
+    } else {
+        botoes += `<button class="px-3 py-1.5 rounded-lg border border-ink-200 text-ink-400 cursor-not-allowed bg-ink-50">Próxima</button>`;
+    }
+
+    container.innerHTML = `
+        <p class="text-ink-500">Mostrando <span class="font-semibold text-ink-900">${startItem}</span> a <span class="font-semibold text-ink-900">${endItem}</span> de <span class="font-semibold text-ink-900">${totalItens}</span> resultados.</p>
+        <div class="flex items-center gap-2">${botoes}</div>
+    `;
+}
+
+function initFiltrosAtendimentos() {
+    const filters = ['filter-search', 'filter-date', 'filter-status', 'filter-prof'];
+    filters.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', () => {
+                fetchAndRenderAtendimentos(1);
+                fetchAtendimentosKPIs();
+            });
+            if (id === 'filter-search') {
+                el.addEventListener('keyup', (e) => {
+                    if (e.key === 'Enter') {
+                        fetchAndRenderAtendimentos(1);
+                    }
+                });
+            }
+        }
+    });
+}
+
+// --- INIT GLOBAL ---
+window.addEventListener('DOMContentLoaded', () => {
+    // Agora aguardamos o load inicial dos dados do Supabase
+    loadStateFromSupabase();
 });
 

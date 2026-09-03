@@ -14,6 +14,9 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
         rel="stylesheet">
 
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
@@ -143,6 +146,16 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
+
+        /* --- PRINT STYLES --- */
+        @media print {
+            body { background: white !important; }
+            aside.glass-sidebar, header, .print-hide { display: none !important; }
+            main, #views-container, .view-section { overflow: visible !important; height: auto !important; padding: 0 !important; margin: 0 !important; background: white !important; }
+            .shadow-card { box-shadow: none !important; border: 1px solid #eceef0 !important; }
+            #filtros-block { display: none !important; }
+            table th, table td { padding: 8px !important; color: black !important; }
+        }
     </style>
 </head>
 
@@ -221,14 +234,12 @@
         <div class="flex-1 overflow-y-auto p-8 relative z-10" id="views-container">
             <div id="view-faturamento" class="view-section fade-in max-w-6xl mx-auto flex flex-col h-full min-h-[700px]">
                 
-                <div class="flex justify-between items-end mb-8">
+                <div class="flex justify-between items-end mb-8 print-hide">
                     <div>
                         <div class="flex items-center gap-2 text-ink-400 text-sm mb-1.5">
                             <a href="index.html" class="hover:text-brand-700 transition-colors"><i class="ph ph-house"></i></a>
                             <i class="ph ph-caret-right text-xs"></i>
-                            <span>Faturamento</span>
-                            <i class="ph ph-caret-right text-xs"></i>
-                            <span class="text-brand-700 font-medium">Relatórios TISS</span>
+                            <span class="text-brand-700 font-medium">Faturamento TISS</span>
                         </div>
                         <h1 class="text-[28px] font-semibold font-heading text-ink-900 tracking-tight">Faturamento e Relatórios TISS</h1>
                         <p class="text-sm text-ink-400 mt-2">Filtre guias para processamento de Remessa ou Geração de XML</p>
@@ -243,7 +254,7 @@
                     </div>
                 </div>
                 
-                <div class="bg-white p-7 rounded-[20px] shadow-card mb-6">
+                <div id="filtros-block" class="bg-white p-7 rounded-[20px] shadow-card mb-6">
                     <div class="flex flex-col md:flex-row gap-8">
                         <div class="flex-1 space-y-5">
                             <div>
@@ -256,7 +267,7 @@
                             </div>
                             <div>
                                 <label class="form-label">Versão TISS (Exportação)</label>
-                                <select class="form-input appearance-none bg-brand-50/50 text-brand-700 font-medium border-brand-200">
+                                <select id="versao-tiss-export" class="form-input appearance-none bg-brand-50/50 text-brand-700 font-medium border-brand-200">
                                     <option value="4.03.00">Padrão Orizon - Versão 4.03.00 (Recomendado)</option>
                                     <option value="4.02.00">Versão 4.02.00</option>
                                 </select>
@@ -295,7 +306,7 @@
                 <!-- Faturamento Table -->
                 <div class="bg-white rounded-[20px] shadow-card flex-1 overflow-hidden flex flex-col">
                     <div class="bg-white p-5 border-b border-ink-100 flex justify-between items-center">
-                        <span class="text-base font-semibold font-heading text-ink-900">Resultado da Filtragem <span class="text-[11px] font-medium bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full ml-2">1 registro</span></span>
+                        <span class="text-base font-semibold font-heading text-ink-900">Resultado da Filtragem <span id="resultado-filtragem-badge" class="text-[11px] font-medium bg-brand-50 text-brand-700 px-2.5 py-1 rounded-full ml-2">1 registro</span></span>
                         <span class="text-xs font-medium text-ink-500 bg-ink-50 px-3 py-1.5 border border-ink-100 rounded-lg">Lote Num: <strong class="text-ink-900">302026</strong></span>
                     </div>
                     <div class="overflow-x-auto">
@@ -309,13 +320,12 @@
                                     <th class="p-4 font-medium text-right">Vlr. Total</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-ink-100">
-                                <tr class="hover:bg-ink-50/50 transition-colors group cursor-pointer">
-                                    <td class="p-4 whitespace-nowrap text-ink-500 group-hover:text-brand-700 transition-colors">01/06/2026</td>
-                                    <td class="p-4 font-medium text-ink-900">ANA MARIA DA SILVA</td>
-                                    <td class="p-4"><span class="bg-ink-100 text-ink-600 px-2.5 py-1 rounded-md text-[11px] font-semibold">CASSI</span></td>
-                                    <td class="p-4 text-ink-400 font-mono text-xs">16500012...</td>
-                                    <td class="p-4 text-right font-semibold text-ink-900">R$ 74,02</td>
+                            <tbody id="tbodyFaturamento" class="divide-y divide-ink-100">
+                                <tr>
+                                    <td colspan="5" class="p-8 text-center text-ink-400">
+                                        <i class="ph ph-spinner animate-spin text-2xl mb-2"></i>
+                                        <p>Carregando guias aprovadas...</p>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -349,6 +359,22 @@
 
     <script>
         function abrirModalGeracao() {
+            // Verifica se existem guias pendentes na auditoria usando a variável global state
+            if (typeof state !== 'undefined' && state.auditorias) {
+                const pendentes = state.auditorias.filter(a => a.status === 'erro').length;
+                if (pendentes > 0) {
+                    if (typeof mostrarToast === 'function') {
+                        mostrarToast('Ação Bloqueada', `Você possui ${pendentes} guia(s) com pendências! Redirecionando para a Auditoria...`, 'error', 3000);
+                    } else {
+                        alert(`Você possui ${pendentes} guia(s) com pendências! Redirecionando para a Auditoria...`);
+                    }
+                    setTimeout(() => {
+                        window.location.href = 'auditoria.html';
+                    }, 2000);
+                    return; // Bloqueia a abertura do modal
+                }
+            }
+
             const modal = document.getElementById('modalConfirmacao');
             const box = document.getElementById('modalBox');
             modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -369,39 +395,69 @@
         function confirmarGeracaoXML() {
             fecharModalGeracao();
             
-            // Gerar e baixar arquivo XML fake
-            const xmlContent = `<?xml version="1.0" encoding="ISO-8859-1"?>
-<ans:mensagemTISS xmlns:ans="http://www.ans.gov.br/padroes/tiss/schemas">
-    <ans:cabecalho>
-        <ans:identificacaoTransacao>
-            <ans:tipoTransacao>ENVIO_LOTE_GUIAS</ans:tipoTransacao>
-            <ans:dataRegistroTransacao>2026-09-02</ans:dataRegistroTransacao>
-            <ans:horaRegistroTransacao>14:30:00</ans:horaRegistroTransacao>
-        </ans:identificacaoTransacao>
-    </ans:cabecalho>
-    <ans:prestadorParaOperadora>
-        <ans:loteGuias>
-            <ans:numeroLote>302026</ans:numeroLote>
-        </ans:loteGuias>
-    </ans:prestadorParaOperadora>
-</ans:mensagemTISS>`;
+            // Pega a versão selecionada no form
+            const versionSelect = document.getElementById('versao-tiss-export');
+            const version = versionSelect ? versionSelect.value : '4.03.00';
+            
+            // Constroi XML dinâmico com os dados da tabela HTML
+            let xmlContent = `<?xml version="1.0" encoding="ISO-8859-1"?>\n`;
+            xmlContent += `<ans:mensagemTISS xmlns:ans="http://www.ans.gov.br/padroes/tiss/schemas">\n`;
+            xmlContent += `    <ans:cabecalho>\n`;
+            xmlContent += `        <ans:identificacaoTransacao>\n`;
+            xmlContent += `            <ans:tipoTransacao>ENVIO_LOTE_GUIAS</ans:tipoTransacao>\n`;
+            xmlContent += `            <ans:dataRegistroTransacao>${new Date().toISOString().split('T')[0]}</ans:dataRegistroTransacao>\n`;
+            xmlContent += `        </ans:identificacaoTransacao>\n`;
+            xmlContent += `    </ans:cabecalho>\n`;
+            xmlContent += `    <ans:prestadorParaOperadora>\n`;
+            xmlContent += `        <ans:loteGuias>\n`;
+            xmlContent += `            <ans:numeroLote>302026</ans:numeroLote>\n`;
+            xmlContent += `            <ans:versaoPadrao>${version}</ans:versaoPadrao>\n`;
+            
+            // Coletar linhas da tabela e injetar no XML
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach((row, index) => {
+                const colunas = row.querySelectorAll('td');
+                if (colunas.length >= 5) {
+                    const data = colunas[0].innerText.trim();
+                    const paciente = colunas[1].innerText.trim();
+                    const convenio = colunas[2].innerText.trim();
+                    const matricula = colunas[3].innerText.trim();
+                    const valor = colunas[4].innerText.trim();
+                    
+                    xmlContent += `            <ans:guiaTISS>\n`;
+                    xmlContent += `                <ans:numeroGuiaPrestador>${900000 + index}</ans:numeroGuiaPrestador>\n`;
+                    xmlContent += `                <ans:dadosBeneficiario>\n`;
+                    xmlContent += `                    <ans:numeroCarteira>${matricula.replace(/\\D/g,'') || '16500012'}</ans:numeroCarteira>\n`;
+                    xmlContent += `                    <ans:nomeBeneficiario>${paciente}</ans:nomeBeneficiario>\n`;
+                    xmlContent += `                </ans:dadosBeneficiario>\n`;
+                    xmlContent += `                <ans:valorTotalGuia>${valor}</ans:valorTotalGuia>\n`;
+                    xmlContent += `            </ans:guiaTISS>\n`;
+                }
+            });
+            
+            xmlContent += `        </ans:loteGuias>\n`;
+            xmlContent += `    </ans:prestadorParaOperadora>\n`;
+            xmlContent += `</ans:mensagemTISS>`;
+            
+            // Inicia o Download nativo do navegador
             const blob = new Blob([xmlContent], { type: 'application/xml' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'LOTE_302026_TISS_4.03.00.xml';
+            a.download = `LOTE_302026_TISS_${version}.xml`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            mostrarToast('Lote XML Gerado com Sucesso!', 'Lote 302026 exportado no padrão TISS 4.03.00. Redirecionando para Auditoria...', 'success');
-            setTimeout(() => {
-                window.location.href = 'auditoria.html';
-            }, 2500);
+            if(typeof mostrarToast === 'function') {
+                mostrarToast('Lote XML Gerado com Sucesso!', 'O arquivo foi baixado no seu navegador.', 'success');
+            } else {
+                alert('Download do XML efetuado com sucesso!');
+            }
         }
     </script>
-    <script src=".env"></script>
+    <script src="env.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
