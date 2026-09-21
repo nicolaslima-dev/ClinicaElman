@@ -1,15 +1,11 @@
 import { useState, type FormEvent } from 'react';
 import { User, Lock, Eye, EyeOff, ArrowRight, Loader2, ShieldCheck, AlertCircle, CheckCircle, Info } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth.service';
 
 type AlertType = 'info' | 'success' | 'error' | null;
 
-interface LoginFormProps {
-  onOpenRecovery: (email: string) => void;
-}
-
-export function LoginForm({ onOpenRecovery }: LoginFormProps) {
+export function LoginForm() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -104,13 +100,12 @@ export function LoginForm({ onOpenRecovery }: LoginFormProps) {
             <label htmlFor="passwordInput" className="block text-xs font-semibold uppercase tracking-wider text-ink-700">
               Senha de Acesso
             </label>
-            <button
-              type="button"
-              onClick={() => onOpenRecovery(username)}
+            <Link 
+              to="/forgot-password"
               className="text-xs font-semibold text-brand-700 hover:text-brand-900 transition-colors focus:outline-none"
             >
               Esqueceu a senha?
-            </button>
+            </Link>
           </div>
           <div className="input-pill flex items-center px-4 py-3.5 rounded-xl relative">
             <Lock className="w-5 h-5 text-ink-400 mr-3 shrink-0" />
