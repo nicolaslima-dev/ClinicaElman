@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Elman - Recuperação de Senha Corporativa</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts (Inter & Outfit) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f2f7f6',
+                            100: '#dcebe8',
+                            200: '#b7d6cf',
+                            300: '#8bbdb2',
+                            400: '#5c9e91',
+                            500: '#3d8074',
+                            600: '#2f695f',
+                            700: '#26544c',
+                            800: '#1f433d',
+                            900: '#193631',
+                            950: '#0e1f1c'
+                        },
+                        gold: {
+                            400: '#c7a468',
+                            500: '#b3915a',
+                            600: '#96794a'
+                        },
+                        ink: {
+                            50: '#f6f7f6',
+                            100: '#eceef0',
+                            200: '#d7dbdf',
+                            300: '#a9b1ba',
+                            400: '#727d89',
+                            500: '#4c5560',
+                            600: '#333b45',
+                            700: '#232931',
+                            800: '#161b21',
+                            900: '#0d1116',
+                            950: '#080a0d'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 1px 2px rgba(13,17,22,0.04), 0 12px 32px -12px rgba(13,17,22,0.10)',
+                        'card': '0 1px 2px rgba(13,17,22,0.05), 0 1px 0 rgba(13,17,22,0.03)',
+                        'gold-glow': '0 0 25px -4px rgba(199, 164, 104, 0.35)',
+                        'brand-glow': '0 0 30px -5px rgba(47, 105, 95, 0.28)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Glass and ambient gradients matching index.html and login.html */
+        .glass-side-panel {
+            background: linear-gradient(175deg, #0d1116 0%, #11221e 45%, #193631 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .input-pill {
+            background: #f8faf9;
+            border: 1px solid #d7dbdf;
+            transition: all 0.2s ease;
+        }
+
+        .input-pill:focus-within {
+            background: #ffffff;
+            border-color: #2f695f;
+            box-shadow: 0 0 0 4px rgba(47, 105, 95, 0.12);
+        }
+
+        .gold-accent-bar {
+            width: 32px;
+            height: 3px;
+            background: #c7a468;
+            border-radius: 999px;
+        }
+
+        /* Background grid pattern */
+        .bg-grid-pattern {
+            background-size: 32px 32px;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        .pin-box {
+            width: 48px;
+            height: 54px;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            border: 1px solid #d7dbdf;
+            background: #f8faf9;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .pin-box:focus {
+            background: #ffffff;
+            border-color: #2f695f;
+            box-shadow: 0 0 0 4px rgba(47, 105, 95, 0.12);
+            outline: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="h-full w-full bg-white text-ink-800 antialiased overflow-x-hidden">
+
+    <div class="min-h-screen w-full flex flex-col lg:flex-row">
+
+        <!-- ========================================================================= -->
+        <!-- LEFT PANEL: Institutional Security & Identity (100% Full-bleed height)    -->
+        <!-- ========================================================================= -->
+        <aside
+            class="w-full lg:w-5/12 xl:w-5/12 glass-side-panel relative flex flex-col justify-between p-8 sm:p-12 lg:p-16 text-white overflow-hidden shrink-0">
+
+            <!-- Subtle background lighting effects -->
+            <div class="absolute inset-0 bg-grid-pattern pointer-events-none opacity-40"></div>
+            <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-brand-500/15 blur-3xl pointer-events-none">
+            </div>
+            <div
+                class="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-gold-500/10 blur-3xl pointer-events-none">
+            </div>
+
+            <!-- Top Header & Brand Identity -->
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-10">
+                    <img src="logo-elman.png" alt="Clínica Elman" class="h-12 w-auto max-w-[220px] object-contain"
+                        onerror="this.outerHTML='<div class=\'text-2xl sm:text-3xl font-semibold font-heading tracking-tight text-white flex items-center gap-3\'><span class=\'h-10 w-10 rounded-xl bg-brand-800/80 border border-brand-400/30 flex items-center justify-center text-brand-200 shadow-inner\'><i class=\'ph ph-crosshair-simple text-2xl\'></i></span>CLÍNICA <span class=\'text-brand-200 font-light\'>elman</span></div>'">
+                </div>
+
+                <div class="gold-accent-bar mb-6"></div>
+
+                <span
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-brand-900/80 text-brand-200 border border-brand-700/50 mb-4 backdrop-blur-sm">
+                    <span class="w-2 h-2 rounded-full bg-gold-400"></span>
+                    Segurança de Credenciais Médicas
+                </span>
+
+                <h1
+                    class="text-3xl sm:text-4xl xl:text-[42px] font-heading font-semibold text-white tracking-tight leading-tight">
+                    Recuperação Segura de Acesso
+                </h1>
+
+                <p class="text-sm sm:text-base text-brand-100/70 mt-4 max-w-md leading-relaxed">
+                    Procedimento homologado de validação em duas etapas para redefinição de credenciais de médicos e
+                    auditores hospitalares.
+                </p>
+            </div>
+
+            <!-- Center Highlights: Security Protocols -->
+            <div class="relative z-10 my-10 space-y-4">
+                <div
+                    class="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm max-w-md">
+                    <div
+                        class="h-10 w-10 rounded-xl bg-brand-700/40 border border-brand-400/30 flex items-center justify-center text-brand-200 shrink-0">
+                        <i class="ph ph-shield-check text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white font-heading tracking-wide">Código de Uso Único
+                            (OTP)</h2>
+                        <p class="text-xs text-brand-100/65 mt-0.5 leading-relaxed">
+                            O token de redefinição possui validade de 15 minutos e expiração imediata após o primeiro
+                            uso.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm max-w-md">
+                    <div
+                        class="h-10 w-10 rounded-xl bg-gold-500/15 border border-gold-400/30 flex items-center justify-center text-gold-400 shrink-0">
+                        <i class="ph ph-fingerprint text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white font-heading tracking-wide">Rastreabilidade e LGPD
+                        </h2>
+                        <p class="text-xs text-brand-100/65 mt-0.5 leading-relaxed">
+                            Todas as solicitações geram logs auditáveis de IP, data e hora nos servidores da Clínica
+                            Elman.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Status Indicator -->
+            <div
+                class="relative z-10 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between text-xs text-brand-200/60 gap-4">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="font-medium text-white/90">Autenticador Ativo</span>
+                </div>
+                <div class="flex items-center gap-4 text-[11px] font-medium text-brand-200/50">
+                    <span>Criptografia: <strong>TLS 1.3 / 256-bit</strong></span>
+                    <span>Versão 2.8.4</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ========================================================================= -->
+        <!-- RIGHT PANEL: Full-screen Recovery Workflow (No card borders)              -->
+        <!-- ========================================================================= -->
+        <main
+            class="w-full lg:w-7/12 xl:w-7/12 flex-1 flex flex-col justify-between bg-white px-6 sm:px-12 md:px-16 lg:px-20 xl:px-28 py-10 lg:py-14">
+
+            <!-- Top Bar: Navigation Back to Login & Internal Support -->
+            <div class="flex items-center justify-between gap-3 w-full pb-4">
+                <a href="login.html"
+                    class="inline-flex items-center gap-2 text-xs font-semibold text-ink-600 hover:text-brand-800 transition-colors py-1.5 px-3 rounded-xl hover:bg-brand-50 border border-transparent hover:border-brand-200">
+                    <i class="ph ph-arrow-left text-base text-gold-500"></i>
+                    <span>Voltar para o Login</span>
+                </a>
+
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="showHelpAlert()"
+                        class="text-xs font-medium text-ink-500 hover:text-brand-700 transition-colors flex items-center gap-1.5 py-1.5 px-3 rounded-full border border-ink-100 hover:border-brand-200 bg-white">
+                        <i class="ph ph-headset text-base text-brand-600"></i>
+                        <span>Suporte TI</span>
+                    </button>
+                    <div class="h-4 w-[1px] bg-ink-200 hidden sm:block"></div>
+                    <span class="text-xs text-ink-400 hidden sm:inline-block">Ramal: <strong>4022</strong></span>
+                </div>
+            </div>
+
+            <!-- Central Form Column -->
+            <div class="w-full max-w-lg mx-auto my-auto py-8">
+
+                <!-- Stepper Progress Bar -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between max-w-xs mb-6">
+                        <div class="flex items-center gap-2">
+                            <span id="stepDot1"
+                                class="w-7 h-7 rounded-full bg-brand-800 text-white text-xs font-bold flex items-center justify-center transition-all">1</span>
+                            <span class="text-xs font-medium text-ink-800">E-mail</span>
+                        </div>
+                        <div class="h-[2px] flex-1 bg-ink-100 mx-2" id="line1to2"></div>
+                        <div class="flex items-center gap-2">
+                            <span id="stepDot2"
+                                class="w-7 h-7 rounded-full bg-ink-100 text-ink-400 text-xs font-bold flex items-center justify-center transition-all">2</span>
+                            <span class="text-xs font-medium text-ink-400" id="stepText2">Código</span>
+                        </div>
+                        <div class="h-[2px] flex-1 bg-ink-100 mx-2" id="line2to3"></div>
+                        <div class="flex items-center gap-2">
+                            <span id="stepDot3"
+                                class="w-7 h-7 rounded-full bg-ink-100 text-ink-400 text-xs font-bold flex items-center justify-center transition-all">3</span>
+                            <span class="text-xs font-medium text-ink-400" id="stepText3">Senha</span>
+                        </div>
+                    </div>
+
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-brand-50 text-brand-800 border border-brand-100 mb-3">
+                        <i class="ph ph-key-return text-brand-600"></i>
+                        <span id="badgeSubtitle">Redefinição de Credencial</span>
+                    </div>
+
+                    <h2 id="mainHeading"
+                        class="text-3xl sm:text-4xl font-heading font-bold text-ink-900 tracking-tight">
+                        Esqueceu sua senha?
+                    </h2>
+                    <p id="mainDescription" class="text-sm sm:text-base text-ink-400 mt-2 leading-relaxed">
+                        Informe o e-mail cadastrado ou usuário corporativo para enviarmos um token de autorização.
+                    </p>
+                </div>
+
+                <!-- Toast / Status alert -->
+                <div id="statusAlert" class="hidden mb-6 p-4 rounded-xl text-xs sm:text-sm transition-all duration-200">
+                </div>
+
+                <!-- ================================================================= -->
+                <!-- STEP 1: SOLICITAÇÃO DO TOKEN (E-MAIL OU USUÁRIO)                  -->
+                <!-- ================================================================= -->
+                <div id="stepContainer1" class="fade-in">
+                    <form onsubmit="handleStep1Submit(event)" class="space-y-6">
+                        <div>
+                            <label for="recoveryEmailInput"
+                                class="block text-xs font-semibold uppercase tracking-wider text-ink-700 mb-2">
+                                E-mail Institucional ou Usuário
+                            </label>
+                            <div class="input-pill flex items-center px-4 py-3.5 rounded-xl">
+                                <i class="ph ph-envelope-simple text-lg text-ink-400 mr-3 shrink-0"></i>
+                                <input type="text" id="recoveryEmailInput" name="recoveryEmail" required
+                                    placeholder="ex: ilsa.carla@clinicaelman.com.br"
+                                    class="w-full bg-transparent text-sm sm:text-base text-ink-900 placeholder:text-ink-300 focus:outline-none">
+                            </div>
+                            <p class="text-[11px] text-ink-400 mt-1.5">
+                                O token de liberação será enviado exclusivamente ao endereço homologado da clínica.
+                            </p>
+                        </div>
+
+                        <div>
+                            <button type="submit" id="btnStep1"
+                                class="w-full bg-ink-900 hover:bg-brand-900 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-sm hover:shadow-brand-glow group active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-600">
+                                <span>Enviar Código de Validação</span>
+                                <i
+                                    class="ph ph-paper-plane-tilt text-lg text-gold-400 group-hover:translate-x-1.5 transition-transform"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Fast Prototyping Shortcut for Demo -->
+                    <div
+                        class="mt-8 pt-6 border-t border-ink-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-2 text-xs text-ink-500">
+                            <i class="ph ph-lightning text-gold-500 text-base"></i>
+                            <span>Prototipagem rápida:</span>
+                        </div>
+                        <button type="button" onclick="autofillRecoveryEmail()"
+                            class="text-xs font-semibold text-brand-800 hover:text-brand-950 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2">
+                            <span>Preencher como <strong>Ilsa Carla</strong></span>
+                            <i class="ph ph-arrow-elbow-down-right text-brand-600"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================================================================= -->
+                <!-- STEP 2: INSERÇÃO DO CÓDIGO TEMPORÁRIO (6 DÍGITOS)                 -->
+                <!-- ================================================================= -->
+                <div id="stepContainer2" class="hidden fade-in">
+                    <form onsubmit="handleStep2Submit(event)" class="space-y-6">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-ink-700 mb-2">
+                                Código de Verificação (6 dígitos)
+                            </label>
+
+                            <!-- 6 individual pin boxes with auto-advance -->
+                            <div class="flex items-center justify-between gap-2 sm:gap-3 py-2">
+                                <input type="text" maxlength="1" class="pin-box" data-index="0" inputmode="numeric"
+                                    autofocus>
+                                <input type="text" maxlength="1" class="pin-box" data-index="1" inputmode="numeric">
+                                <input type="text" maxlength="1" class="pin-box" data-index="2" inputmode="numeric">
+                                <input type="text" maxlength="1" class="pin-box" data-index="3" inputmode="numeric">
+                                <input type="text" maxlength="1" class="pin-box" data-index="4" inputmode="numeric">
+                                <input type="text" maxlength="1" class="pin-box" data-index="5" inputmode="numeric">
+                            </div>
+
+                            <div class="flex items-center justify-between mt-3 text-xs">
+                                <span class="text-ink-400">Não recebeu o código?</span>
+                                <button type="button" onclick="resendCode()" id="btnResend"
+                                    class="font-semibold text-brand-700 hover:text-brand-900 transition-colors">
+                                    Reenviar em <span id="countdownTimer">45s</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                            <button type="button" onclick="goToStep(1)"
+                                class="w-full sm:w-1/3 py-3.5 px-4 rounded-xl border border-ink-200 text-ink-700 font-semibold text-sm hover:bg-ink-50 transition-colors">
+                                Alterar E-mail
+                            </button>
+                            <button type="submit" id="btnStep2"
+                                class="w-full sm:w-2/3 bg-ink-900 hover:bg-brand-900 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 text-sm flex items-center justify-center gap-2 group shadow-sm hover:shadow-brand-glow">
+                                <span>Validar Código</span>
+                                <i
+                                    class="ph ph-check-circle text-lg text-gold-400 group-hover:scale-110 transition-transform"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Hint for prototyping testing -->
+                    <div
+                        class="mt-8 pt-6 border-t border-ink-100 flex items-center justify-between text-xs text-ink-500">
+                        <span>Código de teste sugerido: <strong class="text-brand-800 font-mono">842091</strong></span>
+                        <button type="button" onclick="fillTestCode()"
+                            class="text-brand-700 hover:underline font-semibold">Autopreencher</button>
+                    </div>
+                </div>
+
+                <!-- ================================================================= -->
+                <!-- STEP 3: DEFINIÇÃO DE NOVA SENHA                                   -->
+                <!-- ================================================================= -->
+                <div id="stepContainer3" class="hidden fade-in">
+                    <form onsubmit="handleStep3Submit(event)" class="space-y-5">
+
+                        <!-- New password input -->
+                        <div>
+                            <label for="newPassword"
+                                class="block text-xs font-semibold uppercase tracking-wider text-ink-700 mb-2">
+                                Nova Senha Institucional
+                            </label>
+                            <div class="input-pill flex items-center px-4 py-3.5 rounded-xl relative">
+                                <i class="ph ph-lock-key text-lg text-ink-400 mr-3 shrink-0"></i>
+                                <input type="password" id="newPassword" required
+                                    oninput="evaluatePasswordStrength(this.value)" placeholder="Mínimo de 8 caracteres"
+                                    class="w-full bg-transparent text-sm sm:text-base text-ink-900 placeholder:text-ink-300 focus:outline-none pr-10">
+                                <button type="button" onclick="togglePasswordVis('newPassword', 'eyeIcon1')"
+                                    class="absolute right-3.5 text-ink-400 hover:text-ink-700 p-1">
+                                    <i id="eyeIcon1" class="ph ph-eye text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Confirm new password -->
+                        <div>
+                            <label for="confirmPassword"
+                                class="block text-xs font-semibold uppercase tracking-wider text-ink-700 mb-2">
+                                Confirmar Nova Senha
+                            </label>
+                            <div class="input-pill flex items-center px-4 py-3.5 rounded-xl relative">
+                                <i class="ph ph-lock-key text-lg text-ink-400 mr-3 shrink-0"></i>
+                                <input type="password" id="confirmPassword" required placeholder="Repita a nova senha"
+                                    class="w-full bg-transparent text-sm sm:text-base text-ink-900 placeholder:text-ink-300 focus:outline-none pr-10">
+                                <button type="button" onclick="togglePasswordVis('confirmPassword', 'eyeIcon2')"
+                                    class="absolute right-3.5 text-ink-400 hover:text-ink-700 p-1">
+                                    <i id="eyeIcon2" class="ph ph-eye text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Security password checklist -->
+                        <div class="p-3.5 rounded-xl bg-ink-50/70 border border-ink-100 text-xs space-y-1.5">
+                            <p class="font-semibold text-ink-700 mb-2">Critérios de segurança hospitalar:</p>
+                            <div class="flex items-center gap-2 text-ink-500" id="ruleLength">
+                                <i class="ph ph-circle text-[10px]"></i>
+                                <span>Pelo menos 8 caracteres</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-ink-500" id="ruleNumber">
+                                <i class="ph ph-circle text-[10px]"></i>
+                                <span>Pelo menos 1 número</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-ink-500" id="ruleUpper">
+                                <i class="ph ph-circle text-[10px]"></i>
+                                <span>Pelo menos 1 letra maiúscula</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
+                            <button type="submit" id="btnStep3"
+                                class="w-full bg-ink-900 hover:bg-brand-900 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-sm hover:shadow-brand-glow group active:scale-[0.99]">
+                                <span>Salvar Nova Senha</span>
+                                <i
+                                    class="ph ph-floppy-disk text-lg text-gold-400 group-hover:scale-110 transition-transform"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ================================================================= -->
+                <!-- STEP 4: SUCESSO E CONFIRMAÇÃO FINAL                               -->
+                <!-- ================================================================= -->
+                <div id="stepContainerSuccess" class="hidden fade-in text-center py-6">
+                    <div
+                        class="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto mb-5 shadow-sm">
+                        <i class="ph ph-check-fat text-3xl"></i>
+                    </div>
+
+                    <h3 class="text-2xl font-heading font-bold text-ink-900 mb-2">
+                        Senha Atualizada!
+                    </h3>
+                    <p class="text-sm text-ink-500 max-w-sm mx-auto mb-8 leading-relaxed">
+                        Sua credencial de acesso ao painel executivo da Clínica Elman foi redefinida com êxito. Você já
+                        pode autenticar normalmente.
+                    </p>
+
+                    <a href="login.html"
+                        class="w-full inline-flex items-center justify-center gap-2 bg-ink-900 hover:bg-brand-900 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 text-sm sm:text-base shadow-sm hover:shadow-brand-glow">
+                        <span>Acessar Login Executivo</span>
+                        <i class="ph ph-arrow-right text-lg text-gold-400"></i>
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Bottom Full-Width Compliance Footer -->
+            <footer
+                class="w-full pt-6 border-t border-ink-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-400">
+                <p class="text-center sm:text-left leading-relaxed">
+                    Acesso monitorado. Uso restrito a colaboradores autorizados da <strong>Clínica Elman</strong> sob
+                    termos da LGPD médica.
+                </p>
+                <div class="flex items-center gap-3 shrink-0">
+                    <span class="inline-flex items-center gap-1">
+                        <i class="ph ph-shield-check text-emerald-600"></i> SSL 256-bit
+                    </span>
+                    <span>•</span>
+                    <a href="login.html" class="hover:text-brand-700 transition-colors font-medium">Voltar ao Login</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        let recoveryTargetEmail = '';
+        let countdownSec = 45;
+        let countdownInterval = null;
+
+        // Auto-advance logic for 6-digit pin boxes
+        const pinInputs = document.querySelectorAll('.pin-box');
+        pinInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (input.value.length === 1 && index < pinInputs.length - 1) {
+                    pinInputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && input.value === '' && index > 0) {
+                    pinInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Fast demo autofill
+        function autofillRecoveryEmail() {
+            const input = document.getElementById('recoveryEmailInput');
+            input.value = 'ilsa.carla@clinicaelman.com.br';
+            input.focus();
+            displayAlert('E-mail institucional da Dra. Ilsa Carla preenchido!', 'info');
+        }
+
+        function fillTestCode() {
+            const code = '842091';
+            pinInputs.forEach((inp, i) => {
+                inp.value = code[i] || '';
+            });
+            displayAlert('Código temporário de teste preenchido!', 'info');
+        }
+
+        // Toggle password view
+        function togglePasswordVis(inputId, iconId) {
+            const field = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            if (field.type === 'password') {
+                field.type = 'text';
+                icon.classList.remove('ph-eye');
+                icon.classList.add('ph-eye-slash');
+            } else {
+                field.type = 'password';
+                icon.classList.remove('ph-eye-slash');
+                icon.classList.add('ph-eye');
+            }
+        }
+
+        // Step 1: Submit email
+        function handleStep1Submit(e) {
+            e.preventDefault();
+            const email = document.getElementById('recoveryEmailInput').value.trim();
+            if (!email) return;
+
+            recoveryTargetEmail = email;
+            displayAlert(`Código seguro enviado para ${email}.`, 'success');
+
+            setTimeout(() => {
+                goToStep(2);
+                startResendTimer();
+            }, 600);
+        }
+
+        // Step 2: Submit PIN code
+        function handleStep2Submit(e) {
+            e.preventDefault();
+            let enteredCode = '';
+            pinInputs.forEach(i => enteredCode += i.value);
+
+            if (enteredCode.length < 6) {
+                displayAlert('Por favor, informe todos os 6 dígitos do código.', 'error');
+                return;
+            }
+
+            displayAlert('Código de segurança validado com sucesso!', 'success');
+            setTimeout(() => {
+                goToStep(3);
+            }, 600);
+        }
+
+        // Step 3: Set new password
+        function handleStep3Submit(e) {
+            e.preventDefault();
+            const p1 = document.getElementById('newPassword').value;
+            const p2 = document.getElementById('confirmPassword').value;
+
+            if (p1.length < 8) {
+                displayAlert('A senha deve conter no mínimo 8 caracteres.', 'error');
+                return;
+            }
+
+            if (p1 !== p2) {
+                displayAlert('As senhas não coincidem. Digite novamente.', 'error');
+                return;
+            }
+
+            goToStep(4);
+        }
+
+        // Live password validation checklist
+        function evaluatePasswordStrength(pwd) {
+            const ruleLen = document.getElementById('ruleLength');
+            const ruleNum = document.getElementById('ruleNumber');
+            const ruleUpp = document.getElementById('ruleUpper');
+
+            // Length
+            if (pwd.length >= 8) {
+                setRuleSuccess(ruleLen, true);
+            } else {
+                setRuleSuccess(ruleLen, false);
+            }
+
+            // Number
+            if (/\d/.test(pwd)) {
+                setRuleSuccess(ruleNum, true);
+            } else {
+                setRuleSuccess(ruleNum, false);
+            }
+
+            // Upper
+            if (/[A-Z]/.test(pwd)) {
+                setRuleSuccess(ruleUpp, true);
+            } else {
+                setRuleSuccess(ruleUpp, false);
+            }
+        }
+
+        function setRuleSuccess(elem, isValid) {
+            const icon = elem.querySelector('i');
+            if (isValid) {
+                elem.className = 'flex items-center gap-2 text-emerald-700 font-medium';
+                icon.className = 'ph ph-check-circle text-sm text-emerald-600';
+            } else {
+                elem.className = 'flex items-center gap-2 text-ink-500';
+                icon.className = 'ph ph-circle text-[10px]';
+            }
+        }
+
+        // Step Controller
+        function goToStep(step) {
+            currentStep = step;
+            const c1 = document.getElementById('stepContainer1');
+            const c2 = document.getElementById('stepContainer2');
+            const c3 = document.getElementById('stepContainer3');
+            const cSuccess = document.getElementById('stepContainerSuccess');
+
+            const dot1 = document.getElementById('stepDot1');
+            const dot2 = document.getElementById('stepDot2');
+            const dot3 = document.getElementById('stepDot3');
+
+            const line1 = document.getElementById('line1to2');
+            const line2 = document.getElementById('line2to3');
+
+            const text2 = document.getElementById('stepText2');
+            const text3 = document.getElementById('stepText3');
+
+            const heading = document.getElementById('mainHeading');
+            const desc = document.getElementById('mainDescription');
+            const badge = document.getElementById('badgeSubtitle');
+
+            c1.classList.add('hidden');
+            c2.classList.add('hidden');
+            c3.classList.add('hidden');
+            cSuccess.classList.add('hidden');
+            hideAlert();
+
+            if (step === 1) {
+                c1.classList.remove('hidden');
+                heading.textContent = 'Esqueceu sua senha?';
+                desc.textContent = 'Informe o e-mail cadastrado ou usuário corporativo para enviarmos um token de autorização.';
+                badge.textContent = 'Redefinição de Credencial';
+
+                dot1.className = 'w-7 h-7 rounded-full bg-brand-800 text-white text-xs font-bold flex items-center justify-center transition-all';
+                dot2.className = 'w-7 h-7 rounded-full bg-ink-100 text-ink-400 text-xs font-bold flex items-center justify-center transition-all';
+                dot3.className = 'w-7 h-7 rounded-full bg-ink-100 text-ink-400 text-xs font-bold flex items-center justify-center transition-all';
+
+                line1.className = 'h-[2px] flex-1 bg-ink-100 mx-2';
+                line2.className = 'h-[2px] flex-1 bg-ink-100 mx-2';
+                text2.className = 'text-xs font-medium text-ink-400';
+                text3.className = 'text-xs font-medium text-ink-400';
+            } else if (step === 2) {
+                c2.classList.remove('hidden');
+                heading.textContent = 'Verificação de Segurança';
+                desc.textContent = `Insira o código de 6 dígitos enviado para ${recoveryTargetEmail || 'seu e-mail institucional'}.`;
+                badge.textContent = 'Validação em Duas Etapas';
+
+                dot1.className = 'w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center transition-all';
+                dot2.className = 'w-7 h-7 rounded-full bg-brand-800 text-white text-xs font-bold flex items-center justify-center transition-all';
+                dot3.className = 'w-7 h-7 rounded-full bg-ink-100 text-ink-400 text-xs font-bold flex items-center justify-center transition-all';
+
+                line1.className = 'h-[2px] flex-1 bg-emerald-500 mx-2';
+                line2.className = 'h-[2px] flex-1 bg-ink-100 mx-2';
+                text2.className = 'text-xs font-semibold text-ink-900';
+                text3.className = 'text-xs font-medium text-ink-400';
+
+                pinInputs[0].focus();
+            } else if (step === 3) {
+                c3.classList.remove('hidden');
+                heading.textContent = 'Criar Nova Senha';
+                desc.textContent = 'Cadastre uma nova senha institucional de alta complexidade em conformidade com as regras hospitalares.';
+                badge.textContent = 'Nova Credencial';
+
+                dot1.className = 'w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center transition-all';
+                dot2.className = 'w-7 h-7 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center transition-all';
+                dot3.className = 'w-7 h-7 rounded-full bg-brand-800 text-white text-xs font-bold flex items-center justify-center transition-all';
+
+                line1.className = 'h-[2px] flex-1 bg-emerald-500 mx-2';
+                line2.className = 'h-[2px] flex-1 bg-emerald-500 mx-2';
+                text2.className = 'text-xs font-medium text-emerald-700';
+                text3.className = 'text-xs font-semibold text-ink-900';
+            } else if (step === 4) {
+                cSuccess.classList.remove('hidden');
+                heading.classList.add('hidden');
+                desc.classList.add('hidden');
+                badge.parentElement.classList.add('hidden');
+                dot1.parentElement.parentElement.classList.add('hidden');
+            }
+        }
+
+        // Resend Timer logic
+        function startResendTimer() {
+            clearInterval(countdownInterval);
+            countdownSec = 45;
+            const timerSpan = document.getElementById('countdownTimer');
+            const resendBtn = document.getElementById('btnResend');
+            resendBtn.disabled = true;
+
+            countdownInterval = setInterval(() => {
+                countdownSec--;
+                if (countdownSec <= 0) {
+                    clearInterval(countdownInterval);
+                    timerSpan.textContent = 'Agora';
+                    resendBtn.disabled = false;
+                } else {
+                    timerSpan.textContent = `${countdownSec}s`;
+                }
+            }, 1000);
+        }
+
+        function resendCode() {
+            if (countdownSec > 0) return;
+            startResendTimer();
+            displayAlert(`Novo código enviado para ${recoveryTargetEmail}.`, 'info');
+        }
+
+        // Feedback alert box
+        function displayAlert(message, type = 'info') {
+            const box = document.getElementById('statusAlert');
+            box.classList.remove('hidden', 'bg-red-50', 'text-red-800', 'border-red-200', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-brand-50', 'text-brand-800', 'border-brand-200');
+
+            if (type === 'error') {
+                box.className = 'mb-6 p-4 rounded-xl text-xs sm:text-sm font-medium border flex items-center gap-3 bg-red-50 text-red-800 border-red-200';
+                box.innerHTML = `<i class="ph ph-warning-circle text-lg shrink-0"></i><span>${message}</span>`;
+            } else if (type === 'success') {
+                box.className = 'mb-6 p-4 rounded-xl text-xs sm:text-sm font-medium border flex items-center gap-3 bg-emerald-50 text-emerald-800 border-emerald-200';
+                box.innerHTML = `<i class="ph ph-check-circle text-lg shrink-0"></i><span>${message}</span>`;
+            } else {
+                box.className = 'mb-6 p-4 rounded-xl text-xs sm:text-sm font-medium border flex items-center gap-3 bg-brand-50 text-brand-800 border-brand-200';
+                box.innerHTML = `<i class="ph ph-info text-lg shrink-0"></i><span>${message}</span>`;
+            }
+        }
+
+        function hideAlert() {
+            document.getElementById('statusAlert').classList.add('hidden');
+        }
+
+        function showHelpAlert() {
+            displayAlert('Dificuldades com a redefinição? Contate a equipe de TI da Clínica no ramal 4022.', 'info');
+        }
+    </script>
+</body>
+
+</html>

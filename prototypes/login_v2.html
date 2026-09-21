@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Elman - Portal Executivo</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts (Inter & Outfit) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f2f7f6',
+                            100: '#dcebe8',
+                            200: '#b7d6cf',
+                            300: '#8bbdb2',
+                            400: '#5c9e91',
+                            500: '#3d8074',
+                            600: '#2f695f',
+                            700: '#26544c',
+                            800: '#1f433d',
+                            900: '#193631',
+                            950: '#0e1f1c'
+                        },
+                        gold: {
+                            400: '#c7a468',
+                            500: '#b3915a',
+                            600: '#96794a'
+                        },
+                        ink: {
+                            50: '#f6f7f6',
+                            100: '#eceef0',
+                            200: '#d7dbdf',
+                            300: '#a9b1ba',
+                            400: '#727d89',
+                            500: '#4c5560',
+                            600: '#333b45',
+                            700: '#232931',
+                            800: '#161b21',
+                            900: '#0d1116',
+                            950: '#080a0d'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 1px 2px rgba(13,17,22,0.04), 0 12px 32px -12px rgba(13,17,22,0.10)',
+                        'card': '0 1px 2px rgba(13,17,22,0.05), 0 1px 0 rgba(13,17,22,0.03)',
+                        'gold-glow': '0 0 25px -4px rgba(199, 164, 104, 0.35)',
+                        'brand-glow': '0 0 30px -5px rgba(47, 105, 95, 0.28)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Glass and ambient gradients matching sidebar in index.html */
+        .glass-side-panel {
+            background: linear-gradient(175deg, #0d1116 0%, #11221e 45%, #193631 100%);
+            border-right: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .input-pill {
+            background: #f8faf9;
+            border: 1px solid #d7dbdf;
+            transition: all 0.2s ease;
+        }
+
+        .input-pill:focus-within {
+            background: #ffffff;
+            border-color: #2f695f;
+            box-shadow: 0 0 0 4px rgba(47, 105, 95, 0.12);
+        }
+
+        .gold-accent-bar {
+            width: 32px;
+            height: 3px;
+            background: #c7a468;
+            border-radius: 999px;
+        }
+
+        /* Background grid pattern on the dark panel */
+        .bg-grid-pattern {
+            background-size: 32px 32px;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="h-full w-full bg-white text-ink-800 antialiased overflow-x-hidden">
+
+    <div class="min-h-screen w-full flex flex-col lg:flex-row">
+
+        <!-- ========================================================================= -->
+        <!-- LEFT PANEL: Institutional Identity (Full height, edge-to-edge)           -->
+        <!-- ========================================================================= -->
+        <aside
+            class="w-full lg:w-5/12 xl:w-5/12 glass-side-panel relative flex flex-col justify-between p-8 sm:p-12 lg:p-16 text-white overflow-hidden shrink-0">
+
+            <!-- Subtle background lighting spots -->
+            <div class="absolute inset-0 bg-grid-pattern pointer-events-none opacity-40"></div>
+            <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-brand-500/15 blur-3xl pointer-events-none">
+            </div>
+            <div
+                class="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-gold-500/10 blur-3xl pointer-events-none">
+            </div>
+
+            <!-- Top Header & Brand Identity -->
+            <div class="relative z-10">
+                <div class="flex items-center gap-4 mb-10">
+                    <img src="logo-elman.png" alt="Clínica Elman" class="h-12 w-auto max-w-[220px] object-contain"
+                        onerror="this.outerHTML='<div class=\'text-2xl sm:text-3xl font-semibold font-heading tracking-tight text-white flex items-center gap-3\'><span class=\'h-10 w-10 rounded-xl bg-brand-800/80 border border-brand-400/30 flex items-center justify-center text-brand-200 shadow-inner\'><i class=\'ph ph-crosshair-simple text-2xl\'></i></span>CLÍNICA <span class=\'text-brand-200 font-light\'>elman</span></div>'">
+                </div>
+
+                <div class="gold-accent-bar mb-6"></div>
+
+                <span
+                    class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-brand-900/80 text-brand-200 border border-brand-700/50 mb-4 backdrop-blur-sm">
+                    <span class="w-2 h-2 rounded-full bg-gold-400"></span>
+                    Ambiente Corporativo Hospitalar
+                </span>
+
+                <h1
+                    class="text-3xl sm:text-4xl xl:text-[42px] font-heading font-semibold text-white tracking-tight leading-tight">
+                    Gestão Médica e Auditoria Integrada
+                </h1>
+
+                <p class="text-sm sm:text-base text-brand-100/70 mt-4 max-w-md leading-relaxed">
+                    Plataforma clínica executiva dedicada ao monitoramento de faturamento TISS, conciliação de glosas e
+                    repasses médicos.
+                </p>
+            </div>
+
+            <!-- Center Highlights -->
+            <div class="relative z-10 my-10 space-y-4">
+                <div
+                    class="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm max-w-md">
+                    <div
+                        class="h-10 w-10 rounded-xl bg-brand-700/40 border border-brand-400/30 flex items-center justify-center text-brand-200 shrink-0">
+                        <i class="ph ph-shield-check text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white font-heading tracking-wide">Padrão TISS v4.01 e ANS
+                        </h2>
+                        <p class="text-xs text-brand-100/65 mt-0.5 leading-relaxed">
+                            Regras de validação automatizada de guias, lotes e demonstrativos de retorno.
+                        </p>
+                    </div>
+                </div>
+
+                <div
+                    class="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-sm max-w-md">
+                    <div
+                        class="h-10 w-10 rounded-xl bg-gold-500/15 border border-gold-400/30 flex items-center justify-center text-gold-400 shrink-0">
+                        <i class="ph ph-lock-simple-open text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm font-semibold text-white font-heading tracking-wide">Segurança em Nível
+                            Hospitalar</h2>
+                        <p class="text-xs text-brand-100/65 mt-0.5 leading-relaxed">
+                            Acesso criptografado de ponta a ponta e rastreabilidade total conforme a LGPD.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Status Indicator -->
+            <div
+                class="relative z-10 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between text-xs text-brand-200/60 gap-4">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="font-medium text-white/90">Servidores Operacionais</span>
+                </div>
+                <div class="flex items-center gap-4 text-[11px] font-medium text-brand-200/50">
+                    <span>Latência: <strong>24ms</strong></span>
+                    <span>Versão 2.8.4</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ========================================================================= -->
+        <!-- RIGHT PANEL: Full-screen Login Area (No card boundaries)                 -->
+        <!-- ========================================================================= -->
+        <main
+            class="w-full lg:w-7/12 xl:w-7/12 flex-1 flex flex-col justify-between bg-white px-6 sm:px-12 md:px-16 lg:px-20 xl:px-28 py-10 lg:py-14">
+
+            <!-- Top Right Bar -->
+            <div class="flex items-center justify-between lg:justify-end gap-3 w-full pb-4">
+                <div class="lg:hidden flex items-center gap-2">
+                    <span
+                        class="h-8 w-8 rounded-lg bg-brand-900 text-brand-200 flex items-center justify-center font-heading font-bold text-sm">E</span>
+                    <span class="font-heading font-bold text-ink-900 tracking-tight text-sm">Clínica Elman</span>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="showHelpInfo()"
+                        class="text-xs font-medium text-ink-500 hover:text-brand-700 transition-colors flex items-center gap-1.5 py-1.5 px-3 rounded-full border border-ink-100 hover:border-brand-200 bg-white">
+                        <i class="ph ph-question text-base text-brand-600"></i>
+                        <span>Central de Suporte</span>
+                    </button>
+                    <div class="h-4 w-[1px] bg-ink-200 hidden sm:block"></div>
+                    <span class="text-xs text-ink-400 hidden sm:inline-block">Ramal TI: <strong>4022</strong></span>
+                </div>
+            </div>
+
+            <!-- Central Form Column -->
+            <div class="w-full max-w-lg mx-auto my-auto py-8 fade-in">
+
+                <div class="mb-8">
+                    <div
+                        class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-brand-50 text-brand-800 border border-brand-100 mb-3">
+                        <i class="ph ph-shield-check text-brand-600"></i>
+                        <span>Portal Corporativo Restrito</span>
+                    </div>
+
+                    <h2 class="text-3xl sm:text-4xl font-heading font-bold text-ink-900 tracking-tight">
+                        Identificação
+                    </h2>
+                    <p class="text-sm sm:text-base text-ink-400 mt-2 leading-relaxed">
+                        Informe suas credenciais institucionais para gerenciar faturamentos, auditorias e atendimentos.
+                    </p>
+                </div>
+
+                <!-- Toast / Status alert -->
+                <div id="statusAlert" class="hidden mb-6 p-4 rounded-xl text-xs sm:text-sm transition-all duration-200">
+                </div>
+
+                <!-- The Form (Exclusively Login, No Create Account) -->
+                <form id="loginForm" class="space-y-6" onsubmit="processLogin(event)">
+
+                    <!-- Username/Email -->
+                    <div>
+                        <label for="usernameInput"
+                            class="block text-xs font-semibold uppercase tracking-wider text-ink-700 mb-2">
+                            Usuário ou E-mail Corporativo
+                        </label>
+                        <div class="input-pill flex items-center px-4 py-3.5 rounded-xl">
+                            <i class="ph ph-user text-lg text-ink-400 mr-3 shrink-0"></i>
+                            <input type="text" id="usernameInput" name="username" required autocomplete="username"
+                                placeholder="ex: ilsa.carla@clinicaelman.com.br"
+                                class="w-full bg-transparent text-sm sm:text-base text-ink-900 placeholder:text-ink-300 focus:outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Password with visibility toggle -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label for="passwordInput"
+                                class="block text-xs font-semibold uppercase tracking-wider text-ink-700">
+                                Senha de Acesso
+                            </label>
+                            <button type="button" onclick="openPasswordRecovery()"
+                                class="text-xs font-semibold text-brand-700 hover:text-brand-900 transition-colors focus:outline-none">
+                                Esqueceu a senha?
+                            </button>
+                        </div>
+                        <div class="input-pill flex items-center px-4 py-3.5 rounded-xl relative">
+                            <i class="ph ph-lock-key text-lg text-ink-400 mr-3 shrink-0"></i>
+                            <input type="password" id="passwordInput" name="password" required
+                                autocomplete="current-password" placeholder="Digite sua senha institucional"
+                                class="w-full bg-transparent text-sm sm:text-base text-ink-900 placeholder:text-ink-300 focus:outline-none pr-10">
+                            <button type="button" id="togglePasswordBtn" onclick="togglePassword()"
+                                title="Mostrar ou ocultar senha"
+                                class="absolute right-3.5 text-ink-400 hover:text-ink-700 transition-colors focus:outline-none p-1">
+                                <i id="eyeIcon" class="ph ph-eye text-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Options: Keep logged in -->
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                            <input type="checkbox" id="rememberCheck" checked
+                                class="w-4 h-4 rounded border-ink-300 text-brand-600 focus:ring-brand-500 cursor-pointer accent-brand-600">
+                            <span
+                                class="text-xs sm:text-sm font-medium text-ink-600 hover:text-ink-900 transition-colors">
+                                Manter sessão ativa por 30 dias
+                            </span>
+                        </label>
+                    </div>
+
+                    <!-- Action Submit Button -->
+                    <div class="pt-2">
+                        <button type="submit" id="submitButton"
+                            class="w-full bg-ink-900 hover:bg-brand-900 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-200 text-sm sm:text-base flex items-center justify-center gap-2.5 shadow-sm hover:shadow-brand-glow group active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-600">
+                            <span id="buttonText">Acessar Painel Executivo</span>
+                            <i id="buttonIcon"
+                                class="ph ph-arrow-right text-lg text-gold-400 group-hover:translate-x-1.5 transition-transform"></i>
+                            <span id="buttonSpinner" class="hidden">
+                                <i class="ph ph-spinner animate-spin text-xl"></i>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Prototyping Preset Shortcut -->
+                <div
+                    class="mt-8 pt-6 border-t border-ink-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div class="flex items-center gap-2 text-xs text-ink-500">
+                        <i class="ph ph-lightning text-gold-500 text-base"></i>
+                        <span>Prototipagem rápida:</span>
+                    </div>
+                    <button type="button" onclick="autofillDemoProfile()"
+                        class="text-xs font-semibold text-brand-800 hover:text-brand-950 bg-brand-50 hover:bg-brand-100 border border-brand-200 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2">
+                        <span>Preencher como <strong>Ilsa Carla</strong></span>
+                        <i class="ph ph-arrow-elbow-down-right text-brand-600"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Full-Width Compliance Footer -->
+            <footer
+                class="w-full pt-6 border-t border-ink-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-ink-400">
+                <p class="text-center sm:text-left leading-relaxed">
+                    Acesso monitorado. Uso restrito a colaboradores autorizados da <strong>Clínica Elman</strong> sob
+                    termos da LGPD médica.
+                </p>
+                <div class="flex items-center gap-3 shrink-0">
+                    <span class="inline-flex items-center gap-1">
+                        <i class="ph ph-shield-check text-emerald-600"></i> SSL 256-bit
+                    </span>
+                    <span>•</span>
+                    <a href="index.html" class="hover:text-brand-700 transition-colors font-medium">Ir ao Dashboard</a>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modal: Recuperação Corporativa de Senha (Sem criar conta) -->
+    <div id="recoveryModal"
+        class="fixed inset-0 bg-ink-950/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-7 sm:p-8 shadow-2xl border border-ink-100 fade-in">
+            <div class="flex items-center justify-between mb-5">
+                <div class="flex items-center gap-3">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-brand-50 border border-brand-100 text-brand-700 flex items-center justify-center">
+                        <i class="ph ph-key text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-heading font-bold text-lg text-ink-900">Recuperação de Acesso</h3>
+                        <p class="text-[11px] text-ink-400">Protocolo seguro de redefinição</p>
+                    </div>
+                </div>
+                <button onclick="closePasswordRecovery()"
+                    class="text-ink-400 hover:text-ink-700 p-1.5 rounded-lg hover:bg-ink-50 transition-colors">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <p class="text-xs text-ink-500 mb-6 leading-relaxed">
+                Por políticas de proteção aos prontuários e auditorias TISS, a nova credencial temporária será remetida
+                somente ao e-mail institucional corporativo homologado.
+            </p>
+
+            <form onsubmit="submitRecoveryRequest(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-ink-700 mb-2">
+                        E-mail Institucional Cadastrado
+                    </label>
+                    <div class="input-pill flex items-center px-4 py-3 rounded-xl">
+                        <i class="ph ph-envelope-simple text-ink-400 mr-3"></i>
+                        <input type="email" id="recoveryEmailInput" required placeholder="seu.nome@clinicaelman.com.br"
+                            class="w-full bg-transparent text-xs sm:text-sm text-ink-900 placeholder:text-ink-300 focus:outline-none">
+                    </div>
+                </div>
+
+                <div id="recoveryFeedback" class="hidden text-xs p-3 rounded-xl"></div>
+
+                <div class="flex items-center justify-end gap-3 pt-3">
+                    <button type="button" onclick="closePasswordRecovery()"
+                        class="px-4 py-2.5 text-xs font-semibold text-ink-600 hover:bg-ink-100 rounded-xl transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                        class="px-5 py-2.5 text-xs font-semibold text-white bg-brand-800 hover:bg-brand-900 rounded-xl transition-colors flex items-center gap-2">
+                        <i class="ph ph-paper-plane-tilt"></i>
+                        <span>Enviar Token</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Password reveal toggle
+        function togglePassword() {
+            const pwd = document.getElementById('passwordInput');
+            const eye = document.getElementById('eyeIcon');
+
+            if (pwd.type === 'password') {
+                pwd.type = 'text';
+                eye.classList.remove('ph-eye');
+                eye.classList.add('ph-eye-slash');
+            } else {
+                pwd.type = 'password';
+                eye.classList.remove('ph-eye-slash');
+                eye.classList.add('ph-eye');
+            }
+        }
+
+        // Fill credentials for prototype testing
+        function autofillDemoProfile() {
+            const username = document.getElementById('usernameInput');
+            const password = document.getElementById('passwordInput');
+
+            username.value = 'ilsa.carla@clinicaelman.com.br';
+            password.value = 'Medicina@2026';
+
+            username.focus();
+            displayAlert('Credenciais da Dra. Ilsa Carla preenchidas!', 'info');
+        }
+
+        // Handle login submission
+        function processLogin(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('usernameInput').value.trim();
+            const password = document.getElementById('passwordInput').value;
+            const btn = document.getElementById('submitButton');
+            const btnText = document.getElementById('buttonText');
+            const btnIcon = document.getElementById('buttonIcon');
+            const btnSpinner = document.getElementById('buttonSpinner');
+
+            if (!username || !password) {
+                displayAlert('Por favor, preencha o usuário e a senha.', 'error');
+                return;
+            }
+
+            // Enter loading state
+            btn.disabled = true;
+            btnText.textContent = 'Validando credenciais...';
+            btnIcon.classList.add('hidden');
+            btnSpinner.classList.remove('hidden');
+
+            setTimeout(() => {
+                if (password.length < 4) {
+                    displayAlert('Credenciais inválidas. Verifique seu login e senha.', 'error');
+                    btn.disabled = false;
+                    btnText.textContent = 'Acessar Painel Executivo';
+                    btnIcon.classList.remove('hidden');
+                    btnSpinner.classList.add('hidden');
+                    return;
+                }
+
+                displayAlert('Autenticação autorizada! Redirecionando para o painel...', 'success');
+
+                setTimeout(() => {
+                    // Redirect to the executive dashboard
+                    window.location.href = 'index.html';
+                }, 800);
+            }, 750);
+        }
+
+        // Display feedback alerts
+        function displayAlert(message, type = 'info') {
+            const box = document.getElementById('statusAlert');
+            box.classList.remove('hidden', 'bg-red-50', 'text-red-800', 'border-red-200', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-brand-50', 'text-brand-800', 'border-brand-200');
+
+            if (type === 'error') {
+                box.className = 'mb-6 p-4 rounded-xl text-xs sm:text-sm font-medium border flex items-center gap-3 bg-red-50 text-red-800 border-red-200';
+                box.innerHTML = `<i class="ph ph-warning-circle text-lg shrink-0"></i><span>${message}</span>`;
+            } else if (type === 'success') {
+                box.className = 'mb-6 p-4 rounded-xl text-xs sm:text-sm font-medium border flex items-center gap-3 bg-emerald-50 text-emerald-800 border-emerald-200';
+                box.innerHTML = `<i class="ph ph-check-circle text-lg shrink-0"></i><span>${message}</span>`;
+            } else {
+                box.className = 'mb-6 p-4 rounded-xl text-xs sm:text-sm font-medium border flex items-center gap-3 bg-brand-50 text-brand-800 border-brand-200';
+                box.innerHTML = `<i class="ph ph-info text-lg shrink-0"></i><span>${message}</span>`;
+            }
+        }
+
+        // Password Recovery Modal
+        function openPasswordRecovery() {
+            document.getElementById('recoveryModal').classList.remove('hidden');
+            const currentUser = document.getElementById('usernameInput').value;
+            if (currentUser && currentUser.includes('@')) {
+                document.getElementById('recoveryEmailInput').value = currentUser;
+            }
+        }
+
+        function closePasswordRecovery() {
+            document.getElementById('recoveryModal').classList.add('hidden');
+            document.getElementById('recoveryFeedback').classList.add('hidden');
+        }
+
+        function submitRecoveryRequest(event) {
+            event.preventDefault();
+            const email = document.getElementById('recoveryEmailInput').value;
+            const feedback = document.getElementById('recoveryFeedback');
+
+            feedback.className = 'text-xs p-3.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-2.5';
+            feedback.innerHTML = `<i class="ph ph-check text-base"></i> Instâncias de validação enviadas para <strong>${email}</strong>.`;
+            feedback.classList.remove('hidden');
+
+            setTimeout(() => {
+                closePasswordRecovery();
+            }, 2400);
+        }
+
+        function showHelpInfo() {
+            displayAlert('Para suporte ou liberação de novos perfis médicos, contate a TI Interna no ramal 4022.', 'info');
+        }
+
+        // Close modal on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closePasswordRecovery();
+            }
+        });
+    </script>
+</body>
+
+</html>
