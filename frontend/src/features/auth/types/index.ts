@@ -1,12 +1,8 @@
-export interface User {
-  id: string;
-  email: string;
-  name?: string;
-  role?: string;
-}
+export * from './auth.types';
+import type { UserProfile } from './auth.types';
 
 export interface UserSession {
-  user: User | null;
+  user: UserProfile | null;
   accessToken: string | null;
 }
 

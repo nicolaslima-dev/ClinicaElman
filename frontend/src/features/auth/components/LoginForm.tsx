@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { User, Lock, Eye, EyeOff, ArrowRight, Loader2, ShieldCheck, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../api/auth.service';
+import { ROLE_DEFAULT_ROUTES } from '../types/auth.types';
 
 type AlertType = 'info' | 'success' | 'error' | null;
 
@@ -30,19 +31,20 @@ export function LoginForm() {
 
     setIsLoading(true);
 
-    const { error } = await login(username, password);
+    const { data, error } = await login(username, password);
 
     setIsLoading(false);
 
-    if (error) {
-      setAlert({ message: error.message, type: 'error' });
+    if (error || !data?.user) {
+      setAlert({ message: error?.message || 'Erro ao realizar login.', type: 'error' });
       return;
     }
 
     setAlert({ message: 'Autenticação autorizada! Redirecionando para o painel...', type: 'success' });
 
     setTimeout(() => {
-      navigate('/');
+      const defaultRoute = ROLE_DEFAULT_ROUTES[data.user.role] || '/';
+      navigate(defaultRoute, { replace: true });
     }, 800);
   };
 

@@ -16,12 +16,20 @@ export const login = async (email: string, password: string): Promise<{ data: Us
 
     if (error) throw error;
 
+    // Buscar o perfil do usuário
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', data.session.user.id)
+      .single();
+
+    if (profileError || !profile) {
+      throw new Error('Falha ao obter perfil de acesso (Role). Contate a TI.');
+    }
+
     return {
       data: {
-        user: {
-          id: data.session.user.id,
-          email: email, 
-        },
+        user: profile,
         accessToken: data.session.access_token,
       },
       error: null
