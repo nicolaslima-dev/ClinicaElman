@@ -13,6 +13,7 @@ import { ForgotPasswordEmailStep } from "../components/ForgotPasswordEmailStep";
 import { ForgotPasswordCodeStep } from "../components/ForgotPasswordCodeStep";
 import { ForgotPasswordPasswordStep } from "../components/ForgotPasswordPasswordStep";
 import { ForgotPasswordSuccessStep } from "../components/ForgotPasswordSuccessStep";
+import { requestPasswordReset, verifyResetToken, updatePassword } from "../api/auth.service";
 
 export function ForgotPasswordPage() {
   const navigate = useNavigate();
@@ -51,17 +52,23 @@ export function ForgotPasswordPage() {
   };
 
   // Step 1
-  const handleStep1Submit = (e: FormEvent) => {
+  const handleStep1Submit = async (e: FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
+    displayAlert("Solicitando código...", "info");
+    
+    const { success, error } = await requestPasswordReset(email);
+    
+    if (error) {
+      displayAlert(error.message, "error");
+      return;
+    }
+
     displayAlert(`Código seguro enviado para ${email}.`, "success");
-    setTimeout(() => {
-      setStep(2);
-      setCountdown(45);
-      setCanResend(false);
-      displayAlert("", null);
-    }, 600);
+    setStep(2);
+    setCountdown(45);
+    setCanResend(false);
   };
 
   // Step 2
@@ -85,7 +92,7 @@ export function ForgotPasswordPage() {
     }
   };
 
-  const handleStep2Submit = (e: FormEvent) => {
+  const handleStep2Submit = async (e: FormEvent) => {
     e.preventDefault();
     const enteredCode = pin.join("");
     if (enteredCode.length < 6) {
@@ -93,22 +100,38 @@ export function ForgotPasswordPage() {
       return;
     }
 
+    displayAlert("Validando código...", "info");
+    
+    const { success, error } = await verifyResetToken(email, enteredCode);
+    
+    if (error || !success) {
+      displayAlert(error?.message || "Código inválido", "error");
+      return;
+    }
+
     displayAlert("Código de segurança validado com sucesso!", "success");
-    setTimeout(() => {
-      setStep(3);
-      displayAlert("", null);
-    }, 600);
+    setStep(3);
+    displayAlert("", null);
   };
 
-  const resendCode = () => {
+  const resendCode = async () => {
     if (!canResend) return;
+    displayAlert("Reenviando código...", "info");
+    
+    const { success, error } = await requestPasswordReset(email);
+    
+    if (error) {
+      displayAlert(error.message, "error");
+      return;
+    }
+    
     setCountdown(45);
     setCanResend(false);
     displayAlert(`Novo código enviado para ${email}.`, "info");
   };
 
   // Step 3
-  const handleStep3Submit = (e: FormEvent) => {
+  const handleStep3Submit = async (e: FormEvent) => {
     e.preventDefault();
     if (newPassword.length < 8) {
       displayAlert("A senha deve conter no mínimo 8 caracteres.", "error");
@@ -117,6 +140,16 @@ export function ForgotPasswordPage() {
 
     if (newPassword !== confirmPassword) {
       displayAlert("As senhas não coincidem. Digite novamente.", "error");
+      return;
+    }
+
+    displayAlert("Atualizando senha...", "info");
+    const enteredCode = pin.join("");
+    
+    const { success, error } = await updatePassword(email, enteredCode, newPassword);
+    
+    if (error || !success) {
+      displayAlert(error?.message || "Erro ao atualizar senha", "error");
       return;
     }
 

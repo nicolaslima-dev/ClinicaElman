@@ -42,8 +42,9 @@ export function LoginForm() {
 
     setAlert({ message: 'Autenticação autorizada! Redirecionando para o painel...', type: 'success' });
 
+    const user = data.user;
     setTimeout(() => {
-      const defaultRoute = ROLE_DEFAULT_ROUTES[data.user.role] || '/';
+      const defaultRoute = ROLE_DEFAULT_ROUTES[user.role] || '/';
       navigate(defaultRoute, { replace: true });
     }, 800);
   };
