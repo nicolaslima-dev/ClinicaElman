@@ -40,50 +40,53 @@
   --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-@layer utilities {
-  .glass-side-panel {
-    background: linear-gradient(175deg, #0d1116 0%, #11221e 45%, #193631 100%);
-    border-right: 1px solid rgba(255, 255, 255, 0.07);
-  }
+.glass-side-panel {
+  background: linear-gradient(175deg, #0d1116 0%, #11221e 45%, #193631 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
 
-  .input-pill {
-    background: #f8faf9;
-    border: 1px solid #d7dbdf;
-    transition: all 0.2s ease;
-  }
+.glass-sidebar {
+  background: linear-gradient(175deg, #0d1116 0%, #193631 130%);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-  .input-pill:focus-within {
-    background: #ffffff;
-    border-color: #2f695f;
-    box-shadow: 0 0 0 4px rgba(47, 105, 95, 0.12);
-  }
+.input-pill {
+  background: #f8faf9;
+  border: 1px solid #d7dbdf;
+  transition: all 0.2s ease;
+}
 
-  .gold-accent-bar {
-    width: 32px;
-    height: 3px;
-    background: #c7a468;
-    border-radius: 999px;
-  }
+.input-pill:focus-within {
+  background: #ffffff;
+  border-color: #2f695f;
+  box-shadow: 0 0 0 4px rgba(47, 105, 95, 0.12);
+}
 
-  .bg-grid-pattern {
-    background-size: 32px 32px;
-    background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  }
+.gold-accent-bar {
+  width: 32px;
+  height: 3px;
+  background: #c7a468;
+  border-radius: 999px;
+}
 
-  .fade-in {
-    animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  }
+.bg-grid-pattern {
+  background-size: 32px 32px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+.fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { LoginPage } from '@/features/auth/pages/LoginPage';
 import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
+import { AdminDashboardPage } from '@/features/admin/pages/AdminDashboardPage';
+import { AdminLayout } from '@/features/admin/layouts/AdminLayout';
 
 import { RoleRedirect } from './RoleRedirect';
 import { RoleGuard } from './RoleGuard';
 
 // --- Mocks Visuais Simples para Teste de Redirecionamento ---
-const DashboardMock = () => <div className="p-10 font-bold text-2xl text-brand-900">Dashboard Executivo (admin)</div>;
 const AtendimentoMock = () => <div className="p-10 font-bold text-2xl text-emerald-700">Tela de Atendimento (medico, recepcao)</div>;
 const FaturamentoMock = () => <div className="p-10 font-bold text-2xl text-gold-700">Setor de Faturamento (faturamento)</div>;
 const AuditoriaMock = () => <div className="p-10 font-bold text-2xl text-red-700">Setor de Auditoria (auditoria)</div>;
@@ -26,7 +27,9 @@ export function AppRoutes() {
 
           {/* Rotas Protegidas e Agrupadas por Role */}
           <Route element={<RoleGuard allowedRoles={['admin']} />}>
-            <Route path="/dashboard" element={<DashboardMock />} />
+            <Route element={<AdminLayout />}>
+              <Route path="/dashboard" element={<AdminDashboardPage />} />
+            </Route>
           </Route>
 
           <Route element={<RoleGuard allowedRoles={['medico', 'recepcao']} />}>
