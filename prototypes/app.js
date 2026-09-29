@@ -1,17 +1,4 @@
-// --- CONFIGURAÇÃO SUPABASE ---
-let supabaseClient = null;
-try {
-    if (typeof SUPABASE_URL === 'undefined' || typeof SUPABASE_ANON_KEY === 'undefined' || !SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        throw new Error("As chaves do Supabase (URL ou KEY) estão vazias ou não definidas. Verifique se o env.js foi gerado corretamente (e limpe o cache do navegador).");
-    }
-    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} catch (err) {
-    console.error("Falha ao inicializar Supabase:", err);
-    window.addEventListener('DOMContentLoaded', () => {
-        mostrarToast('Erro Crítico', err.message, 'error', 10000);
-    });
-}
-
+// --- MOCK ESTADO GLOBAL (Sem Supabase) ---
 // --- ESTADO GLOBAL (Integração Supabase) ---
 let state = {
     kpis: { faturado: 0, aprovado: 0, retido: 0 },
@@ -23,53 +10,26 @@ let activeAuditoriaId = null;
 
 async function loadStateFromSupabase() {
     try {
-        if (!supabaseClient) throw new Error("Supabase não inicializado devido a erro no .env");
-        const { data: kpisData, error: kpisError } = await supabaseClient.from('kpis').select('*').single();
-        if (kpisError) throw kpisError;
-
-        const { data: audData, error: audError } = await supabaseClient.from('auditorias').select('*').order('id', { ascending: true });
-        if (audError) throw audError;
-
-        const { data: convData, error: convError } = await supabaseClient.from('dashboard_convenios').select('*').order('ordem', { ascending: true });
-        if (convError && convError.code !== '42P01') console.error(convError);
-
-        const { data: glosaData, error: glosaError } = await supabaseClient.from('dashboard_glosas').select('*').order('ordem', { ascending: true });
-        if (glosaError && glosaError.code !== '42P01') console.error(glosaError);
-
-        if (kpisData) {
-            state.kpis = {
-                faturado: kpisData.faturado,
-                aprovado: kpisData.aprovado,
-                retido: kpisData.retido
-            };
-        }
+        state.kpis = { faturado: 142850, aprovado: 124300, retido: 18550 };
         
-        if (convData) {
-            state.chartsData.convenios = convData;
-        }
+        state.chartsData.convenios = [
+            { convenio: 'CASSI', valor_faturado: 45000 },
+            { convenio: 'BRADESCO', valor_faturado: 38000 },
+            { convenio: 'SULAMERICA', valor_faturado: 32000 },
+            { convenio: 'UNIMED', valor_faturado: 27850 }
+        ];
 
-        if (glosaData) {
-            state.chartsData.glosas = glosaData;
-        }
+        state.chartsData.glosas = [
+            { label: 'Validadas na clínica', quantidade: 65, cor: '#2f695f' },
+            { label: 'Corrigidas antes do envio', quantidade: 25, cor: '#8bbdb2' },
+            { label: 'Glosadas', quantidade: 10, cor: '#f43f5e' }
+        ];
 
-        if (audData) {
-            state.auditorias = audData.map(item => ({
-                id: item.id,
-                data: item.data,
-                paciente: item.paciente,
-                convenio: item.convenio,
-                proc: item.proc,
-                valor: item.valor,
-                status: item.status,
-                tipoErro: item.tipo_erro,
-                mensagem: item.mensagem,
-                conselhoAtual: item.conselho_atual,
-                matriculaAtual: item.matricula_atual,
-                senhaAtual: item.senha_atual,
-                validadeAtual: item.validade_atual,
-                resolvidoEm: item.resolvido_em
-            }));
-        }
+        state.auditorias = [
+            { id: 1, data: '01/06/2026', paciente: 'Ana Maria da Silva', convenio: 'CASSI', proc: '50000250 (Fisioterapia Motora)', valor: 74.02, status: 'erro', tipoErro: 'cbo_matricula', mensagem: 'Profissional CBO Fisioterapia faturado sob CRM. Matrícula CASSI exige 14 dígitos.', conselhoAtual: 'CRM', matriculaAtual: '0001234567', senhaAtual: null, validadeAtual: null },
+            { id: 2, data: '02/06/2026', paciente: 'João Pedro Costa', convenio: 'BRADESCO', proc: '10101012 (Consulta Médica)', valor: 120.00, status: 'erro', tipoErro: 'senha_autorizacao', mensagem: 'Ausência de senha/token de autorização prévia da operadora Bradesco Saúde.', conselhoAtual: null, matriculaAtual: null, senhaAtual: '', validadeAtual: null },
+            { id: 3, data: '03/06/2026', paciente: 'Maria Eduarda', convenio: 'SULAMERICA', proc: '20104097 (Exame Especial)', valor: 350.50, status: 'erro', tipoErro: 'validade_carteira', mensagem: 'Data de validade da carteira do beneficiário expirada no cadastro original.', conselhoAtual: null, matriculaAtual: null, senhaAtual: null, validadeAtual: '2026-05-31' }
+        ];
 
         fetchAndRenderDashboard();
         fetchAndRenderAuditorias();
@@ -85,38 +45,14 @@ async function loadStateFromSupabase() {
             fetchAndRenderFaturamento();
         }
     } catch (e) {
-        console.error('Erro ao buscar dados do Supabase:', e);
-        mostrarToast('Erro de Conexão', 'Não foi possível carregar os dados do banco.', 'error');
+        console.error('Erro ao carregar os dados locais:', e);
     }
 }
 
 async function restaurarEstadoPadrao() {
-    try {
-        mostrarToast('Restaurando...', 'O lote de auditoria está voltando ao estado inicial...', 'info');
-
-        // Atualiza KPI
-        await supabaseClient.from('kpis').upsert({
-            id: 1, faturado: 142850, aprovado: 124300, retido: 18550
-        });
-
-        // Deleta as auditorias existentes (limpa tabela) para evitar sujeira,
-        // mas como a política pode não permitir DELETE livremente dependendo de como foi criada,
-        // faremos upsert sobrescrevendo os 3 ids originais.
-        const mockAuditorias = [
-            { id: 1, data: '01/06/2026', paciente: 'Ana Maria da Silva', convenio: 'CASSI', proc: '50000250 (Fisioterapia Motora)', valor: 74.02, status: 'erro', tipo_erro: 'cbo_matricula', mensagem: 'Profissional CBO Fisioterapia faturado sob CRM. Matrícula CASSI exige 14 dígitos.', conselho_atual: 'CRM', matricula_atual: '0001234567', senha_atual: null, validade_atual: null },
-            { id: 2, data: '02/06/2026', paciente: 'João Pedro Costa', convenio: 'BRADESCO', proc: '10101012 (Consulta Médica)', valor: 120.00, status: 'erro', tipo_erro: 'senha_autorizacao', mensagem: 'Ausência de senha/token de autorização prévia da operadora Bradesco Saúde.', conselho_atual: null, matricula_atual: null, senha_atual: '', validade_atual: null },
-            { id: 3, data: '03/06/2026', paciente: 'Maria Eduarda', convenio: 'SULAMERICA', proc: '20104097 (Exame Especial)', valor: 350.50, status: 'erro', tipo_erro: 'validade_carteira', mensagem: 'Data de validade da carteira do beneficiário expirada no cadastro original.', conselho_atual: null, matricula_atual: null, senha_atual: null, validade_atual: '2026-05-31' }
-        ];
-
-        const { error } = await supabaseClient.from('auditorias').upsert(mockAuditorias);
-        if (error) throw error;
-        
-        await loadStateFromSupabase();
-        mostrarToast('Dados Restaurados', 'O estado foi resetado com 3 erros para testes.', 'success');
-    } catch (e) {
-        console.error('Erro ao restaurar:', e);
-        mostrarToast('Erro', 'Falha ao restaurar banco de dados. Verifique a permissão do Supabase.', 'error');
-    }
+    mostrarToast('Restaurando...', 'O lote de auditoria está voltando ao estado inicial...', 'info');
+    await loadStateFromSupabase();
+    mostrarToast('Dados Restaurados', 'O estado foi resetado com 3 erros para testes.', 'success');
 }
 
 // --- UTILITÁRIOS ---
@@ -490,75 +426,51 @@ async function salvarCorrecao() {
     }
 
     try {
-        const inputConselho = document.getElementById('inputConselho');
-        const inputMatricula = document.getElementById('inputMatricula');
-        const inputSenhaAuth = document.getElementById('inputSenhaAuth');
-        const inputNovaValidade = document.getElementById('inputNovaValidade');
+        // Mock API Call delay
+        await new Promise(resolve => setTimeout(resolve, 800));
 
-        const payload = {
-            id: currentId,
-            conselhoProfissional: inputConselho ? inputConselho.value : '',
-            matricula: inputMatricula ? inputMatricula.value.trim() : '',
-            senhaAuth: inputSenhaAuth ? inputSenhaAuth.value.trim() : '',
-            novaValidade: inputNovaValidade ? inputNovaValidade.value : ''
-        };
+        // Atualiza estado localmente
+        item.status = 'validado';
+        
+        fecharDrawer();
 
-        const { data, error } = await supabaseClient.rpc('auditar_guia_completa', { payload: payload });
-
-        if (error) {
-            throw error;
+        // Atualização visual otimista
+        const linha = document.getElementById(`linhaGuiaErro-${currentId}`);
+        if (linha) {
+            linha.className = "border-b border-slate-100 transition-colors duration-300 bg-green-50";
         }
 
-        if (data && data.aprovado === false) {
-            const mensagens = (data.criticas && data.criticas.length > 0) ? data.criticas.map(c => c.mensagem).join(', ') : 'Rejeição na validação.';
-            mostrarToast('Falha na Validação', mensagens, 'error');
-            return;
+        const badge = document.getElementById(`badgeStatusErro-${currentId}`);
+        if (badge) {
+            badge.className = "px-3 py-1.5 rounded-md text-xs font-bold border shadow-xs flex items-center gap-1.5 w-max bg-green-100 text-green-700 border-green-200";
+            badge.innerHTML = '<i class="ph ph-check-circle"></i> Validado (Orizon OK)';
         }
 
-        if (data && data.aprovado === true) {
-            fecharDrawer();
-
-            // Atualização visual otimista
-            const linha = document.getElementById(`linhaGuiaErro-${currentId}`);
-            if (linha) {
-                linha.className = "border-b border-slate-100 transition-colors duration-300 bg-green-50";
-            }
-
-            const badge = document.getElementById(`badgeStatusErro-${currentId}`);
-            if (badge) {
-                badge.className = "px-3 py-1.5 rounded-md text-xs font-bold border shadow-xs flex items-center gap-1.5 w-max bg-green-100 text-green-700 border-green-200";
-                badge.innerHTML = '<i class="ph ph-check-circle"></i> Validado (Orizon OK)';
-            }
-
-            const btn = document.getElementById(`btnCorrigir-${currentId}`);
-            if (btn) {
-                btn.outerHTML = `<span id="btnCorrigir-${currentId}" class="text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-lg text-xs font-semibold flex items-center justify-end gap-1.5 w-max ml-auto shadow-xs"><i class="ph ph-check-circle-bold text-emerald-600"></i> Aprovado</span>`;
-            }
-
-            const dashRetido = document.getElementById('dash-retido');
-            const dashAprovado = document.getElementById('dash-aprovado');
-            if (dashRetido && dashAprovado) {
-                dashRetido.classList.add('scale-105');
-                dashAprovado.classList.add('scale-105');
-                setTimeout(() => {
-                    dashRetido.classList.remove('scale-105');
-                    dashAprovado.classList.remove('scale-105');
-                }, 300);
-            }
-
-            // Recarrega o estado real do banco de dados silenciosamente
-            await loadStateFromSupabase();
-
-            mostrarToast(
-                'Glosa Resolvida com Sucesso!', 
-                `A guia de ${item.paciente} (${item.convenio}) foi validada e liberada.`, 
-                'success'
-            );
+        const btn = document.getElementById(`btnCorrigir-${currentId}`);
+        if (btn) {
+            btn.outerHTML = `<span id="btnCorrigir-${currentId}" class="text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-lg text-xs font-semibold flex items-center justify-end gap-1.5 w-max ml-auto shadow-xs"><i class="ph ph-check-circle-bold text-emerald-600"></i> Aprovado</span>`;
         }
+
+        const dashRetido = document.getElementById('dash-retido');
+        const dashAprovado = document.getElementById('dash-aprovado');
+        if (dashRetido && dashAprovado) {
+            dashRetido.classList.add('scale-105');
+            dashAprovado.classList.add('scale-105');
+            setTimeout(() => {
+                dashRetido.classList.remove('scale-105');
+                dashAprovado.classList.remove('scale-105');
+            }, 300);
+        }
+
+        mostrarToast(
+            'Glosa Resolvida com Sucesso!', 
+            `A guia de ${item.paciente} (${item.convenio}) foi validada e liberada.`, 
+            'success'
+        );
 
     } catch (err) {
-        console.error('Erro de API:', err);
-        mostrarToast('Erro de Conexão', 'Não foi possível validar a guia. Interface continua operando normalmente.', 'error');
+        console.error('Erro de API mockada:', err);
+        mostrarToast('Erro de Conexão', 'Não foi possível validar a guia.', 'error');
     }
 }
 
@@ -724,9 +636,56 @@ function fetchAndRenderFaturamento() {
     }
 }
 
-// --- ATENDIMENTOS (PAGINAÇÃO E FILTROS) ---
-let pageAtendimentos = 1;
-const ITEMS_PER_PAGE = 4;
+// --- ATENDIMENTOS (Mock de atendimentos Local DB para Protótipo) ---
+const defaultMockAtendimentosData = [
+    { id: 1, paciente: 'Maria Silva', guia_info: 'Guia: 12345', horario: '08:00', data_registro: '2026-09-01', profissional: 'Dr. Carlos Mendes', local_atendimento: 'Sala 1', convenio: 'Unimed', status: 'aguardando', alerta: false, carteirinha_numero: '00112233', carteirinha_validade: '12/2030', status_financeiro: 'Pendente de Autorização' },
+    { id: 2, paciente: 'João Souza', guia_info: 'Guia: 67890', horario: '08:30', data_registro: '2026-09-01', profissional: 'Dra. Luciana Silva', local_atendimento: 'Sala 2', convenio: 'Bradesco', status: 'em_atendimento', alerta: true, carteirinha_numero: '44556677', carteirinha_validade: '01/2027', status_financeiro: 'Pronta para Auditoria' },
+    { id: 3, paciente: 'Ana Beatriz', guia_info: 'Guia: 11223', horario: '09:00', data_registro: '2026-09-01', profissional: 'Dr. Carlos Mendes', local_atendimento: 'Sala 1', convenio: 'SulAmérica', status: 'realizado', alerta: false, carteirinha_numero: '88990011', carteirinha_validade: '05/2028', status_financeiro: 'Faturada em Lote' },
+    { id: 4, paciente: 'Carlos Eduardo', guia_info: 'Guia: 44556', horario: '10:00', data_registro: '2026-09-01', profissional: 'Dr. Roberto Almeida', local_atendimento: 'Sala 3', convenio: 'CASSI', status: 'cancelado', alerta: false, carteirinha_numero: '22334455', carteirinha_validade: '11/2026', status_financeiro: 'Cancelada' },
+    { id: 5, paciente: 'Felipe Santos', guia_info: 'Guia: 99887', horario: '11:00', data_registro: '2026-09-01', profissional: 'Dra. Luciana Silva', local_atendimento: 'Sala 2', convenio: 'Bradesco', status: 'aguardando', alerta: false, carteirinha_numero: '77889900', carteirinha_validade: '09/2029', status_financeiro: 'Pronta para Auditoria' },
+    { id: 6, paciente: 'Roberto Oliveira', guia_info: 'Guia: 33445', horario: '14:00', data_registro: '2026-09-01', profissional: 'Dr. Carlos Mendes', local_atendimento: 'Sala 1', convenio: 'Unimed', status: 'aguardando', alerta: false, carteirinha_numero: '55667788', carteirinha_validade: '02/2027', status_financeiro: 'Pendente de Autorização' }
+];
+
+function getMockAtendimentos() {
+    const saved = localStorage.getItem('elman_atendimentos_mock');
+    if (saved) return JSON.parse(saved);
+    localStorage.setItem('elman_atendimentos_mock', JSON.stringify(defaultMockAtendimentosData));
+    return defaultMockAtendimentosData;
+}
+
+function saveMockAtendimentos(data) {
+    localStorage.setItem('elman_atendimentos_mock', JSON.stringify(data));
+}
+
+window.cancelarGuiaLocalStorage = function(id) {
+    const data = getMockAtendimentos();
+    const index = data.findIndex(a => a.id === id);
+    if (index !== -1) {
+        data[index].status = 'cancelado';
+        data[index].status_financeiro = 'Cancelada';
+        saveMockAtendimentos(data);
+        if (typeof fetchAndRenderAtendimentos === 'function') {
+            fetchAndRenderAtendimentos(pageAtendimentos || 1);
+            fetchAtendimentosKPIs();
+        }
+    }
+};
+
+window.adicionarGuiaLocalStorage = function(novoAtendimento) {
+    const data = getMockAtendimentos();
+    const nextId = data.length > 0 ? Math.max(...data.map(d => d.id)) + 1 : 1;
+    novoAtendimento.id = nextId;
+    
+    // Obtém o valor do filtro de data da página atual se existir, ou padroniza.
+    const filterDateEl = document.getElementById('filter-date');
+    novoAtendimento.data_registro = filterDateEl ? filterDateEl.value : '2026-09-01';
+    
+    novoAtendimento.status = 'aguardando';
+    novoAtendimento.alerta = false;
+    novoAtendimento.status_financeiro = 'Pendente de Autorização';
+    data.unshift(novoAtendimento);
+    saveMockAtendimentos(data);
+};
 
 async function fetchAtendimentosKPIs() {
     if (!document.getElementById('kpi-para-hoje')) return;
@@ -735,41 +694,28 @@ async function fetchAtendimentosKPIs() {
     if (!filterDate) return;
 
     try {
-        // KPI Para Hoje
-        const { count: countHoje } = await supabaseClient
-            .from('atendimentos')
-            .select('*', { count: 'exact', head: true })
-            .eq('data_registro', filterDate);
-        
-        // KPI Em Consultório
-        const { count: countCons } = await supabaseClient
-            .from('atendimentos')
-            .select('*', { count: 'exact', head: true })
-            .eq('data_registro', filterDate)
-            .eq('status', 'em_atendimento');
-            
-        // KPI Alertas
-        const { count: countAlertas } = await supabaseClient
-            .from('atendimentos')
-            .select('*', { count: 'exact', head: true })
-            .eq('data_registro', filterDate)
-            .eq('alerta', true);
+        const atendimentosDoDia = getMockAtendimentos().filter(a => a.data_registro === filterDate);
+        const countHoje = atendimentosDoDia.length;
+        const countCons = atendimentosDoDia.filter(a => a.status === 'em_atendimento').length;
+        const countAlertas = atendimentosDoDia.filter(a => a.alerta === true).length;
 
         document.getElementById('kpi-para-hoje').innerHTML = `${countHoje || 0} <span class="text-sm font-medium text-ink-400 font-sans">pacientes</span>`;
         document.getElementById('kpi-em-consultorio').innerHTML = `${countCons || 0} <span class="text-sm font-medium text-ink-400 font-sans">agora</span>`;
         document.getElementById('kpi-alertas').innerHTML = `${countAlertas || 0} <span class="text-sm font-medium text-red-500 font-sans">alertas</span>`;
-        
     } catch (e) {
-        console.error('Erro ao buscar KPIs', e);
+        console.error('Erro ao buscar KPIs simulados', e);
     }
 }
+
+let pageAtendimentos = 1;
+const ITEMS_PER_PAGE = 4;
 
 async function fetchAndRenderAtendimentos(page = 1) {
     pageAtendimentos = page;
     const tbody = document.getElementById('tbodyAtendimentos');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-ink-400"><i class="ph ph-spinner animate-spin text-2xl"></i> Carregando atendimentos...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="py-10 text-center text-ink-400"><i class="ph ph-spinner animate-spin text-2xl"></i> Carregando atendimentos...</td></tr>';
 
     const filterSearch = document.getElementById('filter-search')?.value.toLowerCase() || '';
     const filterDate = document.getElementById('filter-date')?.value;
@@ -777,25 +723,25 @@ async function fetchAndRenderAtendimentos(page = 1) {
     const filterProf = document.getElementById('filter-prof')?.value;
 
     try {
-        let query = supabaseClient.from('atendimentos').select('*', { count: 'exact' });
+        let filtrados = [...getMockAtendimentos()];
         
-        if (filterDate) query = query.eq('data_registro', filterDate);
-        if (filterStatus) query = query.eq('status', filterStatus);
-        if (filterProf) query = query.eq('profissional', filterProf);
+        if (filterDate) filtrados = filtrados.filter(a => a.data_registro === filterDate);
+        if (filterStatus) filtrados = filtrados.filter(a => a.status === filterStatus);
+        if (filterProf) filtrados = filtrados.filter(a => a.profissional === filterProf);
         if (filterSearch) {
-            query = query.or(`paciente.ilike.%${filterSearch}%,guia_info.ilike.%${filterSearch}%`);
+            filtrados = filtrados.filter(a => 
+                a.paciente.toLowerCase().includes(filterSearch) || 
+                a.guia_info.toLowerCase().includes(filterSearch)
+            );
         }
 
+        const count = filtrados.length;
         const start = (page - 1) * ITEMS_PER_PAGE;
-        const end = start + ITEMS_PER_PAGE - 1;
-
-        query = query.range(start, end).order('id', { ascending: true });
-
-        const { data, count, error } = await query;
-        if (error) throw error;
+        const end = start + ITEMS_PER_PAGE;
+        const data = filtrados.slice(start, end);
 
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-ink-400">Nenhum atendimento encontrado.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="py-10 text-center text-ink-400">Nenhum atendimento encontrado.</td></tr>';
         } else {
             let html = '';
             data.forEach(item => {
@@ -810,10 +756,42 @@ async function fetchAndRenderAtendimentos(page = 1) {
                     badgeStatus = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs font-medium bg-ink-100 text-ink-600 border border-ink-200"><i class="ph-fill ph-x-circle text-ink-400"></i> Cancelado</span>`;
                 }
 
+                // Campos que talvez ainda não existam no Supabase do usuário (fallback para simulação)
+                const carteirinha = item.carteirinha_numero || '00000000000000';
+                const validade = item.carteirinha_validade || '12/2028';
+                const statusFinanceiro = item.status_financeiro || (item.status === 'cancelado' ? 'Cancelada' : 'Pendente de Autorização');
+
+                let badgeFinanceiro = '';
+                if (statusFinanceiro === 'Pendente de Autorização') {
+                    badgeFinanceiro = `<span class="inline-flex items-center gap-1 px-2 py-1.5 rounded text-[10px] font-bold bg-gold-50 text-gold-700 border border-gold-200/60">Pendente de Autorização</span>`;
+                } else if (statusFinanceiro === 'Pronta para Auditoria') {
+                    badgeFinanceiro = `<span class="inline-flex items-center gap-1 px-2 py-1.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200/60">Pronta para Auditoria</span>`;
+                } else if (statusFinanceiro === 'Faturada em Lote') {
+                    badgeFinanceiro = `<span class="inline-flex items-center gap-1 px-2 py-1.5 rounded text-[10px] font-bold bg-green-50 text-green-700 border border-green-200/60">Faturada em Lote</span>`;
+                } else if (statusFinanceiro === 'Cancelada') {
+                    badgeFinanceiro = `<span class="inline-flex items-center gap-1 px-2 py-1.5 rounded text-[10px] font-bold bg-red-50 text-red-700 border border-red-200/60">Bloqueada (Cancelada)</span>`;
+                } else {
+                    badgeFinanceiro = `<span class="inline-flex items-center gap-1 px-2 py-1.5 rounded text-[10px] font-bold bg-ink-50 text-ink-600 border border-ink-200/60">${statusFinanceiro}</span>`;
+                }
+
+                const acoesInline = `
+                <div class="flex items-center justify-end gap-1">
+                    <button onclick="visualizarEditar(${item.id})" title="Visualizar/Editar Ficha" class="p-2 text-ink-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors border border-transparent hover:border-brand-100 flex items-center gap-1.5">
+                        <i class="ph ph-stethoscope text-lg"></i>
+                    </button>
+                    <button onclick="abrirModalImpressao(${item.id})" title="Imprimir Guia ANS" class="p-2 text-ink-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors border border-transparent hover:border-brand-100 flex items-center gap-1.5">
+                        <i class="ph ph-printer text-lg"></i>
+                    </button>
+                    <button onclick="cancelarGuia(${item.id})" title="Excluir / Cancelar Guia" class="p-2 text-ink-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100 flex items-center gap-1.5">
+                        <i class="ph ph-trash text-lg"></i>
+                    </button>
+                </div>
+                `;
+
                 html += `
                 <tr class="hover:bg-ink-50/50 transition-colors group ${item.status === 'cancelado' ? 'opacity-75' : ''}">
                     <td class="py-4 px-6">
-                        <p class="text-ink-900 font-semibold font-heading text-base ${item.status === 'cancelado' ? 'line-through text-ink-400' : ''}">${item.paciente}</p>
+                        <p class="text-ink-900 font-semibold font-heading text-base hover:text-brand-600 hover:underline cursor-pointer transition-colors ${item.status === 'cancelado' ? 'line-through text-ink-400' : ''}" onclick="verHistorico(${item.id})">${item.paciente}</p>
                         <p class="text-[11px] ${item.alerta ? 'text-red-500 font-bold' : 'text-ink-400 font-mono'} mt-0.5">${item.guia_info}</p>
                     </td>
                     <td class="py-4 px-6">
@@ -825,13 +803,16 @@ async function fetchAndRenderAtendimentos(page = 1) {
                         <p class="text-[11px] text-ink-400 mt-0.5">${item.local_atendimento}</p>
                     </td>
                     <td class="py-4 px-6">
-                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-ink-50 text-ink-700 text-[11px] font-medium border border-ink-100">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-ink-50 text-ink-700 text-[11px] font-medium border border-ink-100 mb-1">
                             ${item.convenio}
                         </span>
+                        <p class="text-[11px] text-ink-500 font-mono">Nº: ${carteirinha}</p>
+                        <p class="text-[11px] text-ink-500 font-mono">Val: ${validade}</p>
                     </td>
                     <td class="py-4 px-6">${badgeStatus}</td>
+                    <td class="py-4 px-6">${badgeFinanceiro}</td>
                     <td class="py-4 px-6 text-right">
-                        <button class="p-2 text-ink-400 hover:text-ink-900 hover:bg-ink-100 rounded-lg transition-colors"><i class="ph ph-dots-three-bold text-lg"></i></button>
+                        ${acoesInline}
                     </td>
                 </tr>
                 `;

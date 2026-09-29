@@ -14,8 +14,7 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap"
         rel="stylesheet">
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -986,6 +985,26 @@
             // Log no console
             console.log("PAYLOAD TISS GERADO:", JSON.stringify(payload, null, 2));
 
+            // Adicionar via localStorage para o teste
+            if (typeof window.adicionarGuiaLocalStorage === 'function') {
+                const pacienteNome = document.getElementById('pacienteBusca')?.value || 'Paciente Novo';
+                const profissionalSelect = document.getElementById('profissionalExecutante');
+                const profissionalNome = profissionalSelect?.options[profissionalSelect.selectedIndex]?.text || 'Profissional';
+                const convenioSelect = document.getElementById('convenio');
+                const convenioNome = convenioSelect?.options[convenioSelect.selectedIndex]?.text || 'Convênio';
+                
+                window.adicionarGuiaLocalStorage({
+                    paciente: pacienteNome,
+                    guia_info: 'Guia: ' + (Math.floor(Math.random() * 90000) + 10000),
+                    horario: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'}),
+                    profissional: profissionalNome,
+                    local_atendimento: 'Recepção',
+                    convenio: convenioNome,
+                    carteirinha_numero: document.getElementById('numeroCarteirinha')?.value || '00000000',
+                    carteirinha_validade: document.getElementById('validadeCarteirinha')?.value || '12/2030'
+                });
+            }
+
             if (typeof mostrarToast === 'function') {
                 mostrarToast('Atendimento Salvo com Sucesso!', 'Guia ' + tipoGuia + ' gerada. Payload TISS logado no console.', 'success');
             } else {
@@ -997,7 +1016,7 @@
             }, 2500);
         }
     </script>
-    <script src="env.js"></script>
+
     <script src="app.js"></script>
 </body>
 
