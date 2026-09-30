@@ -278,10 +278,12 @@
                         <div class="flex-1 space-y-5">
                             <div>
                                 <label class="form-label">Convênios</label>
-                                <select class="form-input appearance-none">
-                                    <option>CASSI</option>
-                                    <option selected>PETROBRÁS PATRICIA</option>
-                                    <option>BRADESCO SAÚDE</option>
+                                <select id="filtroConvenioFaturamento" class="form-input appearance-none" onchange="fetchAndRenderFaturamento()">
+                                    <option value="" disabled selected>Selecione um Convênio obrigatório...</option>
+                                    <option value="CASSI">CASSI</option>
+                                    <option value="BRADESCO">BRADESCO</option>
+                                    <option value="SULAMERICA">SULAMERICA</option>
+                                    <option value="UNIMED">UNIMED</option>
                                 </select>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
@@ -314,10 +316,14 @@
                         <table class="w-full text-left text-sm text-ink-600">
                             <thead>
                                 <tr class="bg-ink-50/50 border-b border-ink-100 text-xs font-semibold text-ink-400 uppercase tracking-wider">
+                                    <th class="p-4 w-12 text-center">
+                                        <input type="checkbox" id="selectAllGuias" class="rounded border-ink-300 text-brand-600 focus:ring-brand-500 w-4 h-4 cursor-pointer" onchange="toggleAllGuias(this)">
+                                    </th>
                                     <th class="p-4 font-medium">Data</th>
                                     <th class="p-4 font-medium">Paciente</th>
                                     <th class="p-4 font-medium">Convênio</th>
                                     <th class="p-4 font-medium">Matrícula</th>
+                                    <th class="p-4 font-medium">Status Auditoria</th>
                                     <th class="p-4 font-medium text-right">Vlr. Total</th>
                                 </tr>
                             </thead>
@@ -330,6 +336,15 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <!-- Resumo Contábil do Lote -->
+                    <div class="bg-brand-50/50 border-t border-ink-100 p-5 flex justify-between items-center mt-auto">
+                        <div class="text-sm text-ink-500 font-medium">
+                            Total de guias selecionadas: <strong id="totalGuiasSelecionadas" class="text-ink-900 font-bold">0</strong>
+                        </div>
+                        <div class="text-sm text-ink-500 font-medium">
+                            Valor Total Consolidado do Lote: <strong id="valorTotalLote" class="text-[20px] font-heading font-bold text-brand-700 ml-2">R$ 0,00</strong>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -360,20 +375,40 @@
 
     <script>
         function abrirModalGeracao() {
-            // Verifica se existem guias pendentes na auditoria usando a variável global state
-            if (typeof state !== 'undefined' && state.auditorias) {
-                const pendentes = state.auditorias.filter(a => a.status === 'erro').length;
-                if (pendentes > 0) {
-                    if (typeof mostrarToast === 'function') {
-                        mostrarToast('Ação Bloqueada', `Você possui ${pendentes} guia(s) com pendências! Redirecionando para a Auditoria...`, 'error', 3000);
-                    } else {
-                        alert(`Você possui ${pendentes} guia(s) com pendências! Redirecionando para a Auditoria...`);
-                    }
-                    setTimeout(() => {
-                        window.location.href = 'auditoria.html';
-                    }, 2000);
-                    return; // Bloqueia a abertura do modal
+            const convenio = document.getElementById('filtroConvenioFaturamento')?.value;
+            if (!convenio) {
+                if (typeof mostrarToast === 'function') {
+                    mostrarToast('Ação Bloqueada', 'Selecione um convênio específico para gerar o lote Orizon.', 'warning');
+                } else {
+                    alert('Selecione um convênio específico para gerar o lote.');
                 }
+                return;
+            }
+
+            const guiasSelecionadas = document.querySelectorAll('.guia-checkbox:checked');
+            if (guiasSelecionadas.length === 0) {
+                if (typeof mostrarToast === 'function') {
+                    mostrarToast('Ação Bloqueada', 'Selecione ao menos uma guia para gerar o XML.', 'warning');
+                } else {
+                    alert('Selecione ao menos uma guia para gerar o XML.');
+                }
+                return;
+            }
+
+            let bloqueio = false;
+            guiasSelecionadas.forEach(cb => {
+                if (cb.dataset.status !== 'validado') {
+                    bloqueio = true;
+                }
+            });
+
+            if (bloqueio) {
+                if (typeof mostrarToast === 'function') {
+                    mostrarToast('Auditoria Pendente', 'O lote selecionado contém guias não validadas na auditoria TISS. Todas as guias precisam estar no status "Validado TISS" para geração.', 'error', 5000);
+                } else {
+                    alert('As guias selecionadas contêm pendências na auditoria.');
+                }
+                return;
             }
 
             const modal = document.getElementById('modalConfirmacao');
@@ -416,23 +451,35 @@
             
             // Coletar linhas da tabela e injetar no XML
             const rows = document.querySelectorAll('tbody tr');
-            rows.forEach((row, index) => {
-                const colunas = row.querySelectorAll('td');
-                if (colunas.length >= 5) {
-                    const data = colunas[0].innerText.trim();
-                    const paciente = colunas[1].innerText.trim();
-                    const convenio = colunas[2].innerText.trim();
-                    const matricula = colunas[3].innerText.trim();
-                    const valor = colunas[4].innerText.trim();
-                    
-                    xmlContent += `            <ans:guiaTISS>\n`;
-                    xmlContent += `                <ans:numeroGuiaPrestador>${900000 + index}</ans:numeroGuiaPrestador>\n`;
-                    xmlContent += `                <ans:dadosBeneficiario>\n`;
-                    xmlContent += `                    <ans:numeroCarteira>${matricula.replace(/\\D/g,'') || '16500012'}</ans:numeroCarteira>\n`;
-                    xmlContent += `                    <ans:nomeBeneficiario>${paciente}</ans:nomeBeneficiario>\n`;
-                    xmlContent += `                </ans:dadosBeneficiario>\n`;
-                    xmlContent += `                <ans:valorTotalGuia>${valor}</ans:valorTotalGuia>\n`;
-                    xmlContent += `            </ans:guiaTISS>\n`;
+            let index = 0;
+            rows.forEach((row) => {
+                const checkbox = row.querySelector('.guia-checkbox');
+                if (checkbox && checkbox.checked) {
+                    const colunas = row.querySelectorAll('td');
+                    if (colunas.length >= 7) {
+                        const data = colunas[1].innerText.trim();
+                        const paciente = colunas[2].innerText.trim();
+                        const conv = colunas[3].innerText.trim();
+                        const matricula = colunas[4].innerText.trim();
+                        const valor = colunas[6].innerText.trim();
+                        
+                        // Muda status da guia global
+                        const guiaId = checkbox.dataset.id;
+                        if (typeof state !== 'undefined' && state.auditorias) {
+                            const g = state.auditorias.find(a => a.id == guiaId);
+                            if(g) g.status = 'faturada';
+                        }
+                        
+                        xmlContent += `            <ans:guiaTISS>\n`;
+                        xmlContent += `                <ans:numeroGuiaPrestador>${900000 + index}</ans:numeroGuiaPrestador>\n`;
+                        xmlContent += `                <ans:dadosBeneficiario>\n`;
+                        xmlContent += `                    <ans:numeroCarteira>${matricula.replace(/\\D/g,'') || '16500012'}</ans:numeroCarteira>\n`;
+                        xmlContent += `                    <ans:nomeBeneficiario>${paciente}</ans:nomeBeneficiario>\n`;
+                        xmlContent += `                </ans:dadosBeneficiario>\n`;
+                        xmlContent += `                <ans:valorTotalGuia>${valor}</ans:valorTotalGuia>\n`;
+                        xmlContent += `            </ans:guiaTISS>\n`;
+                        index++;
+                    }
                 }
             });
             
@@ -450,6 +497,10 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+
+            if(typeof fetchAndRenderFaturamento === 'function') {
+                fetchAndRenderFaturamento(); // Re-render table to show "Faturada" status
+            }
 
             if(typeof mostrarToast === 'function') {
                 mostrarToast('Lote XML Gerado com Sucesso!', 'O arquivo foi baixado no seu navegador.', 'success');

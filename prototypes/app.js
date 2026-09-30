@@ -26,9 +26,10 @@ async function loadStateFromSupabase() {
         ];
 
         state.auditorias = [
-            { id: 1, data: '01/06/2026', paciente: 'Ana Maria da Silva', convenio: 'CASSI', proc: '50000250 (Fisioterapia Motora)', valor: 74.02, status: 'erro', tipoErro: 'cbo_matricula', mensagem: 'Profissional CBO Fisioterapia faturado sob CRM. Matrícula CASSI exige 14 dígitos.', conselhoAtual: 'CRM', matriculaAtual: '0001234567', senhaAtual: null, validadeAtual: null },
-            { id: 2, data: '02/06/2026', paciente: 'João Pedro Costa', convenio: 'BRADESCO', proc: '10101012 (Consulta Médica)', valor: 120.00, status: 'erro', tipoErro: 'senha_autorizacao', mensagem: 'Ausência de senha/token de autorização prévia da operadora Bradesco Saúde.', conselhoAtual: null, matriculaAtual: null, senhaAtual: '', validadeAtual: null },
-            { id: 3, data: '03/06/2026', paciente: 'Maria Eduarda', convenio: 'SULAMERICA', proc: '20104097 (Exame Especial)', valor: 350.50, status: 'erro', tipoErro: 'validade_carteira', mensagem: 'Data de validade da carteira do beneficiário expirada no cadastro original.', conselhoAtual: null, matriculaAtual: null, senhaAtual: null, validadeAtual: '2026-05-31' }
+            { id: 1, data: '01/06/2026', paciente: 'Ana Maria da Silva', convenio: 'CASSI', proc: '50000250 (Fisioterapia Motora)', valor: 74.02, status: 'erro', tipoErro: 'cbo_matricula', tituloErro: 'Matrícula Inválida', mensagem: 'Profissional CBO Fisioterapia faturado sob CRM. Matrícula CASSI exige 14 dígitos.', conselhoAtual: 'CRM', matriculaAtual: '0001234567', senhaAtual: null, validadeAtual: null },
+            { id: 2, data: '02/06/2026', paciente: 'João Pedro Costa', convenio: 'BRADESCO', proc: '10101012 (Consulta Médica)', valor: 120.00, status: 'erro', tipoErro: 'senha_autorizacao', tituloErro: 'Token Bradesco ausente', mensagem: 'Ausência de senha/token de autorização prévia da operadora Bradesco Saúde.', conselhoAtual: null, matriculaAtual: null, senhaAtual: '', validadeAtual: null },
+            { id: 3, data: '03/06/2026', paciente: 'Maria Eduarda', convenio: 'SULAMERICA', proc: '20104097 (Exame Especial)', valor: 350.50, status: 'erro', tipoErro: 'validade_carteira', tituloErro: 'Carteirinha expirada', mensagem: 'Data de validade da carteira do beneficiário expirada no cadastro original.', conselhoAtual: null, matriculaAtual: null, senhaAtual: null, validadeAtual: '2026-05-31' },
+            { id: 4, data: '04/06/2026', paciente: 'Carlos Silva', convenio: 'UNIMED', proc: '40814041 (RX Ombro)', valor: 150.00, status: 'erro', tipoErro: 'cid_tuss', tituloErro: 'CID / TUSS incompatível', mensagem: 'O código TUSS informado não possui cobertura para o CID-10 indicado na guia.', conselhoAtual: null, matriculaAtual: null, senhaAtual: null, validadeAtual: null }
         ];
 
         fetchAndRenderDashboard();
@@ -237,12 +238,40 @@ async function fetchAndRenderAuditorias() {
 
     if (!tbody) return; // Só atualiza a tabela se estiver na página de auditoria
 
+    const filtroConvenio = document.getElementById('filtroAuditoriaConvenio')?.value;
+    const filtroMes = document.getElementById('filtroAuditoriaMes')?.value;
+
+    let dadosFiltrados = state.auditorias;
+
+    if (filtroConvenio) {
+        dadosFiltrados = dadosFiltrados.filter(a => a.convenio === filtroConvenio);
+    }
+
+    if (filtroMes) {
+        // filtroMes is in format YYYY-MM. The item data is DD/MM/YYYY.
+        const [anoFiltro, mesFiltro] = filtroMes.split('-');
+        dadosFiltrados = dadosFiltrados.filter(a => {
+            const parts = a.data.split('/');
+            if (parts.length === 3) {
+                const mes = parts[1];
+                const ano = parts[2];
+                return mes === mesFiltro && ano === anoFiltro;
+            }
+            return true; // Se o formato não bater, não filtra
+        });
+    }
+
+    if (dadosFiltrados.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400">Nenhuma auditoria encontrada com os filtros selecionados.</td></tr>';
+        return;
+    }
+
     let html = '';
-    state.auditorias.forEach(item => {
+    dadosFiltrados.forEach(item => {
         const isErro = item.status === 'erro';
         const rowClass = isErro ? 'bg-red-50/20 hover:bg-red-50/40' : 'bg-emerald-50/20 hover:bg-emerald-50/30';
         const badgeClass = isErro ? 'bg-red-100 text-red-700 border-red-200' : 'bg-emerald-100 text-emerald-700 border-emerald-200';
-        const badgeText = isErro ? 'Erro Cadastral' : 'Validado TISS';
+        const badgeText = isErro ? (item.tituloErro || 'Erro Cadastral') : 'Validado TISS';
         const btnHtml = isErro 
             ? `<button id="btnCorrigir-${item.id}" onclick="abrirDrawer(${item.id})" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300 font-semibold py-1.5 px-4 rounded-xl shadow-sm text-xs transition-all flex items-center gap-1.5 ml-auto hover:scale-105 active:scale-95"><i class="ph ph-wrench text-sm"></i> Corrigir</button>`
             : `<span id="btnCorrigir-${item.id}" class="text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-3 py-1 rounded-lg text-xs font-semibold flex items-center justify-end gap-1.5 w-max ml-auto shadow-xs"><i class="ph ph-check-circle-bold text-emerald-600"></i> Aprovado (${formatCurrency(item.valor)})</span>`;
@@ -328,6 +357,27 @@ function abrirDrawer(id) {
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Data de Liberação da Senha</label>
                     <input type="date" id="inputDataAuth" value="2026-06-02" class="w-full border border-slate-200 rounded-xl shadow-xs p-3 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-white font-medium">
+                </div>
+            </form>
+        `;
+    } else if (item.tipoErro === 'cid_tuss') {
+        formFieldsHtml = `
+            <form id="formCorrecaoGlosa" class="space-y-5" onsubmit="event.preventDefault(); salvarCorrecao();">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Código TUSS (Substituir)</label>
+                    <div class="relative">
+                        <input type="text" id="inputCodigoTuss" value="40814041" class="w-full border border-slate-200 rounded-xl shadow-xs p-3 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-white font-mono tracking-wider font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">Diagnóstico (CID-10 Principal)</label>
+                    <div class="relative">
+                        <input type="text" id="inputCid10" value="M54.5" class="w-full border border-slate-200 rounded-xl shadow-xs p-3 text-sm focus:ring-2 focus:ring-brand-500 outline-none bg-white font-mono tracking-wider font-semibold">
+                    </div>
+                    <p class="text-[11px] text-brand-600 mt-1.5 flex items-center gap-1 font-medium">
+                        <i class="ph ph-check-circle"></i> O CID informado deve justificar clinicamente o TUSS.
+                    </p>
                 </div>
             </form>
         `;
@@ -602,12 +652,31 @@ function fetchAndRenderFaturamento() {
     const tbody = document.getElementById('tbodyFaturamento');
     if (!tbody) return;
 
-    // Para o faturamento, vamos listar as auditorias (pode ser as resolvidas/validadas ou todas para gerar XML)
-    // Para ter volume na tela, vamos pegar as que estão no estado e simular uma carteirinha aleatoria se não tiver matricula
-    const guiasFaturamento = state.auditorias;
+    // Pega o filtro de convênio selecionado na tela de faturamento
+    const selectConvenio = document.getElementById('filtroConvenioFaturamento');
+    const convenioSelecionado = selectConvenio ? selectConvenio.value : '';
+
+    let guiasFaturamento = state.auditorias;
+    
+    // Se não tiver convênio selecionado, pede para selecionar
+    if (!convenioSelecionado) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-ink-400">Selecione um Convênio para visualizar as guias disponíveis.</td></tr>';
+        
+        // Zera contadores
+        const badge = document.getElementById('resultado-filtragem-badge');
+        if (badge) badge.innerText = `0 registros`;
+        calcularResumoLote();
+        return;
+    }
+
+    // Filtra guias pelo convênio selecionado
+    guiasFaturamento = guiasFaturamento.filter(g => g.convenio === convenioSelecionado);
 
     if (guiasFaturamento.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-ink-400">Nenhum lote de guias encontrado para o período.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-ink-400">Nenhum lote de guias encontrado para este convênio.</td></tr>';
+        const badge = document.getElementById('resultado-filtragem-badge');
+        if (badge) badge.innerText = `0 registros`;
+        calcularResumoLote();
         return;
     }
 
@@ -616,12 +685,30 @@ function fetchAndRenderFaturamento() {
         // Usa a matriculaAtual se existir, senao inventa uma pro demonstrativo baseado no id
         const matricula = guia.matriculaAtual || (16500000000 + (guia.id * 13)).toString();
         
+        // Define o status de auditoria/faturamento
+        let badgeAuditoria = '';
+        if (guia.status === 'faturada') {
+            badgeAuditoria = '<span class="bg-blue-100 text-blue-700 px-2 py-1 rounded text-[10px] font-bold"><i class="ph ph-check-all"></i> Faturada</span>';
+        } else if (guia.status === 'validado') {
+            badgeAuditoria = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-bold"><i class="ph ph-check-circle"></i> Validado TISS</span>';
+        } else {
+            badgeAuditoria = '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-[10px] font-bold"><i class="ph ph-warning-circle"></i> Erro Cadastral</span>';
+        }
+
+        // Determina se a checkbox vem checada e habilitada
+        const isFaturada = guia.status === 'faturada';
+        const checkboxHtml = isFaturada 
+            ? `<input type="checkbox" disabled checked class="rounded border-ink-300 text-ink-400 opacity-50 w-4 h-4" title="Guia já faturada e travada">`
+            : `<input type="checkbox" class="guia-checkbox rounded border-ink-300 text-brand-600 focus:ring-brand-500 w-4 h-4 cursor-pointer" data-id="${guia.id}" data-valor="${guia.valor}" data-status="${guia.status}" onchange="calcularResumoLote()">`;
+
         html += `
-            <tr class="hover:bg-ink-50/50 transition-colors group cursor-pointer">
+            <tr class="hover:bg-ink-50/50 transition-colors group ${isFaturada ? 'opacity-70 bg-slate-50' : ''}">
+                <td class="p-4 text-center w-12">${checkboxHtml}</td>
                 <td class="p-4 whitespace-nowrap text-ink-500 group-hover:text-brand-700 transition-colors">${guia.data || '01/06/2026'}</td>
                 <td class="p-4 font-medium text-ink-900">${guia.paciente}</td>
                 <td class="p-4"><span class="bg-ink-100 text-ink-600 px-2.5 py-1 rounded-md text-[11px] font-semibold">${guia.convenio}</span></td>
                 <td class="p-4 text-ink-400 font-mono text-xs">${matricula}</td>
+                <td class="p-4">${badgeAuditoria}</td>
                 <td class="p-4 text-right font-semibold text-ink-900">${formatCurrency(Number(guia.valor))}</td>
             </tr>
         `;
@@ -634,6 +721,34 @@ function fetchAndRenderFaturamento() {
     if (badge) {
         badge.innerText = `${guiasFaturamento.length} registro${guiasFaturamento.length !== 1 ? 's' : ''}`;
     }
+
+    // Calcula iniciais (caso já venham checadas)
+    calcularResumoLote();
+}
+
+function toggleAllGuias(el) {
+    const checkboxes = document.querySelectorAll('.guia-checkbox');
+    checkboxes.forEach(cb => {
+        if (!cb.disabled) {
+            cb.checked = el.checked;
+        }
+    });
+    calcularResumoLote();
+}
+
+function calcularResumoLote() {
+    const checkboxes = document.querySelectorAll('.guia-checkbox:checked');
+    let totalValor = 0;
+    
+    checkboxes.forEach(cb => {
+        totalValor += Number(cb.dataset.valor || 0);
+    });
+
+    const lblGuias = document.getElementById('totalGuiasSelecionadas');
+    const lblValor = document.getElementById('valorTotalLote');
+
+    if (lblGuias) lblGuias.textContent = checkboxes.length;
+    if (lblValor) lblValor.textContent = formatCurrency(totalValor);
 }
 
 // --- ATENDIMENTOS (Mock de atendimentos Local DB para Protótipo) ---

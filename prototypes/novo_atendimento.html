@@ -423,17 +423,7 @@
                                 </select>
                             </div>
 
-                            <!-- Lote e Data do Lote -->
-                            <div class="col-span-1 md:col-span-1 flex gap-2">
-                                <div class="w-1/2">
-                                    <label class="form-label">Lote</label>
-                                    <input type="number" id="numeroLote" class="form-input font-mono" placeholder="Ex: 302026">
-                                </div>
-                                <div class="w-1/2">
-                                    <label class="form-label">Data Lote</label>
-                                    <input type="date" id="dataLote" class="form-input text-ink-700">
-                                </div>
-                            </div>
+                            <!-- Campos de Lote removidos (atribuição exclusiva do módulo de faturamento) -->
 
                             <!-- Unidade -->
                             <div class="col-span-1 md:col-span-1">
@@ -526,7 +516,7 @@
                             <h4 class="text-sm font-medium text-ink-700 mb-3">Profissional Solicitante (Para SP/SADT)</h4>
                             <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
                                 <div class="col-span-1 md:col-span-2">
-                                    <label class="form-label">Nome do Profissional</label>
+                                    <label class="form-label">Nome do Profissional <span id="req_solic_nome" class="text-red-500 hidden">*</span></label>
                                     <input type="text" id="solic_nome" class="form-input" placeholder="Opcional na consulta">
                                 </div>
                                 <div class="col-span-1 md:col-span-1">
@@ -534,7 +524,7 @@
                                     <input type="text" id="solic_cod_operadora" class="form-input">
                                 </div>
                                 <div class="col-span-1 md:col-span-1">
-                                    <label class="form-label">Conselho</label>
+                                    <label class="form-label">Conselho <span id="req_solic_conselho" class="text-red-500 hidden">*</span></label>
                                     <select id="solic_conselho" class="form-input appearance-none">
                                         <option value="CRM">CRM</option>
                                         <option value="CREFITO">CREFITO</option>
@@ -555,7 +545,7 @@
                                     </select>
                                 </div>
                                 <div class="col-span-1 md:col-span-6">
-                                    <label class="form-label">CBO</label>
+                                    <label class="form-label">CBO <span id="req_solic_cbo" class="text-red-500 hidden">*</span></label>
                                     <select id="solic_cbo" class="form-input appearance-none">
                                         <option value="">Selecione...</option>
                                         <option value="225125">225125 - Médico Clínico</option>
@@ -603,7 +593,7 @@
                                 <input type="text" id="numeroGuiaPrestador" class="form-input font-mono" placeholder="Guia do prestador" value="38291040">
                             </div>
                             <div class="col-span-1 md:col-span-1">
-                                <label class="form-label">Senha / Token de Liberação</label>
+                                <label class="form-label">Senha / Token de Liberação <span id="req_senha" class="text-red-500 hidden">*</span></label>
                                 <input type="text" id="numeroSenhaAutorizada" class="form-input font-mono text-brand-700 font-medium" placeholder="Código liberado" value="X88A-92P">
                             </div>
 
@@ -620,9 +610,9 @@
 
                             <!-- Diagnóstico -->
                             <div class="col-span-1 md:col-span-4">
-                                <label class="form-label">Diagnóstico (CID-10 Principal)</label>
+                                <label class="form-label" id="label_diagnostico">Diagnóstico (CID-10 Principal) <span id="req_diagnostico" class="text-red-500 hidden">*</span></label>
                                 <div class="relative">
-                                    <input type="text" class="form-input font-medium"
+                                    <input type="text" id="diagnostico_cid10" class="form-input font-medium"
                                         placeholder="Buscar por código ou descrição..."
                                         value="M54.5 - Dor lombar baixa">
                                     <div class="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
@@ -689,22 +679,37 @@
                         </div>
 
                         <div class="mb-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-                            <div class="md:col-span-3">
+                            <div class="md:col-span-2">
                                 <label class="form-label">Cód. Tabela</label>
                                 <input type="text" id="proc_tabela" class="form-input" value="22" placeholder="Ex: 22">
                             </div>
-                            <div class="md:col-span-3">
+                            <div class="md:col-span-2">
                                 <label class="form-label">Cód. Procedimento</label>
                                 <input type="text" id="proc_codigo" class="form-input" placeholder="Ex: 10101012">
                             </div>
-                            <div class="md:col-span-4">
+                            <div class="md:col-span-3">
                                 <label class="form-label">Descrição</label>
-                                <input type="text" id="proc_desc" class="form-input" placeholder="Descrição (readonly)" readonly>
+                                <input type="text" id="proc_desc" class="form-input" placeholder="Descrição" readonly>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="form-label">Data/Hora</label>
+                                <input type="datetime-local" id="proc_datahora" class="form-input" value="2026-09-01T14:30">
                             </div>
                             <div class="md:col-span-1">
                                 <label class="form-label">Qtd</label>
-                                <input type="number" id="proc_qtd" class="form-input" value="1" min="1">
+                                <input type="number" id="proc_qtd" class="form-input" value="1" min="1" oninput="calcularTotalProcedimento()">
                             </div>
+                            <div class="md:col-span-1">
+                                <label class="form-label">Unitário(R$)</label>
+                                <input type="number" id="proc_unitario" class="form-input bg-ink-50" readonly placeholder="0.00">
+                            </div>
+                            <div class="md:col-span-1">
+                                <label class="form-label">Total(R$)</label>
+                                <input type="number" id="proc_total" class="form-input bg-ink-50" readonly placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="mb-4 grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                            <div class="md:col-span-11"></div>
                             <div class="md:col-span-1">
                                 <button type="button" onclick="adicionarProcedimento()" class="w-full bg-ink-900 hover:bg-ink-800 text-white p-2.5 rounded-lg transition-colors flex items-center justify-center h-[42px]">
                                     <i class="ph ph-plus font-bold"></i>
@@ -739,7 +744,11 @@
                                         <th class="px-4 py-3">Tabela</th>
                                         <th class="px-4 py-3">Código</th>
                                         <th class="px-4 py-3">Descrição</th>
+                                        <th class="px-4 py-3 text-center">Data/Hora</th>
+                                        <th class="px-4 py-3 text-center">Via/Téc.</th>
                                         <th class="px-4 py-3 text-center">Qtd</th>
+                                        <th class="px-4 py-3 text-right">V. Unit</th>
+                                        <th class="px-4 py-3 text-right">V. Total</th>
                                         <th class="px-4 py-3 text-right">Ação</th>
                                     </tr>
                                 </thead>
@@ -833,6 +842,12 @@
         // Array de Procedimentos
         let procedimentosRealizados = [];
 
+        // Tabela de Preços Mock
+        const tabelaPrecos = {
+            '10101012': 150.00,
+            '20103471': 85.00
+        };
+
         // Ao carregar a página
         document.addEventListener('DOMContentLoaded', () => {
             toggleGuiaFields();
@@ -842,12 +857,33 @@
             if (inputCodigo) {
                 inputCodigo.addEventListener('input', (e) => {
                     const desc = document.getElementById('proc_desc');
-                    if (e.target.value === '10101012') desc.value = 'Consulta em consultório';
-                    else if (e.target.value === '20103471') desc.value = 'Fisioterapia p/ distúrbios osteomioarticulares';
-                    else desc.value = e.target.value.length >= 4 ? 'Procedimento Genérico TUSS' : '';
+                    const unit = document.getElementById('proc_unitario');
+                    let valor = 0;
+                    
+                    if (e.target.value === '10101012') {
+                        desc.value = 'Consulta em consultório';
+                        valor = tabelaPrecos['10101012'];
+                    } else if (e.target.value === '20103471') {
+                        desc.value = 'Fisioterapia p/ distúrbios osteomioarticulares';
+                        valor = tabelaPrecos['20103471'];
+                    } else if (e.target.value.length >= 4) {
+                        desc.value = 'Procedimento Genérico TUSS';
+                        valor = 50.00; // default genérico
+                    } else {
+                        desc.value = '';
+                        valor = 0;
+                    }
+                    unit.value = valor.toFixed(2);
+                    calcularTotalProcedimento();
                 });
             }
         });
+
+        function calcularTotalProcedimento() {
+            const unit = parseFloat(document.getElementById('proc_unitario').value) || 0;
+            const qtd = parseInt(document.getElementById('proc_qtd').value) || 1;
+            document.getElementById('proc_total').value = (unit * qtd).toFixed(2);
+        }
 
         // Alterna entre Guia de Consulta e SP/SADT
         function toggleGuiaFields() {
@@ -858,14 +894,53 @@
             const secaoSessoes = document.getElementById('secao_sessoes');
             const camposProcSadt = document.getElementById('campos_proc_sadt');
 
+            // Fields that change required status
+            const reqSenha = document.getElementById('req_senha');
+            const reqDiagnostico = document.getElementById('req_diagnostico');
+            const reqSolicNome = document.getElementById('req_solic_nome');
+            const reqSolicConselho = document.getElementById('req_solic_conselho');
+            const reqSolicCbo = document.getElementById('req_solic_cbo');
+            
+            const inputSenha = document.getElementById('numeroSenhaAutorizada');
+            const inputDiagnostico = document.getElementById('diagnostico_cid10');
+            const inputSolicNome = document.getElementById('solic_nome');
+            const inputSolicConselho = document.getElementById('solic_conselho');
+            const inputSolicCbo = document.getElementById('solic_cbo');
+
             if (isSadt) {
                 if (blocoSolicitante) blocoSolicitante.classList.remove('hidden');
                 if (secaoSessoes) secaoSessoes.classList.remove('hidden');
                 if (camposProcSadt) camposProcSadt.classList.remove('hidden');
+                
+                // Torna obrigatórios
+                if(reqSenha) reqSenha.classList.remove('hidden');
+                if(reqDiagnostico) reqDiagnostico.classList.remove('hidden');
+                if(reqSolicNome) reqSolicNome.classList.remove('hidden');
+                if(reqSolicConselho) reqSolicConselho.classList.remove('hidden');
+                if(reqSolicCbo) reqSolicCbo.classList.remove('hidden');
+                
+                if(inputSenha) inputSenha.required = true;
+                if(inputDiagnostico) inputDiagnostico.required = true;
+                if(inputSolicNome) inputSolicNome.required = true;
+                if(inputSolicConselho) inputSolicConselho.required = true;
+                if(inputSolicCbo) inputSolicCbo.required = true;
             } else {
-                if (blocoSolicitante) blocoSolicitante.classList.add('hidden');
+                if (blocoSolicitante) blocoSolicitante.classList.add('hidden'); // hidden or optional? prompt says "opcionais ou ocultos", hidden makes sense if we have block hidden.
                 if (secaoSessoes) secaoSessoes.classList.add('hidden');
                 if (camposProcSadt) camposProcSadt.classList.add('hidden');
+                
+                // Torna opcionais
+                if(reqSenha) reqSenha.classList.add('hidden');
+                if(reqDiagnostico) reqDiagnostico.classList.add('hidden');
+                if(reqSolicNome) reqSolicNome.classList.add('hidden');
+                if(reqSolicConselho) reqSolicConselho.classList.add('hidden');
+                if(reqSolicCbo) reqSolicCbo.classList.add('hidden');
+                
+                if(inputSenha) inputSenha.required = false;
+                if(inputDiagnostico) inputDiagnostico.required = false;
+                if(inputSolicNome) inputSolicNome.required = false;
+                if(inputSolicConselho) inputSolicConselho.required = false;
+                if(inputSolicCbo) inputSolicCbo.required = false;
             }
         }
 
@@ -886,6 +961,11 @@
             const codigo = document.getElementById('proc_codigo').value;
             const desc = document.getElementById('proc_desc').value;
             const qtd = document.getElementById('proc_qtd').value;
+            const datahora = document.getElementById('proc_datahora').value;
+            const unitario = document.getElementById('proc_unitario').value;
+            const total = document.getElementById('proc_total').value;
+            const via = document.getElementById('proc_via').value;
+            const tecnica = document.getElementById('proc_tecnica').value;
 
             if (!codigo) {
                 alert("Preencha o código do procedimento.");
@@ -896,7 +976,11 @@
                 codigoTabela: tabela,
                 codigoProcedimento: codigo,
                 descricao: desc,
-                quantidade: parseInt(qtd)
+                datahora: datahora,
+                viaTecnica: (via || tecnica) ? `${via || '-'}/${tecnica || '-'}` : '-',
+                quantidade: parseInt(qtd),
+                valorUnitario: parseFloat(unitario) || 0,
+                valorTotal: parseFloat(total) || 0
             });
 
             renderizarTabela();
@@ -905,6 +989,8 @@
             document.getElementById('proc_codigo').value = '';
             document.getElementById('proc_desc').value = '';
             document.getElementById('proc_qtd').value = '1';
+            document.getElementById('proc_unitario').value = '';
+            document.getElementById('proc_total').value = '';
         }
 
         function removerProcedimento(index) {
@@ -918,11 +1004,18 @@
             procedimentosRealizados.forEach((proc, index) => {
                 const tr = document.createElement('tr');
                 tr.className = 'hover:bg-ink-50/50 transition-colors';
+                
+                const dataFormatada = proc.datahora ? new Date(proc.datahora).toLocaleString('pt-BR') : '-';
+
                 tr.innerHTML = `
                     <td class="px-4 py-3">${proc.codigoTabela}</td>
                     <td class="px-4 py-3 font-mono">${proc.codigoProcedimento}</td>
                     <td class="px-4 py-3">${proc.descricao}</td>
+                    <td class="px-4 py-3 text-center text-xs whitespace-nowrap">${dataFormatada}</td>
+                    <td class="px-4 py-3 text-center text-xs">${proc.viaTecnica}</td>
                     <td class="px-4 py-3 text-center">${proc.quantidade}</td>
+                    <td class="px-4 py-3 text-right">R$ ${proc.valorUnitario.toFixed(2)}</td>
+                    <td class="px-4 py-3 text-right">R$ ${proc.valorTotal.toFixed(2)}</td>
                     <td class="px-4 py-3 text-right">
                         <button type="button" onclick="removerProcedimento(${index})" class="text-red-500 hover:text-red-700 p-1">
                             <i class="ph ph-trash text-lg"></i>
