@@ -90,3 +90,43 @@
     transform: translateY(0);
   }
 }
+
+.search-pill {
+  border-radius: 999px;
+  background: #eef0ef;
+  border: 1px solid transparent;
+  transition: all 180ms ease;
+}
+
+.search-pill:focus-within {
+  background: #ffffff;
+  border-color: #d7dbdf;
+  box-shadow: 0 0 0 4px rgba(47, 105, 95, 0.08);
+}
+
+.action-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px -12px rgba(13, 17, 22, 0.15);
+  border-color: #b7d6cf;
+}
+
+.filter-input {
+  background-color: #ffffff;
+  border: 1px solid #eceef0;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8125rem;
+  color: #232931;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.filter-input:focus {
+  border-color: #8bbdb2;
+  box-shadow: 0 0 0 3px rgba(47, 105, 95, 0.1);
+}
