@@ -4,6 +4,7 @@ import { ForgotPasswordPage } from '@/features/auth/pages/ForgotPasswordPage';
 import { AdminDashboardPage } from '@/features/admin/pages/AdminDashboardPage';
 import { AdminAtendimentoPage } from '@/features/admin/pages/AdminAtendimentoPage';
 import { AdminNovoAtendimentoPage } from '@/features/admin/pages/AdminNovoAtendimentoPage';
+import { AdminFaturamentoPage } from '@/features/admin/pages/AdminFaturamentoPage';
 import { AdminLayout } from '@/features/admin/layouts/AdminLayout';
 
 import { RoleRedirect } from './RoleRedirect';
@@ -33,6 +34,7 @@ export function AppRoutes() {
               <Route path="/dashboard" element={<AdminDashboardPage />} />
               <Route path="/atendimento" element={<AdminAtendimentoPage />} />
               <Route path="/atendimento/novo" element={<AdminNovoAtendimentoPage />} />
+              <Route path="/faturamento" element={<AdminFaturamentoPage />} />
             </Route>
           </Route>
 
