@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { KpiCard } from '@/components/ui/KpiCard';
+import { Link } from 'react-router-dom';
 
 export function AdminDashboardPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -131,10 +132,11 @@ export function AdminDashboardPage() {
             <span>{formattedTime}</span>
           </div>
         </div>
-        <a href="#" className="w-full sm:w-auto justify-center bg-ink-900 hover:bg-ink-800 text-white font-medium py-2.5 px-6 rounded-full transition-all text-sm flex items-center gap-2 group shadow-soft hover:shadow-premium-hover">
+
+        <Link to="/auditoria" className="w-full sm:w-auto justify-center bg-ink-900 hover:bg-ink-800 text-white font-medium py-2.5 px-6 rounded-full transition-all text-sm flex items-center gap-2 group shadow-soft hover:shadow-premium-hover">
           Auditar lotes
           <i className="ph ph-arrow-right group-hover:translate-x-0.5 transition-transform"></i>
-        </a>
+        </Link>
       </div>
 
       {/* SOLID KPI CARDS (No borders, premium shadow) */}

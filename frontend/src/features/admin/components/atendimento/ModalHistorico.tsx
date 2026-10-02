@@ -1,6 +1,6 @@
 import React from 'react';
 import { createPortal } from 'react-dom';
-import type { Atendimento } from './AtendimentoTable';
+import type { Atendimento } from '@/features/admin/types';
 
 interface ModalHistoricoProps {
   isOpen: boolean;

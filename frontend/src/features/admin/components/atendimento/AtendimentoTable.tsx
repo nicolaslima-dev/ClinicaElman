@@ -1,18 +1,5 @@
 import React, { useState } from 'react';
-
-export interface Atendimento {
-  id: number;
-  paciente: string;
-  guia: string;
-  horario: string;
-  data: string;
-  profissional: string;
-  local: string;
-  convenio: string;
-  cobertura: string;
-  status: string;
-  statusFinanceiro: string;
-}
+import type { Atendimento } from '@/features/admin/types';
 
 interface AtendimentoTableProps {
   atendimentos: Atendimento[];

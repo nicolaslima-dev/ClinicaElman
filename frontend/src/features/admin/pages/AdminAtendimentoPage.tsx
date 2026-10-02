@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AtendimentoKpiCards } from '../components/atendimento/AtendimentoKpiCards';
-import type { Atendimento } from '../components/atendimento/AtendimentoTable';
+import type { Atendimento } from '@/features/admin/types';
 import { AtendimentoTable } from '../components/atendimento/AtendimentoTable';
 import { ModalImpressao } from '../components/atendimento/ModalImpressao';
 import { ModalHistorico } from '../components/atendimento/ModalHistorico';

@@ -8,7 +8,7 @@ import { ProfissionalRegulacaoSection } from '../components/novo-atendimento/Pro
 import { AutorizacaoDadosClinicosSection } from '../components/novo-atendimento/AutorizacaoDadosClinicosSection';
 import { TratamentoContinuadoSection } from '../components/novo-atendimento/TratamentoContinuadoSection';
 import { ProcedimentosRealizadosSection } from '../components/novo-atendimento/ProcedimentosRealizadosSection';
-import type { Procedimento } from '../components/novo-atendimento/ProcedimentosRealizadosSection';
+import type { Procedimento } from '@/features/admin/types';
 
 export function AdminNovoAtendimentoPage() {
   const navigate = useNavigate();

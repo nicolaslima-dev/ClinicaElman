@@ -10,11 +10,7 @@ export function FaturamentoHeader({ onGerarLote, onImprimir }: FaturamentoHeader
   return (
     <div className="flex justify-between items-end mb-8 print:hidden">
       <div>
-        <div className="flex items-center gap-2 text-ink-400 text-sm mb-1.5">
-          <Link to="/dashboard" className="hover:text-brand-700 transition-colors"><i className="ph ph-house"></i></Link>
-          <i className="ph ph-caret-right text-xs"></i>
-          <span className="text-brand-700 font-medium">Faturamento TISS</span>
-        </div>
+
         <h1 className="text-[28px] font-semibold font-heading text-ink-900 tracking-tight">Faturamento e Relatórios TISS</h1>
         <p className="text-sm text-ink-400 mt-2">Filtre guias para processamento de Remessa ou Geração de XML</p>
       </div>

@@ -1,15 +1,5 @@
 import React, { useState } from 'react';
-
-export interface Procedimento {
-  codigoTabela: string;
-  codigoProcedimento: string;
-  descricao: string;
-  datahora: string;
-  viaTecnica: string;
-  quantidade: number;
-  valorUnitario: number;
-  valorTotal: number;
-}
+import type { Procedimento } from '@/features/admin/types';
 
 interface ProcedimentosRealizadosSectionProps {
   isSadt: boolean;

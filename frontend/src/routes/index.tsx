@@ -5,10 +5,12 @@ import { AdminDashboardPage } from '@/features/admin/pages/AdminDashboardPage';
 import { AdminAtendimentoPage } from '@/features/admin/pages/AdminAtendimentoPage';
 import { AdminNovoAtendimentoPage } from '@/features/admin/pages/AdminNovoAtendimentoPage';
 import { AdminFaturamentoPage } from '@/features/admin/pages/AdminFaturamentoPage';
+import { AdminAuditoriaPage } from '@/features/admin/pages/AdminAuditoriaPage';
 import { AdminLayout } from '@/features/admin/layouts/AdminLayout';
 
 import { RoleRedirect } from './RoleRedirect';
 import { RoleGuard } from './RoleGuard';
+import { NotFoundPage } from './NotFoundPage';
 
 // --- Mocks Visuais Simples para Teste de Redirecionamento ---
 const AtendimentoMock = () => <div className="p-10 font-bold text-2xl text-emerald-700">Tela de Atendimento (medico, recepcao)</div>;
@@ -35,6 +37,7 @@ export function AppRoutes() {
               <Route path="/atendimento" element={<AdminAtendimentoPage />} />
               <Route path="/atendimento/novo" element={<AdminNovoAtendimentoPage />} />
               <Route path="/faturamento" element={<AdminFaturamentoPage />} />
+              <Route path="/auditoria" element={<AdminAuditoriaPage />} />
             </Route>
           </Route>
 
@@ -49,9 +52,9 @@ export function AppRoutes() {
           <Route element={<RoleGuard allowedRoles={['auditoria']} />}>
             <Route path="/auditoria" element={<AuditoriaMock />} />
           </Route>
-          
-          {/* Fallback Catch-all: Re-direciona para a raiz para o RoleRedirect agir */}
-          <Route path="*" element={<RoleRedirect />} />
+
+          {/* Fallback 404: Página em construção / Não encontrada */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </div>
     </Router>
