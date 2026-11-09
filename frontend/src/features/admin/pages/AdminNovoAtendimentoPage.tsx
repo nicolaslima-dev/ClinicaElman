@@ -8,19 +8,37 @@ import { ProfissionalRegulacaoSection } from '../components/novo-atendimento/Pro
 import { AutorizacaoDadosClinicosSection } from '../components/novo-atendimento/AutorizacaoDadosClinicosSection';
 import { TratamentoContinuadoSection } from '../components/novo-atendimento/TratamentoContinuadoSection';
 import { ProcedimentosRealizadosSection } from '../components/novo-atendimento/ProcedimentosRealizadosSection';
-import type { Procedimento } from '@/features/admin/types';
+import type { PacienteRecord, Procedimento } from '@/features/admin/types';
 
 export function AdminNovoAtendimentoPage() {
   const navigate = useNavigate();
   const [tipoGuia, setTipoGuia] = useState<'GUIA_CONSULTA' | 'GUIA_SP_SADT'>('GUIA_CONSULTA');
   const [isSessaoSeriada, setIsSessaoSeriada] = useState(false);
   const [procedimentos, setProcedimentos] = useState<Procedimento[]>([]);
+  const [pacienteSelecionado, setPacienteSelecionado] = useState<PacienteRecord | null>(null);
 
   const isSadt = tipoGuia === 'GUIA_SP_SADT';
 
   const salvarNovoAtendimento = () => {
-    console.log("PAYLOAD TISS GERADO", { tipoGuia, isSessaoSeriada, procedimentos });
-    alert('Atendimento Salvo! Payload logado no console.');
+    if (!pacienteSelecionado) {
+      alert('Selecione um paciente cadastrado na seção de Identificação antes de gerar a guia.');
+      return;
+    }
+    console.log('PAYLOAD TISS GERADO', {
+      tipoGuia,
+      versaoTissOperadora: pacienteSelecionado.plano?.operadora?.versao_tiss || '4.03.00',
+      pacienteId: pacienteSelecionado.id,
+      pacienteNome: pacienteSelecionado.nome,
+      planoSaudeId: pacienteSelecionado.plano_saude_id,
+      carteiraPlano: pacienteSelecionado.carteira_plano,
+      isSessaoSeriada,
+      procedimentos,
+    });
+    alert(
+      `Atendimento registrado para ${pacienteSelecionado.nome} (Padrão TISS ${
+        pacienteSelecionado.plano?.operadora?.versao_tiss || '4.03.00'
+      })!`
+    );
     navigate('/atendimento');
   };
 
@@ -50,7 +68,7 @@ export function AdminNovoAtendimentoPage() {
 
       <div className="space-y-6">
         <TipoGuiaSection tipoGuia={tipoGuia} setTipoGuia={setTipoGuia} />
-        <IdentificacaoSection />
+        <IdentificacaoSection onPacienteChange={setPacienteSelecionado} />
         <DadosAgendamentoSection />
         <ProfissionalRegulacaoSection isSadt={isSadt} />
         <AutorizacaoDadosClinicosSection isSadt={isSadt} />

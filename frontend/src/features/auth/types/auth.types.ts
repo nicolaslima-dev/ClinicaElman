@@ -9,7 +9,7 @@ export interface UserProfile {
 
 export const ROLE_DEFAULT_ROUTES: Record<UserRole, string> = {
   admin: '/dashboard',
-  medico: '/atendimento',
+  medico: '/portal-terapeuta',
   faturamento: '/faturamento',
   auditoria: '/auditoria',
   recepcao: '/atendimento',
