@@ -1096,3 +1096,67 @@ export async function registrarDigitacaoGuiaNoLote(
   };
 }
 
+/**
+ * Marca um Lote e todas as suas Guias vinculadas como "XML TISS Gerado" (faturada_xml)
+ */
+export async function marcarLoteComoXmlGerado(numeroLote: string): Promise<{
+  lote: LoteFaturamentoRecord | null;
+  error: string | null;
+}> {
+  const numLimpo = numeroLote.trim();
+  if (!numLimpo) {
+    return { lote: null, error: 'Número do lote inválido.' };
+  }
+
+  const agora = new Date().toISOString();
+
+  if (isSupabaseConfigured()) {
+    try {
+      await supabase
+        .from('lotes_faturamento')
+        .update({
+          status_lote: 'xml_gerado',
+          updated_at: agora,
+        })
+        .eq('numero_lote', numLimpo);
+
+      await supabase
+        .from('guias_tiss')
+        .update({
+          status_guia: 'faturada_xml',
+          status_auditoria: 'aprovado',
+          updated_at: agora,
+        })
+        .eq('numero_lote', numLimpo);
+    } catch {
+      // Fallback local
+    }
+  }
+
+  const lotesLocais = getLocalLotesRaw().map((l) =>
+    l.numero_lote === numLimpo
+      ? { ...l, status_lote: 'xml_gerado' as const, updated_at: agora }
+      : l
+  );
+  saveLocalLotes(lotesLocais);
+
+  const guiasLocais = getLocalGuiasRaw().map((g) =>
+    g.numero_lote === numLimpo
+      ? {
+          ...g,
+          status_guia: 'faturada_xml' as const,
+          status_auditoria: 'aprovado' as const,
+          updated_at: agora,
+        }
+      : g
+  );
+  saveLocalGuias(guiasLocais);
+
+  const { data: lotesAtualizados } = await listarLotesFaturamento();
+  return {
+    lote: lotesAtualizados.find((l) => l.numero_lote === numLimpo) || null,
+    error: null,
+  };
+}
+
+

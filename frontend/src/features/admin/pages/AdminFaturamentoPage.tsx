@@ -20,6 +20,7 @@ import { listarLotesFaturamento } from '../api/faturamento.service';
 import { formatarDataBr } from '../utils/pacienteValidators';
 import { ModalDigitacaoGuiaFaturamento } from '../components/faturamento/ModalDigitacaoGuiaFaturamento';
 import { ModalTabelaPrecosOperadora } from '../components/faturamento/ModalTabelaPrecosOperadora';
+import { FaturamentoModalGeracao } from '../components/faturamento/FaturamentoModalGeracao';
 import { ModalGuiaSpSadtPrint } from '../components/autorizacoes/ModalGuiaSpSadtPrint';
 
 export function AdminFaturamentoPage() {
@@ -45,6 +46,10 @@ export function AdminFaturamentoPage() {
   const [guiaSelecionadaParaDigitar, setGuiaSelecionadaParaDigitar] =
     useState<GuiaTissRecord | null>(null);
   const [isModalPrecosOpen, setIsModalPrecosOpen] = useState(false);
+  const [isModalXmlOpen, setIsModalXmlOpen] = useState(false);
+  const [loteParaXml, setLoteParaXml] = useState<LoteFaturamentoRecord | null>(
+    null
+  );
   const [guiaImpressao, setGuiaImpressao] = useState<GuiaTissRecord | null>(null);
   const [bannerSucesso, setBannerSucesso] = useState<string | null>(null);
 
@@ -88,7 +93,11 @@ export function AdminFaturamentoPage() {
       (g) => g.status_guia === 'enviada_faturamento'
     ).length;
     const digitadasEmLote = guias.filter(
-      (g) => g.status_guia === 'em_lote' || g.status_guia === 'faturada_xml'
+      (g) =>
+        g.status_guia === 'em_lote' ||
+        g.status_guia === 'retida_auditoria' ||
+        g.status_guia === 'validada_lote' ||
+        g.status_guia === 'faturada_xml'
     ).length;
     const totalLotes = lotes.length;
     const valorConsolidadoLotes = lotes.reduce(
@@ -112,6 +121,8 @@ export function AdminFaturamentoPage() {
       if (
         filtroStatus === 'em_lote' &&
         g.status_guia !== 'em_lote' &&
+        g.status_guia !== 'retida_auditoria' &&
+        g.status_guia !== 'validada_lote' &&
         g.status_guia !== 'faturada_xml'
       ) {
         return false;
@@ -209,6 +220,18 @@ export function AdminFaturamentoPage() {
           >
             <i className="ph ph-currency-circle-dollar text-base text-brand-600"></i>
             Tabela TUSS & Contratos Operadoras
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setLoteParaXml(null);
+              setIsModalXmlOpen(true);
+            }}
+            className="px-4 py-2.5 rounded-full text-xs font-semibold text-brand-800 bg-brand-50 border border-brand-200 hover:bg-brand-100 transition-colors flex items-center gap-2 shadow-xs cursor-pointer"
+          >
+            <i className="ph ph-file-code text-base text-brand-600"></i>
+            Exportar XML TISS
           </button>
 
           <button
@@ -487,8 +510,21 @@ export function AdminFaturamentoPage() {
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
                               Recebida do Terapeuta
                             </span>
-                          ) : guia.status_guia === 'em_lote' ? (
+                          ) : guia.status_guia === 'retida_auditoria' ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-red-50 text-red-700 border border-red-200">
+                              Retida em Auditoria
+                            </span>
+                          ) : guia.status_guia === 'faturada_xml' ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                              <i className="ph ph-file-code"></i>
+                              XML TISS Gerado
+                            </span>
+                          ) : guia.status_guia === 'validada_lote' ? (
                             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                              Validada (Apta XML)
+                            </span>
+                          ) : guia.status_guia === 'em_lote' ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-brand-50 text-brand-700 border border-brand-200">
                               Digitada no Lote
                             </span>
                           ) : (
@@ -560,6 +596,11 @@ export function AdminFaturamentoPage() {
                             <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-brand-100 text-brand-800">
                               {lote.operadora?.nome || 'Operadora'} • TISS {lote.versao_tiss}
                             </span>
+                            {lote.status_lote === 'xml_gerado' && (
+                              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                XML Exportado
+                              </span>
+                            )}
                           </div>
                           <p className="text-xs text-ink-500 mt-0.5">
                             {lote.quantidade_guias} guia(s) digitada(s) para este lote
@@ -567,8 +608,8 @@ export function AdminFaturamentoPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <div className="text-right">
+                      <div className="flex items-center gap-3">
+                        <div className="text-right mr-2">
                           <span className="text-[11px] uppercase font-semibold text-ink-400 block">
                             Valor Total do Lote
                           </span>
@@ -576,6 +617,18 @@ export function AdminFaturamentoPage() {
                             R$ {Number(lote.valor_total_lote).toFixed(2).replace('.', ',')}
                           </strong>
                         </div>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setLoteParaXml(lote);
+                            setIsModalXmlOpen(true);
+                          }}
+                          className="px-3.5 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer"
+                        >
+                          <i className="ph ph-file-code text-sm"></i>
+                          Gerar / Baixar XML TISS
+                        </button>
 
                         <button
                           type="button"
@@ -678,6 +731,25 @@ export function AdminFaturamentoPage() {
       <ModalGuiaSpSadtPrint
         onClose={() => setGuiaImpressao(null)}
         guia={guiaImpressao}
+      />
+
+      {/* Modal 4: Exportador Real de XML TISS (Fase 5) */}
+      <FaturamentoModalGeracao
+        isOpen={isModalXmlOpen}
+        onClose={() => {
+          setIsModalXmlOpen(false);
+          setLoteParaXml(null);
+        }}
+        lotes={lotes}
+        loteInicial={loteParaXml}
+        onXmlExportado={async (_lote, nomeArq, hash) => {
+          setIsModalXmlOpen(false);
+          setLoteParaXml(null);
+          setBannerSucesso(
+            `Arquivo TISS ${nomeArq} gerado e baixado com sucesso (Hash MD5 Epílogo ANS: ${hash})!`
+          );
+          await carregarDadosFaturamento();
+        }}
       />
     </div>
   );

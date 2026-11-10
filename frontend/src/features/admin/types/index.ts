@@ -191,6 +191,7 @@ export type StatusGuiaTiss =
   | 'enviada_faturamento'
   | 'em_lote'
   | 'retida_auditoria'
+  | 'validada_lote'
   | 'faturada_xml';
 
 export interface GuiaTissSessaoRecord {
@@ -228,6 +229,9 @@ export interface GuiaTissRecord {
   nome_assinante?: string | null;
   assinado_em?: string | null;
   status_guia: StatusGuiaTiss;
+  status_auditoria?: 'pendente' | 'reprovado' | 'aprovado';
+  total_glosas_detectadas?: number;
+  auditado_em?: string | null;
   enviada_faturamento_em?: string | null;
   digitado_faturamento_em?: string | null;
   lote_id?: string | null;
@@ -241,6 +245,7 @@ export interface GuiaTissRecord {
   terapeuta_executante?: TerapeutaRecord;
   autorizacao?: AutorizacaoRecord;
   sessoes?: GuiaTissSessaoRecord[];
+  criticas_auditoria?: AuditoriaCriticaRecord[];
 }
 
 export interface AutorizacaoRecord {
@@ -399,6 +404,57 @@ export interface ResultadoValidacaoFaturamentoGuia {
   divergenciaTerapeuta: boolean;
   divergenciaValorTabela: boolean;
   valorTabeladoOperadora?: number | null;
+}
+
+// ============================================================================
+// MODELAGEM NORMALIZADA (3FN) - FASE 4 SUPABASE
+// Motor de Conferência e Crítica Pré-XML (Auditoria)
+// ============================================================================
+
+export type CodigoCriticaAuditoria =
+  | 'CRIT_DATA_REPETIDA'
+  | 'CRIT_QTD_DIFERENTE_1'
+  | 'CRIT_TERAPEUTA_DIVERGENTE'
+  | 'CRIT_VALOR_TABELA_PLANO';
+
+export interface AuditoriaCriticaRecord {
+  id: string;
+  guia_id: string;
+  lote_id?: string | null;
+  codigo_critica: CodigoCriticaAuditoria;
+  titulo: string;
+  mensagem_detalhe: string;
+  valor_esperado?: string | null;
+  valor_encontrado?: string | null;
+  bloqueante: boolean;
+  status: 'pendente' | 'corrigido';
+  created_at?: string;
+  corrigido_em?: string | null;
+}
+
+export interface ResumoAuditoriaLote {
+  loteId: string;
+  numeroLote: string;
+  operadoraNome: string;
+  versaoTiss: VersaoTiss;
+  totalGuias: number;
+  guiasAprovadas: number;
+  guiasRetidas: number;
+  totalCriticasPendentes: number;
+  valorTotalLote: number;
+  valorRetidoEmGlosa: number;
+  aptoParaGerarXml: boolean;
+}
+
+export interface CorrigirFalhaAuditoriaDTO {
+  guia_id: string;
+  deduplicar_datas?: boolean;
+  normalizar_quantidade_1?: boolean;
+  alinhar_terapeuta_designado?: boolean;
+  aplicar_valor_tabela?: boolean;
+  novo_valor_unitario?: number;
+  novo_terapeuta_executante_id?: string;
+  novas_sessoes?: Array<{ data_realizacao: string; quantidade: number }>;
 }
 
 // ============================================================================

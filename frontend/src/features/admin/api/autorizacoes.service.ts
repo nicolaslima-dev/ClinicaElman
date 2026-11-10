@@ -449,6 +449,9 @@ async function hidratarDadosLocais(): Promise<{
   const guiasHidratadas: GuiaTissRecord[] = guiasRaw.map(g => {
     const paciente = pacientes.find(p => p.id === g.paciente_id);
     const terapeuta_designado = terapeutas.find(t => t.id === g.terapeuta_designado_id);
+    const terapeuta_executante = g.terapeuta_executante_id
+      ? terapeutas.find(t => t.id === g.terapeuta_executante_id)
+      : terapeuta_designado;
     const autorizacao = autorizacoesRaw.find(a => a.id === g.autorizacao_id);
     const sessoes = sessoesRaw
       .filter(s => s.guia_id === g.id)
@@ -459,6 +462,7 @@ async function hidratarDadosLocais(): Promise<{
       paciente,
       plano: paciente?.plano,
       terapeuta_designado,
+      terapeuta_executante,
       autorizacao,
       sessoes,
     };
@@ -590,13 +594,24 @@ export async function listarGuiasTiss(): Promise<{
         .order('created_at', { ascending: false });
 
       if (!error && data) {
-        const formatadas: GuiaTissRecord[] = (data as any[]).map(g => ({
-          ...g,
-          plano: g.paciente?.plano,
-          sessoes: (g.sessoes || []).sort(
-            (a: GuiaTissSessaoRecord, b: GuiaTissSessaoRecord) => a.ordem_sessao - b.ordem_sessao
-          ),
-        }));
+        const { data: listaTerapeutas } = await listarTerapeutas();
+        const formatadas: GuiaTissRecord[] = (data as any[]).map(g => {
+          const terDesignado =
+            g.terapeuta_designado ||
+            listaTerapeutas.find(t => t.id === g.terapeuta_designado_id);
+          const terExecutante = g.terapeuta_executante_id
+            ? listaTerapeutas.find(t => t.id === g.terapeuta_executante_id)
+            : terDesignado;
+          return {
+            ...g,
+            plano: g.paciente?.plano,
+            terapeuta_designado: terDesignado,
+            terapeuta_executante: terExecutante,
+            sessoes: (g.sessoes || []).sort(
+              (a: GuiaTissSessaoRecord, b: GuiaTissSessaoRecord) => a.ordem_sessao - b.ordem_sessao
+            ),
+          };
+        });
         return { data: formatadas, fonte: 'supabase', error: null };
       }
 
