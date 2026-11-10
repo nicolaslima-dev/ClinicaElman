@@ -199,6 +199,8 @@ export interface GuiaTissSessaoRecord {
   ordem_sessao: number; // 1 a 10
   data_realizacao: string; // YYYY-MM-DD (deve respeitar Campo 4 = data_inicio até data_fim)
   quantidade: number; // Padrão 1
+  valor_unitario?: number;
+  valor_total?: number;
   assinatura_confirmada: boolean;
   observacao_sessao?: string | null;
   created_at?: string;
@@ -212,6 +214,7 @@ export interface GuiaTissRecord {
   paciente_id: string;
   plano_saude_id: string;
   terapeuta_designado_id: string;
+  terapeuta_executante_id?: string | null;
   versao_tiss: VersaoTiss;
   data_autorizacao_campo4: string; // Campo 4 – Data da Autorização (= data_inicio da senha)
   data_validade_senha: string; // Data fim da senha
@@ -219,11 +222,15 @@ export interface GuiaTissRecord {
   codigo_tuss: string;
   descricao_termo: string;
   qtd_sessoes_previstas: number; // 1 a 10
+  valor_unitario_sessao?: number;
+  valor_total_guia?: number;
   assinatura_paciente_base64?: string | null;
   nome_assinante?: string | null;
   assinado_em?: string | null;
   status_guia: StatusGuiaTiss;
   enviada_faturamento_em?: string | null;
+  digitado_faturamento_em?: string | null;
+  lote_id?: string | null;
   numero_lote?: string | null;
   created_at?: string;
   updated_at?: string;
@@ -231,6 +238,7 @@ export interface GuiaTissRecord {
   paciente?: PacienteRecord;
   plano?: PlanoSaudeRecord & { operadora?: OperadoraRecord };
   terapeuta_designado?: TerapeutaRecord;
+  terapeuta_executante?: TerapeutaRecord;
   autorizacao?: AutorizacaoRecord;
   sessoes?: GuiaTissSessaoRecord[];
 }
@@ -280,6 +288,117 @@ export interface EmitirGuiaSpSadtDTO {
   autorizacao_id: string;
   qtd_sessoes_previstas: number; // 1 a 10
   numero_guia_operadora?: string | null;
+}
+
+// ============================================================================
+// MODELAGEM NORMALIZADA (3FN) - FASE 3 SUPABASE
+// public.planos_procedimentos_precos, public.lotes_faturamento
+// ============================================================================
+
+export interface CreateProcedimentoTussDTO {
+  codigo_tuss: string;
+  descricao: string;
+  tabela_dominio?: string;
+  conselho_obrigatorio: string;
+  cbo_prefixo: string;
+  exige_senha?: boolean;
+}
+
+export interface PlanoProcedimentoPrecoRecord {
+  id: string;
+  operadora_id: string;
+  plano_saude_id?: string | null;
+  codigo_tuss: string;
+  valor_sessao: number;
+  numero_contrato?: string | null;
+  vigencia_inicio?: string | null;
+  vigencia_fim?: string | null;
+  ativo: boolean;
+  created_at?: string;
+  updated_at?: string;
+  // Hidratados
+  operadora?: OperadoraRecord;
+  plano?: PlanoSaudeRecord;
+  procedimento?: ProcedimentoTussRecord;
+}
+
+export interface UpsertPlanoProcedimentoPrecoDTO {
+  operadora_id: string;
+  plano_saude_id?: string | null;
+  codigo_tuss: string;
+  valor_sessao: number;
+  numero_contrato?: string | null;
+  vigencia_inicio?: string | null;
+  vigencia_fim?: string | null;
+}
+
+export type StatusLoteFaturamento = 'aberto' | 'em_conferencia' | 'fechado' | 'xml_gerado';
+
+export interface LoteFaturamentoRecord {
+  id: string;
+  numero_lote: string;
+  operadora_id: string;
+  versao_tiss: VersaoTiss;
+  status_lote: StatusLoteFaturamento;
+  quantidade_guias: number;
+  valor_total_lote: number;
+  criado_por?: string | null;
+  observacoes?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  // Hidratados
+  operadora?: OperadoraRecord;
+  guias?: GuiaTissRecord[];
+}
+
+export interface CreateLoteFaturamentoDTO {
+  numero_lote: string;
+  operadora_id: string;
+  versao_tiss?: VersaoTiss;
+  observacoes?: string | null;
+}
+
+export interface DigitarGuiaFaturamentoDTO {
+  guia_id?: string | null; // Se preenchido, atualiza uma guia vinda do Portal do Terapeuta; se vazio, cria nova guia no faturamento
+  paciente_id: string;
+  autorizacao_id: string;
+  terapeuta_executante_id: string;
+  numero_lote: string;
+  lote_id?: string | null;
+  valor_unitario_sessao: number;
+  datas_sessoes: Array<{
+    data_realizacao: string;
+    quantidade: number;
+  }>;
+  nome_assinante?: string | null;
+}
+
+export interface ResumoSemanaIso {
+  chaveSemana: string; // Ex: 2026-Sem.45
+  intervaloLabel: string; // Ex: 02/11/2026 a 08/11/2026
+  datasGuiaAtual: string[];
+  datasOutrasGuias: string[];
+  totalNaSemana: number;
+  limiteSemanal: number;
+  excedeuLimite: boolean;
+}
+
+export interface ResultadoValidacaoFaturamentoGuia {
+  conforme: boolean;
+  errosBloqueantes: string[];
+  avisos: string[];
+  semanasIso: ResumoSemanaIso[];
+  saldoAutorizacao: {
+    totalAutorizado: number;
+    jaRealizadoOutrasGuias: number;
+    sessoesGuiaAtual: number;
+    totalAcumulado: number;
+    saldoRestanteAposGuia: number;
+    estourouSaldoTotal: boolean;
+  };
+  divergenciaTerapeuta: boolean;
+  divergenciaValorTabela: boolean;
+  valorTabeladoOperadora?: number | null;
 }
 
 // ============================================================================
