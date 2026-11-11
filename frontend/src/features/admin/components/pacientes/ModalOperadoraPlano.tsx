@@ -144,39 +144,49 @@ export function ModalOperadoraPlano({
       : `Novo Plano — ${modo.operadora.nome}`;
 
   return createPortal(
-    <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-ink-900/50 backdrop-blur-sm" onClick={onClose}></div>
+    <div className="fixed inset-0 z-[110] flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto">
+      <div className="fixed inset-0 bg-ink-900/50 backdrop-blur-sm" onClick={onClose}></div>
 
       <form
         onSubmit={handleSubmit}
-        className="relative bg-white rounded-2xl shadow-2xl border border-ink-100 w-full max-w-xl overflow-hidden z-10 fade-in"
+        className="relative bg-white rounded-2xl shadow-2xl border border-ink-100 w-full max-w-xl overflow-hidden z-10 flex flex-col max-h-[92dvh] sm:max-h-[90vh] my-auto fade-in"
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-ink-100 flex items-center justify-between bg-white">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
-              <i className={`ph ${modo.tipo === 'novo_plano' ? 'ph-cards' : 'ph-buildings'} text-xl`}></i>
+        <div className="px-4 py-3.5 sm:px-6 sm:py-5 border-b border-ink-100 flex items-center justify-between gap-2.5 sm:gap-3 bg-white shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+              <i className={`ph ${modo.tipo === 'novo_plano' ? 'ph-cards' : 'ph-buildings'} text-base sm:text-xl`}></i>
             </div>
-            <div>
-              <h3 className="text-lg font-bold font-heading text-ink-900">{tituloModal}</h3>
-              <p className="text-xs text-ink-500">
+            <div className="min-w-0">
+              <h3 className="text-sm sm:text-lg font-bold font-heading text-ink-900 leading-snug break-words">
+                {modo.tipo === 'nova_operadora' ? (
+                  <>
+                    Nova Operadora <span className="hidden sm:inline">& Versão TISS</span>
+                  </>
+                ) : modo.tipo === 'editar_operadora' ? (
+                  `Editar Operadora: ${modo.operadora.nome}`
+                ) : (
+                  `Novo Plano — ${modo.operadora.nome}`
+                )}
+              </h3>
+              <p className="text-[11px] sm:text-xs text-ink-500 leading-tight mt-0.5">
                 {modo.tipo === 'novo_plano'
-                  ? `Herdará automaticamente a Versão TISS ${modo.operadora.versao_tiss} da operadora`
-                  : 'As informações pré-definidas serão aplicadas automaticamente aos planos e pacientes'}
+                  ? `Padrão TISS herdado da operadora (${modo.operadora.versao_tiss}).`
+                  : 'Defina a versão TISS e regras de matrícula para os planos.'}
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-ink-400 hover:text-ink-700 bg-ink-50 hover:bg-ink-100 rounded-full p-2 transition-colors"
+            className="text-ink-400 hover:text-ink-700 bg-ink-50 hover:bg-ink-100 rounded-full p-2 transition-colors shrink-0 cursor-pointer"
           >
             <i className="ph ph-x text-lg"></i>
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-5 overflow-y-auto flex-1">
           {erroForm && (
             <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
               <i className="ph ph-warning-circle text-base shrink-0"></i>
@@ -379,18 +389,18 @@ export function ModalOperadoraPlano({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-ink-50 border-t border-ink-100 flex justify-end gap-3">
+        <div className="px-4 py-3.5 sm:px-6 sm:py-4 bg-ink-50 border-t border-ink-100 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-full text-sm font-medium text-ink-600 bg-white border border-ink-200 hover:bg-ink-50 transition-colors"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium text-ink-600 bg-white border border-ink-200 hover:bg-ink-50 transition-colors"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={salvando}
-            className="px-6 py-2.5 rounded-full text-sm font-medium text-white bg-ink-900 hover:bg-ink-800 disabled:opacity-60 transition-all flex items-center gap-2 shadow-soft"
+            className="w-full sm:w-auto justify-center px-6 py-2.5 rounded-full text-xs sm:text-sm font-medium text-white bg-ink-900 hover:bg-ink-800 disabled:opacity-60 transition-all flex items-center gap-2 shadow-soft"
           >
             <i className="ph ph-check-circle text-brand-300 text-lg"></i>
             {salvando ? 'Salvando...' : 'Salvar Registro'}

@@ -41,6 +41,7 @@ export function AdminAuditoriaPage() {
   );
 
   // Filtros
+  const [busca, setBusca] = useState('');
   const [convenio, setConvenio] = useState('');
   const [numeroLote, setNumeroLote] = useState('');
   const [tipoCritica, setTipoCritica] = useState<CodigoCriticaAuditoria | ''>('');
@@ -141,9 +142,46 @@ export function AdminAuditoriaPage() {
     };
   }, [todasCriticas]);
 
+  // Contadores totais de retidas e validadas para os filtros
+  const totalRetidas = useMemo(
+    () => guiasAuditadas.filter((g) => (g.criticas_auditoria || []).length > 0).length,
+    [guiasAuditadas]
+  );
+  const totalValidadas = useMemo(
+    () => guiasAuditadas.filter((g) => (g.criticas_auditoria || []).length === 0).length,
+    [guiasAuditadas]
+  );
+
+  const handleLimparFiltros = () => {
+    setBusca('');
+    setConvenio('');
+    setNumeroLote('');
+    setTipoCritica('');
+    setStatusFiltro('todos');
+  };
+
   // Filtragem das guias na tabela
   const guiasFiltradas = useMemo(() => {
     return guiasAuditadas.filter((g) => {
+      if (busca.trim()) {
+        const termo = busca.trim().toLowerCase();
+        const matchGuia = g.numero_guia_prestador?.toLowerCase().includes(termo);
+        const matchPaciente = g.paciente?.nome?.toLowerCase().includes(termo);
+        const matchSenha = g.numero_senha?.toLowerCase().includes(termo);
+        const matchLote = g.numero_lote?.toLowerCase().includes(termo);
+        const matchTuss = g.codigo_tuss?.toLowerCase().includes(termo);
+        const matchTermo = g.descricao_termo?.toLowerCase().includes(termo);
+        if (
+          !matchGuia &&
+          !matchPaciente &&
+          !matchSenha &&
+          !matchLote &&
+          !matchTuss &&
+          !matchTermo
+        ) {
+          return false;
+        }
+      }
       if (numeroLote && g.numero_lote !== numeroLote) return false;
       if (
         convenio &&
@@ -162,12 +200,12 @@ export function AdminAuditoriaPage() {
       }
       return true;
     });
-  }, [guiasAuditadas, numeroLote, convenio, statusFiltro, tipoCritica]);
+  }, [guiasAuditadas, busca, numeroLote, convenio, statusFiltro, tipoCritica]);
 
   return (
     <div
       id="view-auditoria"
-      className="view-section fade-in max-w-7xl mx-auto flex flex-col h-full min-h-[700px] pb-10"
+      className="view-section fade-in max-w-7xl mx-auto flex flex-col w-full min-h-0 pb-12"
     >
       <AuditoriaHeader
         pendentesCount={todasCriticas.length}
@@ -177,23 +215,23 @@ export function AdminAuditoriaPage() {
       />
 
       {bannerFeedback && (
-        <div className="mb-5 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex justify-between items-center shadow-xs">
-          <div className="flex items-center gap-2">
-            <i className="ph ph-check-circle-fill text-lg text-emerald-600"></i>
-            <span>{bannerFeedback}</span>
+        <div className="mb-4 sm:mb-5 p-3.5 sm:p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 shadow-xs">
+          <div className="flex items-start sm:items-center gap-2 min-w-0">
+            <i className="ph ph-check-circle-fill text-lg text-emerald-600 shrink-0 mt-0.5 sm:mt-0"></i>
+            <span className="leading-snug">{bannerFeedback}</span>
           </div>
           <button
             type="button"
             onClick={() => setBannerFeedback(null)}
-            className="text-emerald-700 hover:text-emerald-950 font-bold px-2 cursor-pointer"
+            className="self-end sm:self-auto text-emerald-700 hover:text-emerald-950 font-bold px-2 py-0.5 rounded cursor-pointer text-xs"
           >
-            ✕
+            Fechar ✕
           </button>
         </div>
       )}
 
-      {/* Cards das 4 Regras Críticas Obrigatórias */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* Cards das 4 Regras Críticas Obrigatórias (Grid Responsivo 2x2 no mobile, 4 no desktop) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-5 sm:mb-6">
         <button
           type="button"
           onClick={() =>
@@ -201,23 +239,23 @@ export function AdminAuditoriaPage() {
               tipoCritica === 'CRIT_DATA_REPETIDA' ? '' : 'CRIT_DATA_REPETIDA'
             )
           }
-          className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${
+          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer ${
             tipoCritica === 'CRIT_DATA_REPETIDA'
               ? 'bg-red-50 border-red-300 ring-2 ring-red-500/20'
               : 'bg-white border-ink-100 shadow-card hover:border-ink-200'
           }`}
         >
-          <div className="flex justify-between items-center">
-            <span className="text-[11px] font-bold uppercase text-ink-400">
-              Crítica 1 — Datas Repetidas
+          <div className="flex justify-between items-center gap-1.5">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 truncate">
+              1 • Datas Repetidas
             </span>
-            <i className="ph ph-calendar-x text-lg text-red-600"></i>
+            <i className="ph ph-calendar-x text-base sm:text-lg text-red-600 shrink-0"></i>
           </div>
-          <p className="text-2xl font-bold font-heading text-ink-900 mt-1.5">
+          <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 mt-1 sm:mt-1.5">
             {contadores4Criticas.datasRepetidas}
           </p>
-          <p className="text-[11px] text-ink-400 mt-0.5">
-            Mesma data na guia ou em outra guia do paciente
+          <p className="text-[10px] sm:text-[11px] text-ink-400 mt-0.5 line-clamp-2">
+            Mesma data na guia ou em outra guia
           </p>
         </button>
 
@@ -230,23 +268,23 @@ export function AdminAuditoriaPage() {
                 : 'CRIT_QTD_DIFERENTE_1'
             )
           }
-          className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${
+          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer ${
             tipoCritica === 'CRIT_QTD_DIFERENTE_1'
               ? 'bg-red-50 border-red-300 ring-2 ring-red-500/20'
               : 'bg-white border-ink-100 shadow-card hover:border-ink-200'
           }`}
         >
-          <div className="flex justify-between items-center">
-            <span className="text-[11px] font-bold uppercase text-ink-400">
-              Crítica 2 — Quantidade ≠ 1
+          <div className="flex justify-between items-center gap-1.5">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 truncate">
+              2 • Quantidade ≠ 1
             </span>
-            <i className="ph ph-hash text-lg text-red-600"></i>
+            <i className="ph ph-hash text-base sm:text-lg text-red-600 shrink-0"></i>
           </div>
-          <p className="text-2xl font-bold font-heading text-ink-900 mt-1.5">
+          <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 mt-1 sm:mt-1.5">
             {contadores4Criticas.qtdDiferente1}
           </p>
-          <p className="text-[11px] text-ink-400 mt-0.5">
-            Linhas de sessão com quantidade diferente de 1
+          <p className="text-[10px] sm:text-[11px] text-ink-400 mt-0.5 line-clamp-2">
+            Linhas de sessão com quantidade ≠ 1
           </p>
         </button>
 
@@ -259,23 +297,23 @@ export function AdminAuditoriaPage() {
                 : 'CRIT_TERAPEUTA_DIVERGENTE'
             )
           }
-          className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${
+          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer ${
             tipoCritica === 'CRIT_TERAPEUTA_DIVERGENTE'
               ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-500/20'
               : 'bg-white border-ink-100 shadow-card hover:border-ink-200'
           }`}
         >
-          <div className="flex justify-between items-center">
-            <span className="text-[11px] font-bold uppercase text-ink-400">
-              Crítica 3 — Terapeuta Divergente
+          <div className="flex justify-between items-center gap-1.5">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 truncate">
+              3 • Terapeuta Divergente
             </span>
-            <i className="ph ph-user-switch text-lg text-amber-600"></i>
+            <i className="ph ph-user-switch text-base sm:text-lg text-amber-600 shrink-0"></i>
           </div>
-          <p className="text-2xl font-bold font-heading text-ink-900 mt-1.5">
+          <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 mt-1 sm:mt-1.5">
             {contadores4Criticas.terapeutaDivergente}
           </p>
-          <p className="text-[11px] text-ink-400 mt-0.5">
-            Executante difere do designado na guia/senha
+          <p className="text-[10px] sm:text-[11px] text-ink-400 mt-0.5 line-clamp-2">
+            Executante difere do designado
           </p>
         </button>
 
@@ -288,37 +326,37 @@ export function AdminAuditoriaPage() {
                 : 'CRIT_VALOR_TABELA_PLANO'
             )
           }
-          className={`text-left p-4 rounded-2xl border transition-all cursor-pointer ${
+          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer ${
             tipoCritica === 'CRIT_VALOR_TABELA_PLANO'
               ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-500/20'
               : 'bg-white border-ink-100 shadow-card hover:border-ink-200'
           }`}
         >
-          <div className="flex justify-between items-center">
-            <span className="text-[11px] font-bold uppercase text-ink-400">
-              Crítica 4 — Valor ≠ Tabela
+          <div className="flex justify-between items-center gap-1.5">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 truncate">
+              4 • Valor ≠ Tabela
             </span>
-            <i className="ph ph-currency-circle-dollar text-lg text-amber-600"></i>
+            <i className="ph ph-currency-circle-dollar text-base sm:text-lg text-amber-600 shrink-0"></i>
           </div>
-          <p className="text-2xl font-bold font-heading text-ink-900 mt-1.5">
+          <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 mt-1 sm:mt-1.5">
             {contadores4Criticas.valorTabelaPlano}
           </p>
-          <p className="text-[11px] text-ink-400 mt-0.5">
-            Valor unitário difere da tabela do plano
+          <p className="text-[10px] sm:text-[11px] text-ink-400 mt-0.5 line-clamp-2">
+            Valor unitário difere da tabela
           </p>
         </button>
       </div>
 
       {/* Painel de Status de Liberação dos Lotes para XML */}
       {resumosLotes.length > 0 && (
-        <div className="mb-6 bg-white p-4 rounded-2xl border border-ink-100 shadow-card">
-          <div className="flex items-center justify-between mb-3">
+        <div className="mb-5 sm:mb-6 bg-white p-3.5 sm:p-4 rounded-2xl border border-ink-100 shadow-card">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-3 mb-3">
             <span className="text-xs font-bold uppercase tracking-wider text-ink-500 flex items-center gap-1.5">
-              <i className="ph ph-package text-brand-600 text-base"></i>
+              <i className="ph ph-package text-brand-600 text-base shrink-0"></i>
               Status de Conferência Pré-XML por Lote
             </span>
-            <span className="text-[11px] text-ink-400">
-              O Lote só é liberado para geração do XML quando possui 0 guias retidas
+            <span className="text-[10px] sm:text-[11px] text-ink-400">
+              O Lote só é liberado para XML quando possui 0 guias retidas
             </span>
           </div>
 
@@ -331,22 +369,22 @@ export function AdminAuditoriaPage() {
                     numeroLote === resumo.numeroLote ? '' : resumo.numeroLote
                   )
                 }
-                className={`p-3.5 rounded-xl border transition-all cursor-pointer flex justify-between items-center ${
+                className={`p-3 sm:p-3.5 rounded-xl border transition-all cursor-pointer flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 ${
                   resumo.aptoParaGerarXml
                     ? 'bg-emerald-50/50 border-emerald-200 hover:bg-emerald-50'
                     : 'bg-red-50/50 border-red-200 hover:bg-red-50'
                 } ${
                   numeroLote === resumo.numeroLote
-                    ? 'ring-2 ring-ink-900'
+                    ? 'ring-2 ring-ink-900 shadow-xs'
                     : ''
                 }`}
               >
-                <div>
-                  <div className="flex items-center gap-2">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                     <span className="font-mono font-bold text-xs text-ink-900">
                       Lote #{resumo.numeroLote}
                     </span>
-                    <span className="text-[11px] font-semibold text-ink-600">
+                    <span className="text-[11px] font-semibold text-ink-600 truncate">
                       {resumo.operadoraNome} (TISS {resumo.versaoTiss})
                     </span>
                   </div>
@@ -367,13 +405,13 @@ export function AdminAuditoriaPage() {
                       setLoteParaXml(found);
                       setIsModalXmlOpen(true);
                     }}
-                    className="px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-wide shrink-0 flex items-center gap-1 shadow-xs cursor-pointer"
+                    className="w-full sm:w-auto px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold uppercase tracking-wide shrink-0 flex items-center justify-center gap-1 shadow-xs cursor-pointer"
                   >
                     <i className="ph ph-file-code text-xs"></i>
                     Gerar XML TISS
                   </button>
                 ) : (
-                  <span className="px-2.5 py-1 rounded-full bg-red-600 text-white text-[10px] font-bold uppercase tracking-wide shrink-0">
+                  <span className="w-full sm:w-auto px-2.5 py-1 rounded-full bg-red-600 text-white text-[10px] font-bold uppercase tracking-wide shrink-0 text-center">
                     Retido ({resumo.guiasRetidas} guia{resumo.guiasRetidas !== 1 && 's'})
                   </span>
                 )}
@@ -384,6 +422,8 @@ export function AdminAuditoriaPage() {
       )}
 
       <AuditoriaFiltros
+        busca={busca}
+        setBusca={setBusca}
         convenio={convenio}
         setConvenio={setConvenio}
         numeroLote={numeroLote}
@@ -394,6 +434,10 @@ export function AdminAuditoriaPage() {
         setStatusFiltro={setStatusFiltro}
         resumosLotes={resumosLotes}
         operadorasNomes={operadorasNomes}
+        totalGuias={guiasAuditadas.length}
+        totalRetidas={totalRetidas}
+        totalValidadas={totalValidadas}
+        onLimparFiltros={handleLimparFiltros}
       />
 
       <AuditoriaTable

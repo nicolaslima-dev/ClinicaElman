@@ -142,9 +142,9 @@ export function AuditoriaDrawer({
         }`}
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-ink-100 flex justify-between items-center bg-ink-50/70">
-          <div>
-            <div className="flex items-center gap-2">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-5 border-b border-ink-100 flex justify-between items-start sm:items-center bg-ink-50/70 gap-3">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <span className="px-2.5 py-0.5 rounded bg-ink-900 text-brand-300 font-mono text-xs font-bold">
                 Guia #{guia.numero_guia_prestador}
               </span>
@@ -154,10 +154,10 @@ export function AuditoriaDrawer({
                 </span>
               )}
             </div>
-            <h2 className="text-lg font-bold font-heading text-ink-900 mt-1">
+            <h2 className="text-base sm:text-lg font-bold font-heading text-ink-900 mt-1 truncate">
               Conferência e Resolução de Críticas Pré-XML
             </h2>
-            <p className="text-xs text-ink-500">
+            <p className="text-xs text-ink-500 truncate">
               Paciente: <strong>{guia.paciente?.nome}</strong> •{' '}
               {guia.plano?.operadora?.nome} (TISS {guia.versao_tiss})
             </p>
@@ -165,26 +165,27 @@ export function AuditoriaDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="text-ink-400 hover:text-ink-700 p-2 rounded-full hover:bg-ink-100 transition-colors cursor-pointer"
+            className="text-ink-400 hover:text-ink-700 p-2 rounded-full hover:bg-ink-100 transition-colors cursor-pointer shrink-0"
+            title="Fechar painel"
           >
             <i className="ph ph-x text-lg"></i>
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6 flex-1 overflow-y-auto space-y-6" id="drawerContent">
+        <div className="p-4 sm:p-6 flex-1 overflow-y-auto space-y-4 sm:space-y-6" id="drawerContent">
           {/* Diagnóstico das 4 Críticas */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <span className="text-xs font-bold uppercase tracking-wider text-ink-500">
-                Diagnóstico do Validador de Lote (4 Regras Críticas)
+                Diagnóstico do Validador de Lote
               </span>
               {criticas.length > 0 && (
                 <button
                   type="button"
                   disabled={salvando}
                   onClick={handleCorrigirTudoAutomaticamente}
-                  className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs cursor-pointer w-full sm:w-auto"
                 >
                   <i className="ph ph-magic-wand text-sm"></i>
                   Sanar Todas as Falhas (1 Clique)
@@ -194,12 +195,12 @@ export function AuditoriaDrawer({
 
             {criticas.length === 0 ? (
               <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-3 text-emerald-800">
-                <i className="ph ph-check-circle-fill text-2xl text-emerald-600"></i>
+                <i className="ph ph-check-circle-fill text-2xl text-emerald-600 shrink-0"></i>
                 <div>
                   <p className="text-xs font-bold">
                     Guia 100% Conforme nas 4 Críticas TISS!
                   </p>
-                  <p className="text-[11px] opacity-90">
+                  <p className="text-[11px] opacity-90 mt-0.5">
                     Nenhuma data repetida, todas as quantidades iguais a 1, terapeuta validado e valor de acordo com a tabela do plano.
                   </p>
                 </div>
@@ -208,18 +209,18 @@ export function AuditoriaDrawer({
               criticas.map((crit) => (
                 <div
                   key={crit.id}
-                  className="bg-red-50/90 border-l-4 border-red-600 p-4 rounded-r-xl space-y-2"
+                  className="bg-red-50/90 border-l-4 border-red-600 p-3.5 sm:p-4 rounded-r-xl space-y-2"
                 >
                   <div className="flex justify-between items-start gap-2">
                     <h4 className="text-xs font-bold text-red-900 flex items-center gap-1.5">
-                      <i className="ph ph-warning-octagon-fill text-red-600 text-base"></i>
-                      {crit.titulo}
+                      <i className="ph ph-warning-octagon-fill text-red-600 text-base shrink-0"></i>
+                      <span>{crit.titulo}</span>
                     </h4>
                   </div>
                   <p className="text-xs text-red-800 leading-relaxed">
                     {crit.mensagem_detalhe}
                   </p>
-                  <div className="grid grid-cols-2 gap-2 pt-1 text-[11px]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
                     <div className="bg-white/80 p-2 rounded-lg border border-red-200">
                       <span className="text-ink-400 block uppercase font-semibold text-[10px]">
                         Encontrado na Guia:
@@ -243,12 +244,12 @@ export function AuditoriaDrawer({
           </div>
 
           {/* Seção 1 e 2: Conferência de Datas e Quantidades das Sessões */}
-          <div className="bg-ink-50/60 p-4 rounded-2xl border border-ink-200 space-y-3">
-            <div className="flex flex-wrap justify-between items-center gap-2">
+          <div className="bg-ink-50/60 p-3.5 sm:p-4 rounded-2xl border border-ink-200 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <span className="text-xs font-bold text-ink-800 uppercase tracking-wide">
                 1 & 2. Datas das Sessões e Quantidades ({sessoesEditaveis.length}/10)
               </span>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {temCriticaDataRepetida && (
                   <button
                     type="button"
@@ -279,60 +280,17 @@ export function AuditoriaDrawer({
                 return (
                   <div
                     key={idx}
-                    className={`grid grid-cols-12 gap-2 items-center p-2.5 rounded-xl border text-xs ${
+                    className={`p-3 rounded-xl border text-xs transition-colors ${
                       isRepetida || isQtdInvalida
-                        ? 'bg-red-50 border-red-300'
+                        ? 'bg-red-50/80 border-red-300'
                         : 'bg-white border-ink-200'
                     }`}
                   >
-                    <div className="col-span-1 font-mono font-bold text-ink-400">
-                      #{idx + 1}
-                    </div>
-                    <div className="col-span-6">
-                      <input
-                        type="date"
-                        value={sessao.data_realizacao}
-                        min={guia.data_autorizacao_campo4?.split('T')[0]}
-                        max={guia.data_validade_senha?.split('T')[0]}
-                        onChange={(e) => {
-                          const nova = e.target.value;
-                          setSessoesEditaveis((prev) =>
-                            prev.map((item, i) =>
-                              i === idx ? { ...item, data_realizacao: nova } : item
-                            )
-                          );
-                        }}
-                        className="w-full bg-ink-50 border border-ink-200 rounded-lg px-2.5 py-1.5 font-mono text-xs"
-                      />
-                      {isRepetida && (
-                        <span className="text-[10px] text-red-600 font-bold block mt-0.5">
-                          Data repetida ({formatarDataBr(sessao.data_realizacao)})
-                        </span>
-                      )}
-                    </div>
-                    <div className="col-span-3 flex items-center gap-1.5">
-                      <span className="text-[11px] text-ink-400">Qtd:</span>
-                      <input
-                        type="number"
-                        min="1"
-                        max="10"
-                        value={sessao.quantidade}
-                        onChange={(e) => {
-                          const q = Number(e.target.value) || 1;
-                          setSessoesEditaveis((prev) =>
-                            prev.map((item, i) =>
-                              i === idx ? { ...item, quantidade: q } : item
-                            )
-                          );
-                        }}
-                        className={`w-16 border rounded-lg px-2 py-1.5 font-mono font-bold text-xs text-center ${
-                          isQtdInvalida
-                            ? 'bg-red-100 border-red-400 text-red-800'
-                            : 'bg-ink-50 border-ink-200 text-ink-900'
-                        }`}
-                      />
-                    </div>
-                    <div className="col-span-2 text-right">
+                    {/* Linha superior: Sessão # e botão excluir */}
+                    <div className="flex items-center justify-between gap-2 mb-2 sm:hidden">
+                      <span className="font-mono font-bold text-xs text-ink-500">
+                        Sessão #{idx + 1}
+                      </span>
                       {sessoesEditaveis.length > 1 && (
                         <button
                           type="button"
@@ -341,11 +299,79 @@ export function AuditoriaDrawer({
                               prev.filter((_, i) => i !== idx)
                             )
                           }
-                          className="text-red-500 hover:text-red-700 font-semibold text-[11px] cursor-pointer"
+                          className="text-red-600 hover:text-red-800 font-semibold text-xs py-0.5 px-2 rounded hover:bg-red-50 cursor-pointer"
                         >
                           Excluir
                         </button>
                       )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 sm:items-center">
+                      <div className="hidden sm:block sm:col-span-1 font-mono font-bold text-ink-400">
+                        #{idx + 1}
+                      </div>
+
+                      <div className="sm:col-span-6">
+                        <input
+                          type="date"
+                          value={sessao.data_realizacao}
+                          min={guia.data_autorizacao_campo4?.split('T')[0]}
+                          max={guia.data_validade_senha?.split('T')[0]}
+                          onChange={(e) => {
+                            const nova = e.target.value;
+                            setSessoesEditaveis((prev) =>
+                              prev.map((item, i) =>
+                                i === idx ? { ...item, data_realizacao: nova } : item
+                              )
+                            );
+                          }}
+                          className="w-full bg-ink-50 border border-ink-200 rounded-lg px-2.5 py-1.5 font-mono text-xs"
+                        />
+                        {isRepetida && (
+                          <span className="text-[10px] text-red-600 font-bold block mt-0.5">
+                            Data repetida ({formatarDataBr(sessao.data_realizacao)})
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="sm:col-span-3 flex items-center justify-between sm:justify-start gap-1.5">
+                        <span className="text-[11px] text-ink-400">Qtd:</span>
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={sessao.quantidade}
+                          onChange={(e) => {
+                            const q = Number(e.target.value) || 1;
+                            setSessoesEditaveis((prev) =>
+                              prev.map((item, i) =>
+                                i === idx ? { ...item, quantidade: q } : item
+                              )
+                            );
+                          }}
+                          className={`w-16 border rounded-lg px-2 py-1.5 font-mono font-bold text-xs text-center ${
+                            isQtdInvalida
+                              ? 'bg-red-100 border-red-400 text-red-800'
+                              : 'bg-ink-50 border-ink-200 text-ink-900'
+                          }`}
+                        />
+                      </div>
+
+                      <div className="hidden sm:block sm:col-span-2 text-right">
+                        {sessoesEditaveis.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setSessoesEditaveis((prev) =>
+                                prev.filter((_, i) => i !== idx)
+                              )
+                            }
+                            className="text-red-500 hover:text-red-700 font-semibold text-[11px] cursor-pointer"
+                          >
+                            Excluir
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );
@@ -354,8 +380,8 @@ export function AuditoriaDrawer({
           </div>
 
           {/* Seção 3: Conferência do Terapeuta (Designado vs. Executante) */}
-          <div className="bg-ink-50/60 p-4 rounded-2xl border border-ink-200 space-y-3">
-            <div className="flex justify-between items-center">
+          <div className="bg-ink-50/60 p-3.5 sm:p-4 rounded-2xl border border-ink-200 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <span className="text-xs font-bold text-ink-800 uppercase tracking-wide">
                 3. Conferência do Profissional Terapeuta
               </span>
@@ -363,7 +389,7 @@ export function AuditoriaDrawer({
                 <button
                   type="button"
                   onClick={handleAlinharTerapeutaLocal}
-                  className="px-2.5 py-1 rounded-lg bg-brand-100 hover:bg-brand-200 text-brand-800 text-[11px] font-bold cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg bg-brand-100 hover:bg-brand-200 text-brand-800 text-[11px] font-bold cursor-pointer w-full sm:w-auto text-center"
                 >
                   Alinhar ao Terapeuta Designado
                 </button>
@@ -372,7 +398,7 @@ export function AuditoriaDrawer({
 
             <div className="text-xs text-ink-600 bg-white p-3 rounded-xl border border-ink-100">
               Terapeuta inicialmente designado na Guia/Autorização:{' '}
-              <strong className="text-ink-900">
+              <strong className="text-ink-900 block sm:inline mt-0.5 sm:mt-0">
                 {guia.terapeuta_designado?.nome} ({guia.terapeuta_designado?.conselho}{' '}
                 {guia.terapeuta_designado?.numero_conselho})
               </strong>
@@ -385,7 +411,7 @@ export function AuditoriaDrawer({
               <select
                 value={terapeutaExecId}
                 onChange={(e) => setTerapeutaExecId(e.target.value)}
-                className="w-full bg-white border border-ink-200 rounded-xl py-2.5 px-3 text-xs font-medium text-ink-900"
+                className="w-full bg-white border border-ink-200 rounded-xl py-2.5 px-3 text-xs font-medium text-ink-900 outline-none focus:border-brand-400"
               >
                 {terapeutas.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -400,10 +426,10 @@ export function AuditoriaDrawer({
           </div>
 
           {/* Seção 4: Conferência do Valor da Sessão conforme Tabela do Plano */}
-          <div className="bg-ink-50/60 p-4 rounded-2xl border border-ink-200 space-y-3">
-            <div className="flex justify-between items-center">
+          <div className="bg-ink-50/60 p-3.5 sm:p-4 rounded-2xl border border-ink-200 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <span className="text-xs font-bold text-ink-800 uppercase tracking-wide">
-                4. Conferência de Valor (Tabela do Plano de Saúde)
+                4. Conferência de Valor (Tabela do Plano)
               </span>
               { (temCriticaValor ||
                 (valorTabelaOperadora &&
@@ -411,7 +437,7 @@ export function AuditoriaDrawer({
                 <button
                   type="button"
                   onClick={handleAplicarValorTabelaLocal}
-                  className="px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] font-bold cursor-pointer"
+                  className="px-2.5 py-1 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-800 text-[11px] font-bold cursor-pointer w-full sm:w-auto text-center"
                 >
                   Aplicar Valor da Tabela (R${' '}
                   {valorTabelaOperadora?.toFixed(2).replace('.', ',')})
@@ -419,7 +445,7 @@ export function AuditoriaDrawer({
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="bg-white p-3 rounded-xl border border-ink-100">
                 <span className="text-[10px] font-semibold uppercase text-ink-400 block">
                   Valor Tabelado ({guia.plano?.operadora?.nome})
@@ -441,7 +467,7 @@ export function AuditoriaDrawer({
                   min="0.01"
                   value={valorUnitario}
                   onChange={(e) => setValorUnitario(e.target.value)}
-                  className="w-full bg-white border border-ink-200 rounded-xl py-2 px-3 font-mono font-bold text-sm text-ink-900"
+                  className="w-full bg-white border border-ink-200 rounded-xl py-2 px-3 font-mono font-bold text-sm text-ink-900 outline-none focus:border-brand-400"
                 />
               </div>
             </div>
@@ -449,11 +475,11 @@ export function AuditoriaDrawer({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-ink-100 bg-ink-50 flex justify-between items-center gap-3">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-ink-100 bg-ink-50 flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-2.5 sm:gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 bg-white border border-ink-200 rounded-full text-xs font-semibold text-ink-600 hover:bg-ink-100 transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 bg-white border border-ink-200 rounded-xl sm:rounded-full text-xs font-semibold text-ink-600 hover:bg-ink-100 transition-colors cursor-pointer text-center"
           >
             Fechar
           </button>
@@ -462,10 +488,10 @@ export function AuditoriaDrawer({
             type="button"
             disabled={salvando}
             onClick={handleSalvarAjustesManuais}
-            className="px-6 py-2.5 bg-ink-900 hover:bg-ink-800 text-white rounded-full text-xs font-semibold shadow-soft flex items-center gap-2 transition-all cursor-pointer"
+            className="w-full sm:w-auto px-6 py-2.5 bg-ink-900 hover:bg-ink-800 disabled:opacity-60 text-white rounded-xl sm:rounded-full text-xs font-semibold shadow-soft flex items-center justify-center gap-2 transition-all cursor-pointer"
           >
             <i className="ph ph-shield-check text-base text-brand-300"></i>
-            {salvando ? 'Revalidando Guia...' : 'Salvar Correções e Revalidar Guia'}
+            <span>{salvando ? 'Revalidando Guia...' : 'Salvar Correções e Revalidar Guia'}</span>
           </button>
         </div>
       </div>

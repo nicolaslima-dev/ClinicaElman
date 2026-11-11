@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import logoElman from '@/assets/images/logos/logo-elman.png';
 import type { NavSection, UserProfileData } from './types';
@@ -16,6 +16,8 @@ export function Sidebar({ sections, userProfile, isMobileMenuOpen, onCloseMobile
   const isRouteActive = (path: string) => {
     return location.pathname.startsWith(path);
   };
+
+  let runningLinkIndex = 0;
 
   return (
     <>
@@ -38,7 +40,7 @@ export function Sidebar({ sections, userProfile, isMobileMenuOpen, onCloseMobile
             ) : (
               <div className="h-4 w-24 bg-white/10 rounded animate-pulse mb-1"></div>
             )}
-            
+
             {userProfile.role ? (
               <p className="text-[10px] font-medium text-brand-200 mt-0.5">{userProfile.role}</p>
             ) : (
@@ -57,9 +59,8 @@ export function Sidebar({ sections, userProfile, isMobileMenuOpen, onCloseMobile
                     <Link
                       key={link.path}
                       to={link.path}
-                      className={`relative w-full flex items-center justify-between py-3 text-sm font-medium transition-colors duration-200 ${
-                        active ? "text-white" : "text-brand-100/50 hover:text-white"
-                      }`}
+                      className={`relative w-full flex items-center justify-between py-3 text-sm font-medium transition-colors duration-200 ${active ? "text-white" : "text-brand-100/50 hover:text-white"
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         {active && (
@@ -81,40 +82,108 @@ export function Sidebar({ sections, userProfile, isMobileMenuOpen, onCloseMobile
         </nav>
       </aside>
 
-      {/* MOBILE MENU DROPDOWN (Rendered conditionally via the wrapper BaseLayout) */}
-      {isMobileMenuOpen && (
-        <div className="block lg:hidden absolute top-16 left-0 w-full z-50 animate-fade-in origin-top">
-           <div className="space-y-1 px-4 pt-2 pb-4 bg-ink-900/95 backdrop-blur-md border-t border-white/10 shadow-premium">
-            {sections.map((section, idx) => (
-              <div key={idx} className={idx > 0 ? "mt-4 pt-4 border-t border-white/10" : ""}>
-                 {idx > 0 && <p className="text-[11px] font-medium text-brand-200/40 tracking-wide mb-2 px-3 uppercase">{section.title}</p>}
-                 {section.links.map(link => {
-                   const active = isRouteActive(link.path);
-                   return (
-                     <Link
-                       key={link.path}
-                       to={link.path}
-                       onClick={onCloseMobileMenu}
-                       className={`block rounded-md px-3 py-2.5 text-base font-medium transition-all flex justify-between items-center ${
-                         active ? "bg-white/10 text-white" : "text-brand-100/50 hover:bg-white/5 hover:text-white"
-                       }`}
-                     >
-                       <div className="flex items-center gap-3">
-                         <i className={`ph ${link.icon} text-lg`}></i> {link.label}
-                       </div>
-                       {link.badge !== undefined && link.badge > 0 && (
-                         <span className="bg-gold-500 text-ink-900 text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full">
-                           {link.badge}
-                         </span>
-                       )}
-                     </Link>
-                   )
-                 })}
+      {/* MOBILE MENU DROPDOWN & OVERLAY COM TRANSIÇÃO SUAVE */}
+      <div
+        className={`lg:hidden fixed inset-0 top-16 z-50 transition-all duration-300 ease-in-out ${isMobileMenuOpen
+            ? 'opacity-100 pointer-events-auto visible'
+            : 'opacity-0 pointer-events-none invisible'
+          }`}
+        aria-hidden={!isMobileMenuOpen}
+      >
+        {/* Backdrop escurecido com clique para fechar */}
+        <div
+          className={`absolute inset-0 bg-ink-950/65 backdrop-blur-xs transition-opacity duration-300 ease-in-out ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'
+            }`}
+          onClick={onCloseMobileMenu}
+        />
+
+        {/* Painel do menu com descida suave */}
+        <div
+          className={`relative w-full max-h-[calc(100vh-4rem)] overflow-y-auto bg-ink-900/98 backdrop-blur-xl border-b border-white/10 shadow-2xl transition-all duration-300 ease-out transform ${isMobileMenuOpen
+              ? 'translate-y-0 opacity-100'
+              : '-translate-y-4 opacity-0'
+            }`}
+          style={{ scrollbarWidth: 'none' }}
+        >
+          {/* Card do Usuário no topo do Menu Mobile */}
+          <div className="px-4 pt-3.5 pb-1">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/10">
+              {userProfile.initials ? (
+                <div className="h-9 w-9 rounded-full bg-ink-800 border border-white/15 flex items-center justify-center text-brand-100 font-semibold text-xs uppercase shrink-0">
+                  {userProfile.initials}
+                </div>
+              ) : (
+                <div className="h-9 w-9 rounded-full bg-white/10 animate-pulse shrink-0"></div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-white truncate font-heading">{userProfile.name || 'Usuário'}</p>
+                <p className="text-[10px] text-brand-200/70 uppercase tracking-wider">{userProfile.role || 'Colaborador'}</p>
               </div>
-            ))}
-           </div>
+            </div>
+          </div>
+
+          {/* Seções de Links com Animação em Cascata (Descida Suave) */}
+          <nav className="px-4 py-3 space-y-4">
+            {sections.map((section, sectionIdx) => {
+              const sectionDelay = isMobileMenuOpen ? `${sectionIdx * 70 + 40}ms` : '0ms';
+
+              return (
+                <div
+                  key={sectionIdx}
+                  className={sectionIdx > 0 ? "pt-3.5 border-t border-white/10" : ""}
+                >
+                  <p
+                    style={{ transitionDelay: sectionDelay }}
+                    className={`text-[11px] font-semibold text-brand-200/40 tracking-wider mb-2 px-3 uppercase transition-all duration-300 ease-out transform ${isMobileMenuOpen ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0'
+                      }`}
+                  >
+                    {section.title}
+                  </p>
+
+                  <div className="space-y-1">
+                    {section.links.map((link) => {
+                      const active = isRouteActive(link.path);
+                      const currentLinkIndex = runningLinkIndex++;
+                      const linkDelay = isMobileMenuOpen ? `${currentLinkIndex * 35 + 70}ms` : '0ms';
+
+                      return (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={onCloseMobileMenu}
+                          style={{
+                            transitionDelay: linkDelay,
+                          }}
+                          className={`relative w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ease-out transform ${isMobileMenuOpen
+                              ? 'translate-y-0 opacity-100'
+                              : '-translate-y-3.5 opacity-0'
+                            } ${active
+                              ? "bg-brand-600/30 text-white border border-brand-400/30 font-semibold shadow-sm"
+                              : "text-brand-100/65 hover:text-white hover:bg-white/[0.06] border border-transparent"
+                            }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            {active && (
+                              <span className="w-1.5 h-4 bg-gold-400 rounded-full shrink-0"></span>
+                            )}
+                            <i className={`ph ${link.icon} text-lg ${active ? 'text-gold-400' : 'text-brand-200/70'}`}></i>
+                            <span>{link.label}</span>
+                          </div>
+                          {link.badge !== undefined && link.badge > 0 && (
+                            <span className="bg-gold-500 text-ink-900 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+                              {link.badge}
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </nav>
         </div>
-      )}
+      </div>
     </>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type {
   OperadoraRecord,
   PlanoProcedimentoPrecoRecord,
@@ -202,48 +203,48 @@ export function ModalTabelaPrecosOperadora({
   const formInputClass =
     'w-full bg-ink-50 border border-ink-200 rounded-xl py-2.5 px-3.5 text-sm text-ink-800 transition-all outline-none focus:bg-white focus:border-brand-400 focus:ring-[3px] focus:ring-brand-500/10';
 
-  return (
-    <div className="fixed inset-0 bg-ink-950/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden border border-ink-100 my-8">
+  return createPortal(
+    <div className="fixed inset-0 bg-ink-950/60 backdrop-blur-sm z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden overscroll-contain animate-in fade-in-0 duration-200">
+      <div className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden border border-ink-100 my-0 sm:my-8 max-h-[95dvh] sm:max-h-[90dvh] flex flex-col overscroll-contain">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-ink-100 flex justify-between items-center bg-ink-50/60">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-sm">
+        <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-ink-100 flex justify-between items-center bg-ink-50/60 shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-sm shrink-0">
               <i className="ph ph-currency-circle-dollar text-xl"></i>
             </div>
-            <div>
-              <h3 className="text-lg font-bold font-heading text-ink-900">
-                Catálogo TUSS & Contratos de Valores por Operadora
+            <div className="min-w-0">
+              <h3 className="text-base sm:text-lg font-bold font-heading text-ink-900 truncate">
+                Catálogo TUSS & Contratos por Operadora
               </h3>
-              <p className="text-xs text-ink-500">
-                Fluxo padrão: 1. Recebe contrato da operadora → 2. Importa códigos TUSS → 3. Digita/importa preços acordados
+              <p className="text-xs text-ink-500 line-clamp-1">
+                Fluxo: 1. Contrato da operadora → 2. Importa códigos TUSS → 3. Digita/importa preços acordados
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-ink-400 hover:text-ink-700 p-1.5 rounded-lg hover:bg-ink-100 transition-colors"
+            className="text-ink-400 hover:text-ink-700 p-1.5 rounded-lg hover:bg-ink-100 transition-colors cursor-pointer shrink-0"
           >
             <i className="ph ph-x text-lg"></i>
           </button>
         </div>
 
         {/* Navegação das 3 Etapas */}
-        <div className="px-6 pt-4 border-b border-ink-100 flex flex-wrap gap-2 bg-white">
+        <div className="px-3 sm:px-6 pt-3 sm:pt-4 border-b border-ink-100 flex overflow-x-auto gap-2 bg-white shrink-0">
           <button
             type="button"
             onClick={() => {
               setAbaAtiva('precos_operadora');
               setErroForm(null);
             }}
-            className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl border-b-2 transition-all flex items-center gap-2 ${
+            className={`px-3 sm:px-4 py-2.5 text-xs font-semibold rounded-t-xl border-b-2 transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap cursor-pointer ${
               abaAtiva === 'precos_operadora'
                 ? 'border-brand-600 text-brand-700 bg-brand-50/50'
                 : 'border-transparent text-ink-500 hover:text-ink-800'
             }`}
           >
             <i className="ph ph-table text-sm"></i>
-            Tabela de Preços Acordados por Operadora
+            Tabela de Preços Acordados
           </button>
           <button
             type="button"
@@ -251,14 +252,14 @@ export function ModalTabelaPrecosOperadora({
               setAbaAtiva('importar_lote');
               setErroForm(null);
             }}
-            className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl border-b-2 transition-all flex items-center gap-2 ${
+            className={`px-3 sm:px-4 py-2.5 text-xs font-semibold rounded-t-xl border-b-2 transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap cursor-pointer ${
               abaAtiva === 'importar_lote'
                 ? 'border-brand-600 text-brand-700 bg-brand-50/50'
                 : 'border-transparent text-ink-500 hover:text-ink-800'
             }`}
           >
             <i className="ph ph-upload-simple text-sm"></i>
-            Importar Contrato / Planilha (CSV)
+            Importar Contrato (CSV)
           </button>
           <button
             type="button"
@@ -266,18 +267,18 @@ export function ModalTabelaPrecosOperadora({
               setAbaAtiva('novo_tuss');
               setErroForm(null);
             }}
-            className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl border-b-2 transition-all flex items-center gap-2 ${
+            className={`px-3 sm:px-4 py-2.5 text-xs font-semibold rounded-t-xl border-b-2 transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap cursor-pointer ${
               abaAtiva === 'novo_tuss'
                 ? 'border-brand-600 text-brand-700 bg-brand-50/50'
                 : 'border-transparent text-ink-500 hover:text-ink-800'
             }`}
           >
             <i className="ph ph-plus-circle text-sm"></i>
-            Cadastrar Código Padrão TUSS ({procedimentosTuss.length})
+            Cadastrar TUSS ({procedimentosTuss.length})
           </button>
         </div>
 
-        <div className="p-6 max-h-[75vh] overflow-y-auto space-y-5">
+        <div className="p-4 sm:p-6 max-h-[78dvh] sm:max-h-[75vh] overflow-y-auto space-y-4 sm:space-y-5 flex-1">
           {erroForm && (
             <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
               <i className="ph ph-warning-circle text-base shrink-0"></i>
@@ -384,8 +385,8 @@ export function ModalTabelaPrecosOperadora({
                 </div>
               </form>
 
-              <div className="border border-ink-100 rounded-xl overflow-hidden">
-                <div className="bg-ink-50 px-4 py-3 border-b border-ink-100 flex justify-between items-center">
+              <div className="border border-ink-100 rounded-xl overflow-x-auto">
+                <div className="bg-ink-50 px-4 py-3 border-b border-ink-100 flex justify-between items-center min-w-[600px]">
                   <span className="text-xs font-bold text-ink-700 uppercase tracking-wider">
                     Valores Contratuais Ativos — {operadoraSelecionada?.nome}
                   </span>
@@ -393,7 +394,7 @@ export function ModalTabelaPrecosOperadora({
                     {precosOperadora.length} procedimento(s) precificado(s)
                   </span>
                 </div>
-                <table className="w-full text-left text-xs text-ink-700">
+                <table className="w-full text-left text-xs text-ink-700 min-w-[600px]">
                   <thead>
                     <tr className="bg-ink-50/40 border-b border-ink-100 text-[11px] font-semibold text-ink-400 uppercase">
                       <th className="p-3">Código TUSS</th>
@@ -577,7 +578,8 @@ export function ModalTabelaPrecosOperadora({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 

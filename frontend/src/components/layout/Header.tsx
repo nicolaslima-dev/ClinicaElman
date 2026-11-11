@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import logoElman from '@/assets/images/logos/logo-elman.png';
 import type { UserProfileData } from './types';
 import { useAuth } from '@/contexts/AuthContext';
@@ -7,10 +7,17 @@ import { ConfirmLogoutModal } from '@/components/ui/ConfirmLogoutModal';
 
 interface HeaderProps {
   userProfile: UserProfileData;
+  isMobileMenuOpen: boolean;
   onToggleMobileMenu: () => void;
+  onCloseMobileMenu?: () => void;
 }
 
-export function Header({ userProfile, onToggleMobileMenu }: HeaderProps) {
+export function Header({ 
+  userProfile, 
+  isMobileMenuOpen, 
+  onToggleMobileMenu, 
+  onCloseMobileMenu 
+}: HeaderProps) {
   const [openDropdown, setOpenDropdown] = useState<'none' | 'notifications' | 'settings'>('none');
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -34,7 +41,15 @@ export function Header({ userProfile, onToggleMobileMenu }: HeaderProps) {
   }, []);
 
   const toggleDropdown = (dropdown: 'notifications' | 'settings') => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
+    }
     setOpenDropdown(prev => prev === dropdown ? 'none' : dropdown);
+  };
+
+  const handleToggleMobileMenu = () => {
+    setOpenDropdown('none');
+    onToggleMobileMenu();
   };
 
   const handleOpenLogoutModal = () => {
@@ -66,21 +81,23 @@ export function Header({ userProfile, onToggleMobileMenu }: HeaderProps) {
               <button 
                 type="button" 
                 onClick={() => toggleDropdown('notifications')}
-                className="relative p-2 text-brand-100/50 hover:text-white transition-all duration-200 cursor-pointer active:scale-95 rounded-full hover:bg-white/5"
+                aria-label="Notificações"
+                className="relative p-2 h-9 w-9 flex items-center justify-center text-brand-100/70 hover:text-white transition-all duration-200 cursor-pointer active:scale-95 rounded-xl border border-white/15 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/25"
               >
-                <i className="ph ph-bell text-xl"></i>
-                <span className="absolute top-2 right-2.5 w-1.5 h-1.5 bg-gold-500 rounded-full"></span>
+                <i className="ph ph-bell text-lg"></i>
+                <span className="absolute top-2 right-2 w-1.5 h-1.5 bg-gold-500 rounded-full"></span>
               </button>
               <button 
                 onClick={() => toggleDropdown('settings')}
-                className="relative flex rounded-full bg-ink-800 text-sm ml-1 overflow-hidden cursor-pointer active:scale-95 transition-all duration-200"
+                aria-label="Perfil do usuário"
+                className="relative flex rounded-full bg-ink-800 text-sm ml-2 overflow-hidden cursor-pointer active:scale-95 transition-all duration-200 border border-white/15 hover:border-white/25"
               >
                 {userProfile.initials ? (
-                  <div className="h-8 w-8 rounded-full bg-ink-800 border border-white/10 flex items-center justify-center text-brand-100 font-semibold text-xs uppercase">
+                  <div className="h-9 w-9 rounded-full bg-ink-800 flex items-center justify-center text-brand-100 font-semibold text-xs uppercase">
                     {userProfile.initials}
                   </div>
                 ) : (
-                  <div className="h-8 w-8 rounded-full bg-white/10 animate-pulse"></div>
+                  <div className="h-9 w-9 rounded-full bg-white/10 animate-pulse"></div>
                 )}
               </button>
 
@@ -154,17 +171,45 @@ export function Header({ userProfile, onToggleMobileMenu }: HeaderProps) {
             
             {/* Logo */}
             <div className="flex flex-1 items-center justify-center">
-              <img src={logoElman} alt="Clínica Elman" className="h-8 w-auto object-contain" />
+              <Link 
+                to="/dashboard" 
+                onClick={() => onCloseMobileMenu?.()} 
+                className="flex items-center justify-center transition-transform active:scale-95 focus:outline-none"
+              >
+                <img src={logoElman} alt="Clínica Elman" className="h-8 w-auto object-contain" />
+              </Link>
             </div>
 
-            {/* Hamburger (Mobile Right) */}
+            {/* Hamburger (Mobile Right) com Borda Leve e Animação Morfada */}
             <div className="flex items-center">
               <button 
                 type="button" 
-                onClick={onToggleMobileMenu}
-                className="group relative inline-flex items-center justify-center rounded-md p-2 text-brand-100/50 hover:bg-white/5 hover:text-white transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-400 h-10 w-10 overflow-hidden cursor-pointer"
+                onClick={handleToggleMobileMenu}
+                aria-label={isMobileMenuOpen ? "Fechar menu principal" : "Abrir menu principal"}
+                aria-expanded={isMobileMenuOpen}
+                className={`group relative inline-flex items-center justify-center rounded-xl p-2.5 h-10 w-10 transition-all duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-brand-400/40 cursor-pointer active:scale-90 border ${
+                  isMobileMenuOpen 
+                    ? 'border-white/30 bg-white/10 text-white shadow-sm ring-1 ring-white/10' 
+                    : 'border-white/15 bg-white/[0.04] text-brand-100/70 hover:text-white hover:bg-white/[0.08] hover:border-white/25'
+                }`}
               >
-                <i className="ph ph-list text-2xl"></i>
+                <div className="w-5 h-4 relative flex flex-col justify-between items-center pointer-events-none">
+                  <span 
+                    className={`w-5 h-[2px] bg-current rounded-full transition-all duration-300 ease-in-out transform origin-center ${
+                      isMobileMenuOpen ? 'translate-y-[7px] rotate-45' : 'translate-y-0 rotate-0'
+                    }`} 
+                  />
+                  <span 
+                    className={`w-5 h-[2px] bg-current rounded-full transition-all duration-200 ease-in-out ${
+                      isMobileMenuOpen ? 'opacity-0 scale-x-0 -translate-x-1' : 'opacity-100 scale-x-100 translate-x-0'
+                    }`} 
+                  />
+                  <span 
+                    className={`w-5 h-[2px] bg-current rounded-full transition-all duration-300 ease-in-out transform origin-center ${
+                      isMobileMenuOpen ? '-translate-y-[7px] -rotate-45' : 'translate-y-0 rotate-0'
+                    }`} 
+                  />
+                </div>
               </button>
             </div>
           </div>

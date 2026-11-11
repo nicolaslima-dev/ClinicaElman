@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import type {
   AuditoriaCriticaRecord,
@@ -126,34 +127,34 @@ export function FaturamentoModalGeracao({
     );
   };
 
-  return (
+  return createPortal(
     <div
       id="modalConfirmacao"
-      className="fixed inset-0 bg-ink-950/55 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
+      className="fixed inset-0 bg-ink-950/60 backdrop-blur-sm z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden overscroll-contain animate-in fade-in-0 duration-200"
     >
       <div
         id="modalBox"
-        className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden border border-ink-100 my-8"
+        className="bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden border border-ink-100 my-0 sm:my-8 max-h-[95dvh] sm:max-h-[90dvh] flex flex-col overscroll-contain"
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-ink-100 flex justify-between items-center bg-ink-50/70">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-ink-900 text-brand-300 flex items-center justify-center shadow-sm">
-              <i className="ph ph-file-code text-2xl"></i>
+        <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-ink-100 flex justify-between items-center bg-ink-50/70 shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 sm:w-11 h-10 sm:h-11 rounded-xl bg-ink-900 text-brand-300 flex items-center justify-center shadow-sm shrink-0">
+              <i className="ph ph-file-code text-xl sm:text-2xl"></i>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-lg font-bold font-heading text-ink-900">
-                  Motor de Exportação XML TISS (Padrão ANS)
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <h3 className="text-base sm:text-lg font-bold font-heading text-ink-900 truncate">
+                  Motor de Exportação XML TISS
                 </h3>
                 {resultadoXml && (
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-brand-100 text-brand-800 border border-brand-200">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-mono font-bold bg-brand-100 text-brand-800 border border-brand-200">
                     ans:Padrao {resultadoXml.versaoTiss}
                   </span>
                 )}
               </div>
-              <p className="text-xs text-ink-500">
-                Geração estruturada ans:mensagemTISS (SP/SADT) com adaptação dinâmica de versão da operadora e Hash Epílogo MD5
+              <p className="text-xs text-ink-500 line-clamp-1">
+                Geração estruturada ans:mensagemTISS (SP/SADT) com validação de versão e Hash MD5
               </p>
             </div>
           </div>
@@ -161,14 +162,14 @@ export function FaturamentoModalGeracao({
           <button
             type="button"
             onClick={onClose}
-            className="text-ink-400 hover:text-ink-700 p-2 rounded-lg hover:bg-ink-100 transition-colors cursor-pointer"
+            className="text-ink-400 hover:text-ink-700 p-1.5 sm:p-2 rounded-lg hover:bg-ink-100 transition-colors cursor-pointer shrink-0"
           >
             <i className="ph ph-x text-lg"></i>
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6 max-h-[75vh] overflow-y-auto space-y-5">
+        <div className="p-4 sm:p-6 max-h-[78dvh] sm:max-h-[75vh] overflow-y-auto space-y-4 sm:space-y-5 flex-1">
           {/* Seleção do Lote */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end bg-ink-50/60 p-4 rounded-2xl border border-ink-100">
             <div className="md:col-span-7">
@@ -363,11 +364,11 @@ export function FaturamentoModalGeracao({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-ink-50 border-t border-ink-100 flex justify-between items-center gap-3">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 bg-ink-50 border-t border-ink-100 flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-2.5 sm:gap-3 shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-full text-xs font-semibold text-ink-600 bg-white border border-ink-200 hover:bg-ink-100 transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs font-semibold text-ink-600 bg-white border border-ink-200 hover:bg-ink-100 transition-colors cursor-pointer text-center"
           >
             Fechar
           </button>
@@ -378,15 +379,18 @@ export function FaturamentoModalGeracao({
               !resultadoXml || isBloqueadoAuditoria || exportando || verificandoAuditoria
             }
             onClick={handleBaixarXmlOficial}
-            className="bg-ink-900 hover:bg-ink-800 disabled:bg-ink-300 text-white font-semibold py-2.5 px-6 rounded-full transition-all text-xs flex items-center gap-2 shadow-soft cursor-pointer"
+            className="w-full sm:w-auto bg-ink-900 hover:bg-ink-800 disabled:bg-ink-300 text-white font-semibold py-2.5 px-6 rounded-full transition-all text-xs flex items-center justify-center gap-2 shadow-soft cursor-pointer text-center"
           >
             <i className="ph ph-download-simple text-base text-brand-300"></i>
-            {exportando
-              ? 'Gerando Arquivo XML...'
-              : `Baixar Arquivo XML (${resultadoXml?.versaoTiss || 'TISS'})`}
+            <span>
+              {exportando
+                ? 'Gerando Arquivo XML...'
+                : `Baixar Arquivo XML (${resultadoXml?.versaoTiss || 'TISS'})`}
+            </span>
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

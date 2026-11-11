@@ -58,37 +58,37 @@ export function ModalEmitirGuiaSpSadt({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[115] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-ink-900/50 backdrop-blur-sm" onClick={onClose}></div>
+    <div className="fixed inset-0 z-[115] flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto">
+      <div className="fixed inset-0 bg-ink-900/50 backdrop-blur-sm" onClick={onClose}></div>
 
       <form
         onSubmit={handleSubmit}
-        className="relative bg-white rounded-2xl shadow-2xl border border-ink-100 w-full max-w-lg overflow-hidden z-10 fade-in"
+        className="relative bg-white rounded-2xl shadow-2xl border border-ink-100 w-full max-w-lg overflow-hidden z-10 flex flex-col max-h-[92dvh] sm:max-h-[90vh] my-auto fade-in"
       >
-        <div className="px-6 py-5 border-b border-ink-100 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
-              <i className="ph ph-file-plus text-xl"></i>
+        <div className="px-4 py-3.5 sm:px-6 sm:py-5 border-b border-ink-100 flex items-center justify-between gap-2.5 sm:gap-3 shrink-0 bg-white">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+              <i className="ph ph-file-plus text-base sm:text-xl"></i>
             </div>
-            <div>
-              <h3 className="text-lg font-bold font-heading text-ink-900">
-                Gerar Guia TISS SP/SADT p/ Terapeuta
+            <div className="min-w-0">
+              <h3 className="text-sm sm:text-lg font-bold font-heading text-ink-900 leading-snug break-words">
+                Gerar Guia TISS SP/SADT
               </h3>
-              <p className="text-xs text-ink-500">
-                Emissão automática conforme versão TISS da operadora e envio ao profissional.
+              <p className="text-[11px] sm:text-xs text-ink-500 leading-tight mt-0.5">
+                Emissão automática e envio ao terapeuta designado.
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-ink-400 hover:text-ink-700 bg-ink-50 hover:bg-ink-100 rounded-full p-2 transition-colors"
+            className="text-ink-400 hover:text-ink-700 bg-ink-50 hover:bg-ink-100 rounded-full p-2 transition-colors shrink-0 cursor-pointer"
           >
             <i className="ph ph-x text-lg"></i>
           </button>
         </div>
 
-        <div className="p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
           {erro && (
             <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
               {erro}
@@ -169,18 +169,18 @@ export function ModalEmitirGuiaSpSadt({
           </div>
         </div>
 
-        <div className="px-6 py-4 bg-ink-50 border-t border-ink-100 flex justify-end gap-3">
+        <div className="px-4 py-3.5 sm:px-6 sm:py-4 bg-ink-50 border-t border-ink-100 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 shrink-0">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-full text-sm font-medium text-ink-600 bg-white border border-ink-200 hover:bg-ink-50 transition-colors"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium text-ink-600 bg-white border border-ink-200 hover:bg-ink-50 transition-colors"
           >
             Cancelar
           </button>
           <button
             type="submit"
             disabled={emitindo || saldo <= 0}
-            className="px-6 py-2.5 rounded-full text-sm font-medium text-white bg-ink-900 hover:bg-ink-800 disabled:opacity-60 transition-all flex items-center gap-2 shadow-soft"
+            className="w-full sm:w-auto justify-center px-6 py-2.5 rounded-full text-xs sm:text-sm font-medium text-white bg-ink-900 hover:bg-ink-800 disabled:opacity-60 transition-all flex items-center gap-2 shadow-soft"
           >
             <i className="ph ph-paper-plane-tilt text-brand-300 text-lg"></i>
             {emitindo ? 'Gerando Guia...' : 'Gerar Guia e Enviar ao Terapeuta'}

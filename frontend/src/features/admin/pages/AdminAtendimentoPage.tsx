@@ -64,34 +64,35 @@ export function AdminAtendimentoPage() {
 
   return (
     <>
-      <div id="view-atendimento" className="view-section fade-in max-w-7xl mx-auto w-full">
+      <div id="view-atendimento" className="view-section fade-in max-w-7xl mx-auto w-full pb-10">
         {/* Page Header */}
-      <div className="flex justify-between items-end mb-8">
-        <div>
-          <h1 className="text-[28px] font-semibold font-heading text-ink-900 tracking-tight">
-            Gestão de Atendimentos
-          </h1>
-          <p className="text-sm text-ink-400 mt-1">
-            Acompanhe a agenda do dia, cadastre novas fichas e monitore o fluxo clínico.
-          </p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-6 sm:mb-8">
+          <div>
+            <h1 className="text-2xl sm:text-[28px] font-semibold font-heading text-ink-900 tracking-tight leading-tight">
+              Gestão de Atendimentos
+            </h1>
+            <p className="text-xs sm:text-sm text-ink-400 mt-1">
+              Acompanhe a agenda do dia, cadastre novas fichas e monitore o fluxo clínico.
+            </p>
+          </div>
+          <Link to="/atendimento/novo" className="w-full sm:w-auto">
+            <button
+              type="button"
+              className="w-full sm:w-auto justify-center bg-ink-900 hover:bg-ink-800 text-white font-medium py-2.5 px-5 sm:px-6 rounded-full transition-all text-xs sm:text-sm flex items-center gap-2 shadow-soft group cursor-pointer"
+            >
+              <i className="ph ph-plus-circle text-base sm:text-lg text-brand-300 group-hover:rotate-90 transition-transform duration-300 shrink-0"></i>
+              <span>Novo Atendimento</span>
+            </button>
+          </Link>
         </div>
-        <Link to="/atendimento/novo">
-          <button
-            className="bg-ink-900 hover:bg-ink-800 text-white font-medium py-2.5 px-6 rounded-full transition-all text-sm flex items-center gap-2 shadow-soft group"
-          >
-            <i className="ph ph-plus-circle text-lg text-brand-300 group-hover:rotate-90 transition-transform duration-300"></i>
-            Novo Atendimento
-          </button>
-        </Link>
-      </div>
 
-      <AtendimentoKpiCards onExportarAgenda={exportarAgenda} />
+        <AtendimentoKpiCards onExportarAgenda={exportarAgenda} />
 
-      <AtendimentoTable
-        atendimentos={mockAtendimentos}
-        onOpenHistorico={abrirHistorico}
-        onOpenImpressao={() => setModalImpressaoOpen(true)}
-      />
+        <AtendimentoTable
+          atendimentos={mockAtendimentos}
+          onOpenHistorico={abrirHistorico}
+          onOpenImpressao={() => setModalImpressaoOpen(true)}
+        />
       </div>
 
       <ModalImpressao

@@ -18,10 +18,10 @@ export function OperadorasPlanosSection({
       .length;
 
   return (
-    <div className="space-y-5">
-      <div className="bg-white p-6 rounded-[20px] shadow-card border border-ink-100/50 flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-5">
+      <div className="bg-white p-4 sm:p-6 rounded-[20px] shadow-card border border-ink-100/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5 sm:gap-4">
         <div>
-          <h3 className="text-base font-semibold font-heading text-ink-900">
+          <h3 className="text-sm sm:text-base font-semibold font-heading text-ink-900">
             Operadoras & Planos Pré-Definidos (Modelagem Relacional)
           </h3>
           <p className="text-xs text-ink-500 mt-1">
@@ -31,14 +31,14 @@ export function OperadorasPlanosSection({
         <button
           type="button"
           onClick={() => onAbrirModal({ tipo: 'nova_operadora' })}
-          className="bg-ink-900 hover:bg-ink-800 text-white font-medium py-2.5 px-5 rounded-full transition-all text-sm flex items-center gap-2 shadow-soft"
+          className="w-full sm:w-auto justify-center bg-ink-900 hover:bg-ink-800 text-white font-medium py-2.5 px-5 rounded-full transition-all text-xs sm:text-sm flex items-center gap-2 shadow-soft shrink-0 cursor-pointer"
         >
           <i className="ph ph-plus-circle text-brand-300 text-lg"></i>
           Nova Operadora
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         {operadoras.map(op => {
           const qtdPacientes = contarPacientesOperadora(op.id);
           const planos = op.planos || [];
@@ -46,7 +46,7 @@ export function OperadorasPlanosSection({
           return (
             <div
               key={op.id}
-              className="bg-white rounded-[20px] p-6 shadow-card border border-ink-100/70 flex flex-col justify-between hover:border-brand-200 transition-all"
+              className="bg-white rounded-[20px] p-4 sm:p-6 shadow-card border border-ink-100/70 flex flex-col justify-between hover:border-brand-200 transition-all"
             >
               <div>
                 <div className="flex items-start justify-between gap-3 mb-4">

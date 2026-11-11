@@ -22,19 +22,22 @@ function KpiCard({
   tooltip
 }: KpiCardProps) {
   return (
-    <div className="action-card relative group bg-white p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between">
-      <div>
-        <p className="text-xs font-medium text-ink-400 uppercase tracking-wide">{title}</p>
-        <p className="text-2xl font-semibold font-heading text-ink-900 mt-1">
-          {value} <span className={`text-sm font-medium font-sans ${subtitleColor}`}>{subtitle}</span>
+    <div className="action-card relative group bg-white p-3.5 sm:p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between gap-2">
+      <div className="min-w-0">
+        <p className="text-[10px] sm:text-xs font-medium text-ink-400 uppercase tracking-wide truncate">{title}</p>
+        <p className="text-lg sm:text-2xl font-semibold font-heading text-ink-900 mt-0.5 sm:mt-1 truncate">
+          {value}{' '}
+          <span className={`text-[11px] sm:text-sm font-medium font-sans ${subtitleColor} block sm:inline`}>
+            {subtitle}
+          </span>
         </p>
       </div>
-      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${iconBgColor} ${iconColor}`}>
-        <i className={`ph ${icon} text-xl`}></i>
+      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 ${iconBgColor} ${iconColor}`}>
+        <i className={`ph ${icon} text-base sm:text-xl`}></i>
       </div>
       
       {tooltip && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-56 bg-ink-900 text-white text-xs text-center p-2.5 rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg font-medium">
+        <div className="hidden sm:block absolute bottom-full left-1/2 -translate-x-1/2 mb-3 w-56 bg-ink-900 text-white text-xs text-center p-2.5 rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50 shadow-lg font-medium">
           {tooltip}
           <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-ink-900"></div>
         </div>
@@ -49,7 +52,7 @@ interface AtendimentoKpiCardsProps {
 
 export function AtendimentoKpiCards({ onExportarAgenda }: AtendimentoKpiCardsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-5 sm:mb-8">
       <KpiCard 
         title="Para Hoje"
         value="42"
@@ -84,14 +87,17 @@ export function AtendimentoKpiCards({ onExportarAgenda }: AtendimentoKpiCardsPro
       {/* Card 4: Relatórios Rápidos (Custom style) */}
       <div 
         onClick={onExportarAgenda}
-        className="action-card cursor-pointer p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between bg-gradient-to-br from-brand-900 to-ink-900 text-white"
+        className="action-card cursor-pointer p-3.5 sm:p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between gap-2 bg-gradient-to-br from-brand-900 to-ink-900 text-white"
       >
-        <div>
-          <p className="text-xs font-medium text-brand-200 uppercase tracking-wide">Relatórios</p>
-          <p className="text-sm font-medium mt-1 leading-snug">Exportar agenda<br/>e listagem diária</p>
+        <div className="min-w-0">
+          <p className="text-[10px] sm:text-xs font-medium text-brand-200 uppercase tracking-wide truncate">Relatórios</p>
+          <p className="text-xs sm:text-sm font-medium mt-0.5 sm:mt-1 leading-snug">
+            Exportar agenda
+            <span className="hidden sm:inline"><br/>e listagem diária</span>
+          </p>
         </div>
-        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white backdrop-blur-sm border border-white/20">
-          <i className="ph ph-download-simple text-xl"></i>
+        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 flex items-center justify-center text-white backdrop-blur-sm border border-white/20 shrink-0">
+          <i className="ph ph-download-simple text-base sm:text-xl"></i>
         </div>
       </div>
     </div>

@@ -40,10 +40,17 @@ export function ModalAssinatura({
     const canvas = signatureCanvasRef.current;
     if (!canvas) return [0, 0];
     const rect = canvas.getBoundingClientRect();
+    // Converte coordenadas da tela para o sistema interno do canvas
+    // (no celular o canvas é reduzido via CSS e o traço ficaria deslocado sem essa escala)
+    const scaleX = rect.width ? canvas.width / rect.width : 1;
+    const scaleY = rect.height ? canvas.height / rect.height : 1;
     if (e.touches && e.touches.length > 0) {
-      return [e.touches[0].clientX - rect.left, e.touches[0].clientY - rect.top];
+      return [
+        (e.touches[0].clientX - rect.left) * scaleX,
+        (e.touches[0].clientY - rect.top) * scaleY,
+      ];
     }
-    return [e.clientX - rect.left, e.clientY - rect.top];
+    return [(e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY];
   };
 
   const startDrawing = (e: any) => {
@@ -100,28 +107,29 @@ export function ModalAssinatura({
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[130] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[130] flex items-end sm:items-center justify-center sm:p-4">
       <div className="absolute inset-0 bg-ink-900/60 backdrop-blur-sm" onClick={onClose}></div>
-      <div className="relative bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all w-full max-w-xl border border-ink-100 flex flex-col z-10 fade-in">
-        <div className="bg-white px-6 py-5 border-b border-ink-100 flex justify-between items-center">
-          <div>
-            <h3 className="text-lg leading-6 font-bold text-ink-900 flex items-center gap-2">
+      <div className="relative bg-white rounded-t-2xl sm:rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all w-full max-w-xl border border-ink-100 flex flex-col max-h-[94dvh] z-10 fade-in">
+        <div className="bg-white px-4 sm:px-6 py-4 sm:py-5 border-b border-ink-100 flex justify-between items-start sm:items-center gap-3 shrink-0">
+          <div className="min-w-0">
+            <h3 className="text-base sm:text-lg leading-6 font-bold text-ink-900 flex items-center gap-2">
               <i className="ph-fill ph-signature text-brand-600"></i> Coleta de Assinatura TISS
             </h3>
-            <p className="text-xs text-ink-500 mt-1">
+            <p className="text-[11px] sm:text-xs text-ink-500 mt-1">
               Assinatura do Paciente ou Responsável Legal para validação das sessões na Guia SP/SADT.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-ink-400 hover:text-ink-600 bg-ink-50 hover:bg-ink-100 rounded-full p-2 transition-colors"
+            aria-label="Fechar"
+            className="text-ink-400 hover:text-ink-600 bg-ink-50 hover:bg-ink-100 rounded-full p-2 transition-colors shrink-0"
           >
             <i className="ph ph-x text-lg"></i>
           </button>
         </div>
 
-        <div className="px-6 py-5 bg-ink-50/50 space-y-4">
+        <div className="px-4 sm:px-6 py-4 sm:py-5 bg-ink-50/50 space-y-4 overflow-y-auto">
           {erro && (
             <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2">
               <i className="ph ph-warning-circle text-base"></i>
@@ -169,25 +177,25 @@ export function ModalAssinatura({
           </div>
         </div>
 
-        <div className="bg-ink-50 px-6 py-4 border-t border-ink-100 flex justify-between items-center">
+        <div className="bg-ink-50 px-4 sm:px-6 py-3.5 sm:py-4 pb-[max(0.875rem,env(safe-area-inset-bottom))] sm:pb-4 border-t border-ink-100 flex flex-col-reverse sm:flex-row sm:justify-between sm:items-center gap-2.5">
           <button
             type="button"
-            className="text-sm font-medium text-ink-500 hover:text-ink-700 flex items-center gap-1"
+            className="text-sm font-medium text-ink-500 hover:text-ink-700 flex items-center justify-center gap-1 py-1.5"
             onClick={limparAssinatura}
           >
             <i className="ph ph-eraser"></i> Limpar Quadro
           </button>
-          <div className="flex gap-3">
+          <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
             <button
               type="button"
-              className="inline-flex justify-center rounded-full border border-ink-200 px-5 py-2 bg-white text-sm font-medium text-ink-700 hover:bg-ink-50 transition-colors"
+              className="w-full sm:w-auto inline-flex justify-center rounded-full border border-ink-200 px-5 py-2.5 sm:py-2 bg-white text-sm font-medium text-ink-700 hover:bg-ink-50 transition-colors"
               onClick={onClose}
             >
               Cancelar
             </button>
             <button
               type="button"
-              className="inline-flex justify-center items-center gap-2 rounded-full px-6 py-2 bg-ink-900 text-sm font-medium text-white hover:bg-ink-800 transition-colors shadow-soft"
+              className="w-full sm:w-auto inline-flex justify-center items-center gap-2 rounded-full px-6 py-2.5 sm:py-2 bg-ink-900 text-sm font-medium text-white hover:bg-ink-800 transition-colors shadow-soft"
               onClick={confirmarAssinatura}
             >
               <i className="ph ph-check-circle text-brand-300 text-lg"></i> Confirmar Assinatura

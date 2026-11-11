@@ -30,7 +30,6 @@ import {
 export function AdminPacientesPage() {
   const [abaAtiva, setAbaAtiva] = useState<'pacientes' | 'operadoras'>('pacientes');
   const [loading, setLoading] = useState(true);
-  const [fonteDados, setFonteDados] = useState<'supabase' | 'local'>('local');
 
   const [pacientes, setPacientes] = useState<PacienteRecord[]>([]);
   const [operadoras, setOperadoras] = useState<OperadoraRecord[]>([]);
@@ -59,7 +58,6 @@ export function AdminPacientesPage() {
     ]);
     setOperadoras(resOp.data);
     setPacientes(resPac.data);
-    setFonteDados(resPac.fonte === 'supabase' && resOp.fonte === 'supabase' ? 'supabase' : 'local');
     setLoading(false);
   }, []);
 
@@ -166,69 +164,47 @@ export function AdminPacientesPage() {
       {/* Toast Feedback */}
       {feedback && (
         <div
-          className={`fixed top-6 right-6 z-[150] px-4 py-3.5 rounded-2xl shadow-2xl border flex items-center gap-3 fade-in ${
-            feedback.tipo === 'sucesso'
+          className={`fixed top-4 right-4 left-4 sm:left-auto sm:top-6 sm:right-6 z-[150] px-4 py-3.5 rounded-2xl shadow-2xl border flex items-center gap-3 fade-in ${feedback.tipo === 'sucesso'
               ? 'bg-white border-emerald-200 text-emerald-800'
               : 'bg-white border-red-200 text-red-700'
-          }`}
+            }`}
         >
           <div
-            className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-              feedback.tipo === 'sucesso'
+            className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${feedback.tipo === 'sucesso'
                 ? 'bg-emerald-50 text-emerald-600'
                 : 'bg-red-50 text-red-600'
-            }`}
+              }`}
           >
             <i
-              className={`ph ${
-                feedback.tipo === 'sucesso' ? 'ph-check-circle' : 'ph-warning-circle'
-              } text-lg`}
+              className={`ph ${feedback.tipo === 'sucesso' ? 'ph-check-circle' : 'ph-warning-circle'
+                } text-lg`}
             ></i>
           </div>
-          <span className="text-sm font-medium pr-2">{feedback.mensagem}</span>
+          <span className="text-xs sm:text-sm font-medium pr-2">{feedback.mensagem}</span>
         </div>
       )}
 
       {/* Page Header */}
-      <div className="flex flex-wrap justify-between items-end gap-4 mb-7">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-5 sm:mb-7">
         <div>
           <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-[28px] font-semibold font-heading text-ink-900 tracking-tight">
+            <h1 className="text-2xl sm:text-[28px] font-semibold font-heading text-ink-900 tracking-tight leading-tight">
               Pacientes & Convênios TISS
             </h1>
-            <span
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${
-                fonteDados === 'supabase'
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                  : 'bg-amber-50 text-amber-700 border-amber-200'
-              }`}
-              title={
-                fonteDados === 'supabase'
-                  ? 'Sincronizado diretamente com public.operadoras, public.planos_saude e public.pacientes no Supabase'
-                  : 'Armazenando localmente — rode o script SQL 001_fase1_operadoras_planos_pacientes.sql no Supabase para persistir na nuvem'
-              }
-            >
-              <span
-                className={`w-2 h-2 rounded-full ${
-                  fonteDados === 'supabase' ? 'bg-emerald-500' : 'bg-amber-500'
-                }`}
-              ></span>
-              {fonteDados === 'supabase' ? 'Supabase Conectado (3FN)' : 'Modo Local (Aguardando SQL Supabase)'}
-            </span>
           </div>
-          <p className="text-sm text-ink-400 mt-1">
-            Cadastre pacientes completos e gerencie previamente operadoras e planos com suas versões TISS pré-definidas.
+          <p className="text-xs sm:text-sm text-ink-400 mt-1">
+            Cadastre pacientes completos e gerencie operadoras e planos com suas versões TISS pré-definidas.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
           <button
             type="button"
             onClick={() => setModoModalConvenio({ tipo: 'nova_operadora' })}
-            className="px-5 py-2.5 rounded-full text-sm font-medium text-ink-700 bg-white border border-ink-200 hover:bg-ink-50 transition-colors flex items-center gap-2 shadow-card"
+            className="h-10 px-2 sm:px-5 rounded-full text-[11px] sm:text-sm font-semibold text-ink-700 bg-white border border-ink-200 hover:bg-ink-50 transition-colors flex items-center justify-center gap-1 sm:gap-2 shadow-card cursor-pointer whitespace-nowrap"
           >
-            <i className="ph ph-buildings text-brand-600 text-lg"></i>
-            Nova Operadora
+            <i className="ph ph-buildings text-brand-600 text-sm sm:text-lg shrink-0"></i>
+            <span>Nova Operadora</span>
           </button>
 
           <button
@@ -237,112 +213,126 @@ export function AdminPacientesPage() {
               setPacienteEdicao(null);
               setModalPacienteOpen(true);
             }}
-            className="bg-ink-900 hover:bg-ink-800 text-white font-medium py-2.5 px-6 rounded-full transition-all text-sm flex items-center gap-2 shadow-soft group"
+            className="h-10 px-2 sm:px-6 bg-ink-900 hover:bg-ink-800 text-white font-semibold rounded-full transition-all text-[11px] sm:text-sm flex items-center justify-center gap-1 sm:gap-2 shadow-soft group cursor-pointer whitespace-nowrap"
           >
-            <i className="ph ph-user-plus text-lg text-brand-300"></i>
-            Novo Paciente
+            <i className="ph ph-user-plus text-sm sm:text-lg text-brand-300 shrink-0"></i>
+            <span>Novo Paciente</span>
           </button>
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-7">
-        <div className="action-card bg-white p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-ink-400 uppercase tracking-wide">
+      {/* KPI Cards (Grid 2x2 no celular, 4 colunas no desktop) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5 mb-5 sm:mb-7">
+        {/* Card 1: Pacientes Ativos */}
+        <div className="action-card bg-white p-3 sm:p-5 rounded-2xl border border-ink-100 shadow-card flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold text-ink-400 uppercase tracking-wider leading-tight">
               Pacientes Ativos
-            </p>
-            <p className="text-2xl font-semibold font-heading text-ink-900 mt-1">
-              {pacientes.length}{' '}
-              <span className="text-sm font-medium font-sans text-ink-400">cadastrados</span>
-            </p>
+            </span>
+            <div className="w-6 h-6 sm:w-9 sm:h-9 rounded-full flex items-center justify-center bg-brand-50 text-brand-600 shrink-0">
+              <i className="ph ph-users text-xs sm:text-lg"></i>
+            </div>
           </div>
-          <div className="w-10 h-10 rounded-full flex items-center justify-center bg-brand-50 text-brand-600">
-            <i className="ph ph-users text-xl"></i>
+          <div>
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-lg sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+                {pacientes.length}
+              </span>
+              <span className="text-[10px] sm:text-xs font-medium text-ink-500">
+                cadastrados
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="action-card bg-white p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between">
-          <div>
-            <p className="text-xs font-medium text-ink-400 uppercase tracking-wide">
+        {/* Card 2: Operadoras TISS */}
+        <div className="action-card bg-white p-3 sm:p-5 rounded-2xl border border-ink-100 shadow-card flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold text-ink-400 uppercase tracking-wider leading-tight">
               Operadoras TISS
-            </p>
-            <p className="text-2xl font-semibold font-heading text-ink-900 mt-1">
-              {operadoras.length}{' '}
-              <span className="text-sm font-medium font-sans text-ink-400">
+            </span>
+            <div className="w-6 h-6 sm:w-9 sm:h-9 rounded-full flex items-center justify-center bg-blue-50 text-blue-600 shrink-0">
+              <i className="ph ph-buildings text-xs sm:text-lg"></i>
+            </div>
+          </div>
+          <div>
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-lg sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+                {operadoras.length}
+              </span>
+              <span className="text-[10px] sm:text-xs font-medium text-ink-500">
                 ({totalPlanos} planos)
               </span>
-            </p>
-          </div>
-          <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-50 text-blue-600">
-            <i className="ph ph-buildings text-xl"></i>
+            </div>
           </div>
         </div>
 
-        <div className="action-card bg-white p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between">
+        {/* Card 3: Conferência Carteira */}
+        <div className="action-card bg-white p-3 sm:p-5 rounded-2xl border border-ink-100 shadow-card flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold text-ink-400 uppercase tracking-wider leading-tight">
+              Conferência
+            </span>
+            <div className="w-6 h-6 sm:w-9 sm:h-9 rounded-full flex items-center justify-center bg-amber-50 text-amber-600 shrink-0">
+              <i className="ph ph-identification-badge text-xs sm:text-lg"></i>
+            </div>
+          </div>
           <div>
-            <p className="text-xs font-medium text-ink-400 uppercase tracking-wide">
-              Conferência Carteira
-            </p>
-            <p className="text-2xl font-semibold font-heading text-ink-900 mt-1">
-              {alertasCarteira}{' '}
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-lg sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+                {alertasCarteira}
+              </span>
               <span
-                className={`text-sm font-medium font-sans ${
+                className={`text-[10px] sm:text-xs font-semibold ${
                   alertasCarteira > 0 ? 'text-amber-600' : 'text-emerald-600'
                 }`}
               >
                 {alertasCarteira === 1 ? 'divergência' : 'divergências'}
               </span>
-            </p>
-          </div>
-          <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gold-500/10 text-gold-600">
-            <i className="ph ph-identification-badge text-xl"></i>
+            </div>
           </div>
         </div>
 
+        {/* Card 4: Atalho Rápido */}
         <div
           onClick={() => setAbaAtiva(abaAtiva === 'pacientes' ? 'operadoras' : 'pacientes')}
-          className="action-card cursor-pointer p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between bg-gradient-to-br from-brand-900 to-ink-900 text-white"
+          className="action-card cursor-pointer p-3 sm:p-5 rounded-2xl border border-ink-100 shadow-card flex flex-col justify-between bg-gradient-to-br from-brand-900 to-ink-900 text-white group"
         >
-          <div>
-            <p className="text-xs font-medium text-brand-200 uppercase tracking-wide">
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold text-brand-200 uppercase tracking-wider leading-tight">
               Atalho Rápido
-            </p>
-            <p className="text-sm font-medium mt-1 leading-snug">
-              {abaAtiva === 'pacientes' ? (
-                <>
-                  Gerenciar Operadoras
-                  <br />e Versões TISS
-                </>
-              ) : (
-                <>
-                  Voltar para Lista
-                  <br />de Pacientes
-                </>
-              )}
-            </p>
+            </span>
+            <div className="w-6 h-6 sm:w-9 sm:h-9 rounded-full bg-white/10 flex items-center justify-center text-white border border-white/20 shrink-0 group-hover:bg-white/20 transition-colors">
+              <i className="ph ph-arrows-left-right text-xs sm:text-lg"></i>
+            </div>
           </div>
-          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white border border-white/20">
-            <i className="ph ph-arrows-left-right text-xl"></i>
+          <div>
+            <p className="text-xs sm:text-sm font-bold text-white leading-tight">
+              {abaAtiva === 'pacientes' ? 'Gerenciar Operadoras' : 'Lista de Pacientes'}
+            </p>
+            <p className="text-[10px] sm:text-xs text-brand-300 font-medium leading-tight mt-0.5">
+              {abaAtiva === 'pacientes' ? 'Planos & Versões TISS' : 'Voltar aos cadastros'}
+            </p>
           </div>
         </div>
       </div>
 
       {/* Tabs: Pacientes vs Operadoras & Planos */}
-      <div className="flex items-center gap-2 mb-6 p-1 bg-white border border-ink-100 rounded-xl w-fit shadow-xs">
+      <div className="grid grid-cols-2 sm:flex items-center gap-1.5 sm:gap-2 mb-5 sm:mb-6 p-1 bg-white border border-ink-100 rounded-xl w-full sm:w-fit shadow-xs">
         <button
           type="button"
           onClick={() => setAbaAtiva('pacientes')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+          className={`px-2.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer ${
             abaAtiva === 'pacientes'
               ? 'bg-ink-900 text-white shadow-xs'
               : 'text-ink-500 hover:text-ink-900'
           }`}
         >
-          <i className="ph ph-users"></i>
-          Pacientes Cadastrados
+          <i className="ph ph-users shrink-0 text-xs sm:text-sm"></i>
+          <span className="whitespace-nowrap">Pacientes</span>
+          <span className="hidden sm:inline">Cadastrados</span>
           <span
-            className={`text-[11px] px-2 py-0.5 rounded-full ${
+            className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full shrink-0 ${
               abaAtiva === 'pacientes' ? 'bg-white/20 text-white' : 'bg-ink-100 text-ink-600'
             }`}
           >
@@ -353,16 +343,17 @@ export function AdminPacientesPage() {
         <button
           type="button"
           onClick={() => setAbaAtiva('operadoras')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+          className={`px-2.5 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 sm:gap-2 cursor-pointer ${
             abaAtiva === 'operadoras'
               ? 'bg-ink-900 text-white shadow-xs'
               : 'text-ink-500 hover:text-ink-900'
           }`}
         >
-          <i className="ph ph-buildings"></i>
-          Operadoras & Planos (Versões TISS)
+          <i className="ph ph-buildings shrink-0 text-xs sm:text-sm"></i>
+          <span className="whitespace-nowrap">Operadoras</span>
+          <span className="hidden sm:inline">& Planos (TISS)</span>
           <span
-            className={`text-[11px] px-2 py-0.5 rounded-full ${
+            className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 rounded-full shrink-0 ${
               abaAtiva === 'operadoras' ? 'bg-white/20 text-white' : 'bg-ink-100 text-ink-600'
             }`}
           >
