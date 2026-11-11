@@ -215,26 +215,26 @@ export function AtendimentoTable({ atendimentos, onOpenHistorico, onOpenImpressa
               return (
                 <div
                   key={item.id}
-                  className="rounded-2xl border border-ink-100 bg-white p-4 shadow-xs hover:border-brand-200 transition-all flex flex-col justify-between gap-3.5"
+                  className="rounded-2xl border border-ink-100 bg-white p-3.5 sm:p-4 shadow-xs hover:border-brand-200 transition-all flex flex-col justify-between gap-3"
                 >
                   {/* Topo do Card: Paciente, Guia e Status Operacional */}
                   <div className="flex items-start justify-between gap-2.5">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-9 h-9 rounded-full bg-brand-50 text-brand-700 border border-brand-100 flex items-center justify-center font-bold font-heading text-xs shrink-0">
+                    <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                      <div className="w-9 h-9 rounded-full bg-brand-50 text-brand-700 border border-brand-100 flex items-center justify-center font-bold font-heading text-xs shrink-0 mt-0.5 shadow-2xs">
                         {iniciais}
                       </div>
-                      <div className="min-w-0">
-                        <p className="font-semibold text-ink-900 text-sm leading-snug truncate">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-ink-900 text-sm leading-snug break-words">
                           {item.paciente}
                         </p>
-                        <p className="text-xs font-mono text-ink-400 mt-0.5">
+                        <p className="text-xs font-mono text-ink-500 mt-0.5">
                           Guia: <strong className="text-ink-700">#{item.guia}</strong>
                         </p>
                       </div>
                     </div>
 
                     <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold border shrink-0 ${statusBadge.classe}`}
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border shrink-0 ${statusBadge.classe}`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full ${statusBadge.dot}`}></span>
                       {statusBadge.label}
@@ -242,37 +242,46 @@ export function AtendimentoTable({ atendimentos, onOpenHistorico, onOpenImpressa
                   </div>
 
                   {/* Bloco Central: Horário, Profissional e Convênio */}
-                  <div className="p-3 rounded-xl bg-ink-50/70 border border-ink-100 space-y-2 text-xs">
+                  <div className="p-3 rounded-xl bg-ink-50/70 border border-ink-100 space-y-2.5 text-xs">
                     {/* Horário e Sala */}
-                    <div className="flex items-center justify-between gap-2 flex-wrap">
-                      <div className="flex items-center gap-1.5 font-medium text-ink-800">
+                    <div className="flex flex-col items-center justify-center text-center gap-1.5 pb-0.5">
+                      <div className="flex items-center justify-center gap-2 font-medium text-ink-800">
                         <i className="ph ph-clock text-brand-600 text-sm shrink-0"></i>
-                        <span className="font-mono font-bold text-ink-900">{item.horario}</span>
+                        <span className="font-mono font-bold text-ink-900 text-sm">{item.horario}</span>
                         <span className="text-ink-400">•</span>
-                        <span className="text-ink-500">{item.data}</span>
+                        <span className="text-ink-600 font-medium text-xs">{item.data}</span>
                       </div>
-                      <span className="px-2 py-0.5 rounded-md bg-white border border-ink-200 text-[11px] font-medium text-ink-700">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-md bg-white border border-ink-200 text-[11px] font-medium text-ink-700 shadow-2xs">
+                        <i className="ph ph-door text-ink-400 text-xs"></i>
                         {item.local}
                       </span>
                     </div>
 
                     {/* Profissional */}
-                    <div className="flex items-center gap-1.5 pt-1 border-t border-ink-200/60 text-ink-600">
-                      <i className="ph ph-stethoscope text-ink-400 text-sm shrink-0"></i>
-                      <span className="truncate">
-                        Profissional: <strong className="text-ink-800">{item.profissional}</strong>
-                      </span>
+                    <div className="flex items-start gap-1.5 pt-2 border-t border-ink-200/60 text-ink-600">
+                      <i className="ph ph-stethoscope text-ink-400 text-sm shrink-0 mt-0.5"></i>
+                      <div className="min-w-0 flex-1 leading-snug break-words">
+                        <span className="text-ink-400 text-[11px]">Profissional: </span>
+                        <strong className="text-ink-800 text-xs">{item.profissional}</strong>
+                      </div>
                     </div>
 
                     {/* Convênio & Status Financeiro */}
-                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-ink-200/60 flex-wrap">
-                      <div className="min-w-0">
-                        <p className="font-medium text-ink-800 truncate">{item.convenio}</p>
-                        <p className="text-[11px] text-ink-400">{item.cobertura}</p>
+                    <div className="pt-2 border-t border-ink-200/60 space-y-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[10px] uppercase font-bold text-ink-400 tracking-wider">
+                          Convênio / Plano
+                        </span>
+                        <span className="text-[10px] uppercase font-semibold text-ink-600 bg-white border border-ink-200 px-2 py-0.5 rounded-md shrink-0 shadow-2xs">
+                          Fin: {item.statusFinanceiro}
+                        </span>
                       </div>
-                      <span className="text-[10px] uppercase font-semibold text-ink-600 bg-white border border-ink-200 px-2 py-0.5 rounded-md shrink-0">
-                        Fin: {item.statusFinanceiro}
-                      </span>
+                      <p className="font-semibold text-ink-900 text-xs leading-snug break-words">
+                        {item.convenio}
+                      </p>
+                      <p className="text-[11px] text-ink-500 leading-tight">
+                        {item.cobertura}
+                      </p>
                     </div>
                   </div>
 
@@ -281,7 +290,7 @@ export function AtendimentoTable({ atendimentos, onOpenHistorico, onOpenImpressa
                     <button
                       type="button"
                       onClick={() => onOpenHistorico(item)}
-                      className="w-full py-2 px-3 rounded-xl text-xs font-semibold text-ink-700 bg-ink-50 hover:bg-ink-100 border border-ink-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full py-2.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-semibold text-ink-700 bg-ink-50 hover:bg-ink-100 border border-ink-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <i className="ph ph-clock-counter-clockwise text-base text-brand-600"></i>
                       <span>Histórico</span>
@@ -290,7 +299,7 @@ export function AtendimentoTable({ atendimentos, onOpenHistorico, onOpenImpressa
                     <button
                       type="button"
                       onClick={() => onOpenImpressao(item)}
-                      className="w-full py-2 px-3 rounded-xl text-xs font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full py-2.5 px-2 sm:px-3 rounded-xl text-[11px] sm:text-xs font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       <i className="ph ph-printer text-base"></i>
                       <span>Imprimir Guia</span>

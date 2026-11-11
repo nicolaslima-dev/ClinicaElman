@@ -232,6 +232,7 @@ export function AdminAuditoriaPage() {
 
       {/* Cards das 4 Regras Críticas Obrigatórias (Grid Responsivo 2x2 no mobile, 4 no desktop) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-5 sm:mb-6">
+        {/* Card 1: Datas Repetidas */}
         <button
           type="button"
           onClick={() =>
@@ -239,26 +240,31 @@ export function AdminAuditoriaPage() {
               tipoCritica === 'CRIT_DATA_REPETIDA' ? '' : 'CRIT_DATA_REPETIDA'
             )
           }
-          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer ${
+          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
             tipoCritica === 'CRIT_DATA_REPETIDA'
               ? 'bg-red-50 border-red-300 ring-2 ring-red-500/20'
               : 'bg-white border-ink-100 shadow-card hover:border-ink-200'
           }`}
         >
-          <div className="flex justify-between items-center gap-1.5">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 truncate">
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 leading-tight">
               1 • Datas Repetidas
             </span>
-            <i className="ph ph-calendar-x text-base sm:text-lg text-red-600 shrink-0"></i>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+              <i className="ph ph-calendar-x text-xs sm:text-base"></i>
+            </div>
           </div>
-          <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 mt-1 sm:mt-1.5">
-            {contadores4Criticas.datasRepetidas}
-          </p>
-          <p className="text-[10px] sm:text-[11px] text-ink-400 mt-0.5 line-clamp-2">
-            Mesma data na guia ou em outra guia
-          </p>
+          <div>
+            <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+              {contadores4Criticas.datasRepetidas}
+            </p>
+            <p className="text-[10px] sm:text-[11px] text-ink-400 mt-1 leading-tight">
+              Mesma data na guia ou lote
+            </p>
+          </div>
         </button>
 
+        {/* Card 2: Quantidade ≠ 1 */}
         <button
           type="button"
           onClick={() =>
@@ -268,26 +274,31 @@ export function AdminAuditoriaPage() {
                 : 'CRIT_QTD_DIFERENTE_1'
             )
           }
-          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer ${
+          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
             tipoCritica === 'CRIT_QTD_DIFERENTE_1'
               ? 'bg-red-50 border-red-300 ring-2 ring-red-500/20'
               : 'bg-white border-ink-100 shadow-card hover:border-ink-200'
           }`}
         >
-          <div className="flex justify-between items-center gap-1.5">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 truncate">
-              2 • Quantidade ≠ 1
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 leading-tight">
+              2 • Qtd. Diferente 1
             </span>
-            <i className="ph ph-hash text-base sm:text-lg text-red-600 shrink-0"></i>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+              <i className="ph ph-hash text-xs sm:text-base"></i>
+            </div>
           </div>
-          <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 mt-1 sm:mt-1.5">
-            {contadores4Criticas.qtdDiferente1}
-          </p>
-          <p className="text-[10px] sm:text-[11px] text-ink-400 mt-0.5 line-clamp-2">
-            Linhas de sessão com quantidade ≠ 1
-          </p>
+          <div>
+            <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+              {contadores4Criticas.qtdDiferente1}
+            </p>
+            <p className="text-[10px] sm:text-[11px] text-ink-400 mt-1 leading-tight">
+              Sessões com quantidade ≠ 1
+            </p>
+          </div>
         </button>
 
+        {/* Card 3: Terapeuta Divergente */}
         <button
           type="button"
           onClick={() =>
@@ -297,26 +308,31 @@ export function AdminAuditoriaPage() {
                 : 'CRIT_TERAPEUTA_DIVERGENTE'
             )
           }
-          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer ${
+          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
             tipoCritica === 'CRIT_TERAPEUTA_DIVERGENTE'
               ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-500/20'
               : 'bg-white border-ink-100 shadow-card hover:border-ink-200'
           }`}
         >
-          <div className="flex justify-between items-center gap-1.5">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 truncate">
-              3 • Terapeuta Divergente
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 leading-tight">
+              3 • Terapeuta Diverg.
             </span>
-            <i className="ph ph-user-switch text-base sm:text-lg text-amber-600 shrink-0"></i>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+              <i className="ph ph-user-switch text-xs sm:text-base"></i>
+            </div>
           </div>
-          <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 mt-1 sm:mt-1.5">
-            {contadores4Criticas.terapeutaDivergente}
-          </p>
-          <p className="text-[10px] sm:text-[11px] text-ink-400 mt-0.5 line-clamp-2">
-            Executante difere do designado
-          </p>
+          <div>
+            <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+              {contadores4Criticas.terapeutaDivergente}
+            </p>
+            <p className="text-[10px] sm:text-[11px] text-ink-400 mt-1 leading-tight">
+              Executante ≠ designado
+            </p>
+          </div>
         </button>
 
+        {/* Card 4: Valor ≠ Tabela */}
         <button
           type="button"
           onClick={() =>
@@ -326,24 +342,28 @@ export function AdminAuditoriaPage() {
                 : 'CRIT_VALOR_TABELA_PLANO'
             )
           }
-          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer ${
+          className={`text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
             tipoCritica === 'CRIT_VALOR_TABELA_PLANO'
               ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-500/20'
               : 'bg-white border-ink-100 shadow-card hover:border-ink-200'
           }`}
         >
-          <div className="flex justify-between items-center gap-1.5">
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 truncate">
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-ink-500 leading-tight">
               4 • Valor ≠ Tabela
             </span>
-            <i className="ph ph-currency-circle-dollar text-base sm:text-lg text-amber-600 shrink-0"></i>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+              <i className="ph ph-currency-circle-dollar text-xs sm:text-base"></i>
+            </div>
           </div>
-          <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 mt-1 sm:mt-1.5">
-            {contadores4Criticas.valorTabelaPlano}
-          </p>
-          <p className="text-[10px] sm:text-[11px] text-ink-400 mt-0.5 line-clamp-2">
-            Valor unitário difere da tabela
-          </p>
+          <div>
+            <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+              {contadores4Criticas.valorTabelaPlano}
+            </p>
+            <p className="text-[10px] sm:text-[11px] text-ink-400 mt-1 leading-tight">
+              Valor unitário difere do plano
+            </p>
+          </div>
         </button>
       </div>
 

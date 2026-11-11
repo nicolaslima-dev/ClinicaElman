@@ -154,10 +154,10 @@ export function AuditoriaDrawer({
                 </span>
               )}
             </div>
-            <h2 className="text-base sm:text-lg font-bold font-heading text-ink-900 mt-1 truncate">
+            <h2 className="text-sm sm:text-lg font-bold font-heading text-ink-900 mt-1 leading-snug break-words">
               Conferência e Resolução de Críticas Pré-XML
             </h2>
-            <p className="text-xs text-ink-500 truncate">
+            <p className="text-xs text-ink-500 mt-0.5 leading-snug break-words">
               Paciente: <strong>{guia.paciente?.nome}</strong> •{' '}
               {guia.plano?.operadora?.nome} (TISS {guia.versao_tiss})
             </p>

@@ -307,72 +307,84 @@ export function AdminFaturamentoPage() {
 
       {/* KPIs da Fase 3 */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 print:hidden">
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-ink-100 shadow-card">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-semibold text-ink-400 uppercase tracking-wide truncate">
-              Fila de Recebimento
+        {/* Card 1: Fila de Recebimento */}
+        <div className="bg-white p-3 sm:p-5 rounded-2xl border border-ink-100 shadow-card flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold text-ink-400 uppercase tracking-wider leading-tight">
+              Fila Recebimento
             </span>
-            <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-              <i className="ph ph-tray-arrow-down text-sm sm:text-lg"></i>
+            <div className="w-6 h-6 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+              <i className="ph ph-tray-arrow-down text-xs sm:text-lg"></i>
             </div>
           </div>
-          <p className="text-lg sm:text-2xl font-bold font-heading text-ink-900 mt-1.5 sm:mt-2">
-            {kpis.aguardandoRecebimento}
-          </p>
-          <p className="text-[10px] sm:text-xs text-ink-400 mt-0.5 sm:mt-1 line-clamp-2">
-            Guias enviadas pelos terapeutas
-          </p>
+          <div>
+            <span className="text-lg sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+              {kpis.aguardandoRecebimento}
+            </span>
+            <p className="text-[10px] sm:text-xs text-ink-400 mt-1 leading-tight">
+              Guias dos terapeutas
+            </p>
+          </div>
         </div>
 
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-ink-100 shadow-card">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-semibold text-ink-400 uppercase tracking-wide truncate">
+        {/* Card 2: Guias em Lote */}
+        <div className="bg-white p-3 sm:p-5 rounded-2xl border border-ink-100 shadow-card flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold text-ink-400 uppercase tracking-wider leading-tight">
               Guias em Lote
             </span>
-            <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-              <i className="ph ph-files text-sm sm:text-lg"></i>
+            <div className="w-6 h-6 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+              <i className="ph ph-files text-xs sm:text-lg"></i>
             </div>
           </div>
-          <p className="text-lg sm:text-2xl font-bold font-heading text-ink-900 mt-1.5 sm:mt-2">
-            {kpis.digitadasEmLote}
-          </p>
-          <p className="text-[10px] sm:text-xs text-ink-400 mt-0.5 sm:mt-1 line-clamp-2">
-            Conferidas (máx. 10 datas)
-          </p>
+          <div>
+            <span className="text-lg sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+              {kpis.digitadasEmLote}
+            </span>
+            <p className="text-[10px] sm:text-xs text-ink-400 mt-1 leading-tight">
+              Conferidas (máx 10 datas)
+            </p>
+          </div>
         </div>
 
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-ink-100 shadow-card">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-semibold text-ink-400 uppercase tracking-wide truncate">
+        {/* Card 3: Lotes Gerados */}
+        <div className="bg-white p-3 sm:p-5 rounded-2xl border border-ink-100 shadow-card flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold text-ink-400 uppercase tracking-wider leading-tight">
               Lotes Gerados
             </span>
-            <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
-              <i className="ph ph-folders text-sm sm:text-lg"></i>
+            <div className="w-6 h-6 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0">
+              <i className="ph ph-folders text-xs sm:text-lg"></i>
             </div>
           </div>
-          <p className="text-lg sm:text-2xl font-bold font-heading text-ink-900 mt-1.5 sm:mt-2">
-            {kpis.totalLotes}
-          </p>
-          <p className="text-[10px] sm:text-xs text-ink-400 mt-0.5 sm:mt-1 line-clamp-2">
-            Por Operadora e Versão TISS
-          </p>
+          <div>
+            <span className="text-lg sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+              {kpis.totalLotes}
+            </span>
+            <p className="text-[10px] sm:text-xs text-ink-400 mt-1 leading-tight">
+              Por Operadora e TISS
+            </p>
+          </div>
         </div>
 
-        <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-ink-100 shadow-card">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs font-semibold text-ink-400 uppercase tracking-wide truncate">
+        {/* Card 4: Total em Lotes */}
+        <div className="bg-white p-3 sm:p-5 rounded-2xl border border-ink-100 shadow-card flex flex-col justify-between">
+          <div className="flex items-start justify-between gap-1.5 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold text-ink-400 uppercase tracking-wider leading-tight">
               Total em Lotes
             </span>
-            <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0">
-              <i className="ph ph-currency-dollar text-sm sm:text-lg"></i>
+            <div className="w-6 h-6 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0">
+              <i className="ph ph-currency-dollar text-xs sm:text-lg"></i>
             </div>
           </div>
-          <p className="text-base sm:text-2xl font-bold font-heading text-brand-700 mt-1.5 sm:mt-2 truncate">
-            R$ {kpis.valorConsolidadoLotes.toFixed(2).replace('.', ',')}
-          </p>
-          <p className="text-[10px] sm:text-xs text-ink-400 mt-0.5 sm:mt-1 line-clamp-2">
-            Calculado conforme tabela
-          </p>
+          <div>
+            <span className="text-base sm:text-2xl font-bold font-heading text-brand-700 leading-none block">
+              R$ {kpis.valorConsolidadoLotes.toFixed(2).replace('.', ',')}
+            </span>
+            <p className="text-[10px] sm:text-xs text-ink-400 mt-1 leading-tight">
+              Calculado por tabela
+            </p>
+          </div>
         </div>
       </div>
 
@@ -490,13 +502,22 @@ export function AdminFaturamentoPage() {
                       key={guia.id}
                       className="bg-white border border-ink-150 rounded-2xl p-4 shadow-xs space-y-3 hover:border-brand-300 transition-colors w-full min-w-0"
                     >
-                      {/* Topo do Card: Paciente e Status */}
+                      {/* Topo do Card: Paciente, Lote e Status */}
                       <div className="flex items-start justify-between gap-2 min-w-0">
                         <div className="min-w-0 flex-1">
-                          <span className="font-bold text-ink-900 text-sm block truncate">
-                            {guia.paciente?.nome || 'Paciente'}
-                          </span>
-                          <span className="font-mono text-[11px] text-ink-400 block mt-0.5 truncate">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-bold text-ink-900 text-sm leading-tight break-words">
+                              {guia.paciente?.nome || 'Paciente'}
+                            </span>
+                            {guia.numero_lote ? (
+                              <span className="px-2 py-0.5 rounded-md font-mono font-bold text-[10px] bg-brand-50 text-brand-700 border border-brand-200 shrink-0">
+                                Lote #{guia.numero_lote}
+                              </span>
+                            ) : (
+                              <span className="text-ink-400 text-[10px] italic">Sem lote</span>
+                            )}
+                          </div>
+                          <span className="font-mono text-[11px] text-ink-400 block mt-0.5">
                             Carteira: {guia.paciente?.carteira_plano || '—'}
                           </span>
                         </div>
@@ -508,14 +529,14 @@ export function AdminFaturamentoPage() {
                       {/* Grade de Detalhes da Guia */}
                       <div className="grid grid-cols-2 gap-2.5 pt-2.5 border-t border-ink-100 text-xs min-w-0">
                         <div className="min-w-0">
-                          <span className="text-[10px] uppercase font-semibold text-ink-400 block">
+                          <span className="text-[10px] uppercase font-bold text-ink-400 block tracking-wider">
                             Nº Guia / Senha
                           </span>
                           <span className="font-mono font-bold text-ink-900 block mt-0.5 truncate">
                             #{guia.numero_guia_prestador}
                           </span>
                           <span
-                            className="font-mono text-[11px] text-ink-500 block truncate"
+                            className="font-mono text-[11px] text-ink-600 block truncate"
                             title={guia.numero_senha}
                           >
                             Senha: {guia.numero_senha}
@@ -523,13 +544,13 @@ export function AdminFaturamentoPage() {
                         </div>
 
                         <div className="min-w-0">
-                          <span className="text-[10px] uppercase font-semibold text-ink-400 block">
+                          <span className="text-[10px] uppercase font-bold text-ink-400 block tracking-wider">
                             Operadora / TISS
                           </span>
                           <span className="font-bold text-ink-800 block mt-0.5 truncate">
                             {guia.plano?.operadora?.nome || 'Convênio'}
                           </span>
-                          <span className="text-[11px] font-mono text-brand-700 block truncate">
+                          <span className="text-[11px] font-mono text-brand-700 font-semibold block truncate">
                             TISS {guia.versao_tiss}
                           </span>
                         </div>
@@ -537,7 +558,7 @@ export function AdminFaturamentoPage() {
                         {/* Termo Autorizado */}
                         <div className="col-span-2 bg-ink-50/70 p-2.5 rounded-xl border border-ink-100 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="text-[10px] uppercase font-semibold text-ink-400">
+                            <span className="text-[10px] uppercase font-bold text-ink-400 tracking-wider">
                               Termo Autorizado
                             </span>
                             <span className="font-mono font-bold text-brand-700 text-xs shrink-0">
@@ -549,31 +570,27 @@ export function AdminFaturamentoPage() {
                           </p>
                         </div>
 
-                        <div className="min-w-0">
-                          <span className="text-[10px] uppercase font-semibold text-ink-400 block">
-                            Terapeuta
-                          </span>
-                          <span className="font-medium text-ink-800 block mt-0.5 truncate">
-                            {guia.terapeuta_designado?.nome || 'Terapeuta'}
-                          </span>
-                          <span className="text-[11px] text-ink-400 block truncate">
-                            Campo 4: {formatarDataBr(guia.data_autorizacao_campo4)}
-                          </span>
-                        </div>
+                        {/* Bloco do Terapeuta e Data Campo 4 (Largura total, sem cortes!) */}
+                        <div className="col-span-2 bg-ink-50/60 p-2.5 rounded-xl border border-ink-100 flex items-center justify-between gap-2 flex-wrap">
+                          <div className="min-w-0 flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-brand-50 text-brand-700 border border-brand-100 flex items-center justify-center font-bold text-xs shrink-0">
+                              <i className="ph ph-stethoscope text-xs"></i>
+                            </div>
+                            <div className="min-w-0">
+                              <span className="text-[9px] uppercase font-bold text-ink-400 block leading-none">
+                                Terapeuta Designado
+                              </span>
+                              <p className="font-bold text-xs text-ink-900 mt-0.5 break-words">
+                                {guia.terapeuta_designado?.nome || 'Não designado'}
+                              </p>
+                            </div>
+                          </div>
 
-                        <div className="min-w-0">
-                          <span className="text-[10px] uppercase font-semibold text-ink-400 block">
-                            Nº Lote
-                          </span>
-                          {guia.numero_lote ? (
-                            <span className="inline-block mt-0.5 px-2 py-0.5 rounded-lg font-mono font-bold text-xs bg-brand-50 text-brand-700 border border-brand-200 truncate">
-                              #{guia.numero_lote}
+                          <div className="shrink-0">
+                            <span className="font-mono text-[10px] font-semibold text-brand-800 bg-white border border-brand-200/80 px-2 py-0.5 rounded-md shadow-2xs whitespace-nowrap">
+                              Campo 4: <strong>{formatarDataBr(guia.data_autorizacao_campo4)}</strong>
                             </span>
-                          ) : (
-                            <span className="text-ink-400 text-xs mt-0.5 block italic truncate">
-                              Sem lote vinculado
-                            </span>
-                          )}
+                          </div>
                         </div>
                       </div>
 
@@ -602,26 +619,26 @@ export function AdminFaturamentoPage() {
                       </div>
 
                       {/* Barra de Ações: Botões Perfeitamente Dimensionados para Telas Menores */}
-                      <div className="grid grid-cols-[auto_1fr] gap-2 pt-1 w-full min-w-0">
+                      <div className="flex items-center gap-2 pt-1 w-full min-w-0">
                         <button
                           type="button"
                           onClick={() => setGuiaImpressao(guia)}
                           title="Visualizar Espelho Oficial Guia SP/SADT"
-                          className="h-10 px-3.5 rounded-xl border border-ink-200 bg-white hover:bg-ink-50 active:bg-ink-100 text-ink-700 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0"
+                          className="h-10 px-3 rounded-xl border border-ink-200 bg-white hover:bg-ink-50 active:bg-ink-100 text-ink-700 font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shrink-0 shadow-2xs"
                           aria-label="Imprimir Espelho Guia SP/SADT"
                         >
-                          <i className="ph ph-printer text-base"></i>
-                          <span className="text-xs">Espelho</span>
+                          <i className="ph ph-printer text-base text-ink-600"></i>
+                          <span className="text-xs hidden sm:inline">Espelho</span>
                         </button>
 
                         <button
                           type="button"
                           onClick={() => handleReceberGuiaTerapeuta(guia)}
-                          className="h-10 px-4 rounded-xl bg-ink-900 hover:bg-ink-800 active:scale-[0.98] text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-xs cursor-pointer transition-all min-w-0"
+                          className="flex-1 h-10 px-3 sm:px-4 rounded-xl bg-ink-900 hover:bg-ink-800 active:scale-[0.98] text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs cursor-pointer transition-all min-w-0 whitespace-nowrap"
                         >
                           <i className="ph ph-check-square-offset text-base text-brand-300 shrink-0"></i>
-                          <span className="truncate">
-                            {guia.numero_lote ? 'Editar Lote/Datas' : 'Conferir & Lote'}
+                          <span>
+                            {guia.numero_lote ? 'Editar Lote / Datas' : 'Conferir & Lote'}
                           </span>
                         </button>
                       </div>

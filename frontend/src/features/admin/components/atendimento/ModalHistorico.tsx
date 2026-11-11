@@ -21,7 +21,7 @@ export function ModalHistorico({ isOpen, onClose, paciente }: ModalHistoricoProp
             <h3 className="text-base sm:text-lg leading-6 font-bold text-ink-900 flex items-center gap-2">
               <i className="ph-fill ph-clock-counter-clockwise text-brand-600"></i> Histórico do Paciente
             </h3>
-            <p className="text-xs sm:text-sm text-ink-500 mt-1 truncate">
+            <p className="text-xs sm:text-sm text-ink-500 mt-1 leading-snug break-words">
               {paciente?.paciente || 'Carregando...'}
             </p>
           </div>

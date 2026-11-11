@@ -22,18 +22,22 @@ function KpiCard({
   tooltip
 }: KpiCardProps) {
   return (
-    <div className="action-card relative group bg-white p-3.5 sm:p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between gap-2">
-      <div className="min-w-0">
-        <p className="text-[10px] sm:text-xs font-medium text-ink-400 uppercase tracking-wide truncate">{title}</p>
-        <p className="text-lg sm:text-2xl font-semibold font-heading text-ink-900 mt-0.5 sm:mt-1 truncate">
-          {value}{' '}
-          <span className={`text-[11px] sm:text-sm font-medium font-sans ${subtitleColor} block sm:inline`}>
-            {subtitle}
-          </span>
+    <div className="action-card relative group bg-white p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-ink-100 shadow-card flex flex-col justify-between gap-2.5">
+      <div className="flex items-start justify-between gap-1.5">
+        <p className="text-[10px] sm:text-xs font-bold text-ink-500 uppercase tracking-wider leading-tight">
+          {title}
         </p>
+        <div className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl flex items-center justify-center shrink-0 ${iconBgColor} ${iconColor}`}>
+          <i className={`ph ${icon} text-xs sm:text-base`}></i>
+        </div>
       </div>
-      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 ${iconBgColor} ${iconColor}`}>
-        <i className={`ph ${icon} text-base sm:text-xl`}></i>
+      <div>
+        <p className="text-xl sm:text-2xl font-bold font-heading text-ink-900 leading-none">
+          {value}
+        </p>
+        <p className={`text-[10px] sm:text-xs font-medium font-sans ${subtitleColor} mt-1 leading-tight`}>
+          {subtitle}
+        </p>
       </div>
       
       {tooltip && (
@@ -52,7 +56,7 @@ interface AtendimentoKpiCardsProps {
 
 export function AtendimentoKpiCards({ onExportarAgenda }: AtendimentoKpiCardsProps) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 mb-5 sm:mb-8">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-5 sm:mb-8">
       <KpiCard 
         title="Para Hoje"
         value="42"
@@ -77,27 +81,33 @@ export function AtendimentoKpiCards({ onExportarAgenda }: AtendimentoKpiCardsPro
         title="Sem Autorização"
         value="5"
         subtitle="alertas"
-        subtitleColor="text-red-500"
+        subtitleColor="text-red-500 font-semibold"
         icon="ph-warning-circle"
-        iconBgColor="bg-gold-50"
-        iconColor="text-gold-600"
+        iconBgColor="bg-amber-50"
+        iconColor="text-amber-600"
         tooltip="Guias que estão pendentes de autorização ou possuem alertas de auditoria."
       />
 
       {/* Card 4: Relatórios Rápidos (Custom style) */}
       <div 
         onClick={onExportarAgenda}
-        className="action-card cursor-pointer p-3.5 sm:p-5 rounded-[16px] border border-ink-100 shadow-card flex items-center justify-between gap-2 bg-gradient-to-br from-brand-900 to-ink-900 text-white"
+        className="action-card cursor-pointer p-3 sm:p-4 rounded-[16px] sm:rounded-2xl border border-ink-100 shadow-card flex flex-col justify-between gap-2.5 bg-gradient-to-br from-brand-900 to-ink-900 text-white"
       >
-        <div className="min-w-0">
-          <p className="text-[10px] sm:text-xs font-medium text-brand-200 uppercase tracking-wide truncate">Relatórios</p>
-          <p className="text-xs sm:text-sm font-medium mt-0.5 sm:mt-1 leading-snug">
-            Exportar agenda
-            <span className="hidden sm:inline"><br/>e listagem diária</span>
+        <div className="flex items-start justify-between gap-1.5">
+          <p className="text-[10px] sm:text-xs font-bold text-brand-200 uppercase tracking-wider leading-tight">
+            Relatórios
           </p>
+          <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-white/10 flex items-center justify-center text-white backdrop-blur-sm border border-white/20 shrink-0">
+            <i className="ph ph-download-simple text-xs sm:text-base"></i>
+          </div>
         </div>
-        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white/10 flex items-center justify-center text-white backdrop-blur-sm border border-white/20 shrink-0">
-          <i className="ph ph-download-simple text-base sm:text-xl"></i>
+        <div>
+          <p className="text-sm sm:text-base font-bold leading-tight">
+            Exportar agenda
+          </p>
+          <p className="text-[10px] sm:text-xs text-brand-100/80 mt-1 leading-tight">
+            Listagem diária
+          </p>
         </div>
       </div>
     </div>

@@ -176,15 +176,15 @@ export function AuditoriaTable({
               return (
                 <div
                   key={guia.id}
-                  className={`rounded-2xl border transition-all p-4 flex flex-col justify-between gap-3.5 shadow-xs ${
+                  className={`rounded-2xl border transition-all p-3.5 sm:p-4 flex flex-col justify-between gap-3 shadow-xs ${
                     isRetida
                       ? 'bg-white border-red-200 hover:border-red-300 ring-1 ring-red-500/10'
                       : 'bg-white border-ink-100 hover:border-brand-200'
                   }`}
                 >
                   {/* Topo do Card: Lote, Guia e Badge de Status */}
-                  <div className="flex items-start justify-between gap-2.5">
-                    <div className="min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-1.5 mb-1">
                         {guia.numero_lote ? (
                           <span className="inline-block px-2 py-0.5 rounded bg-brand-50 text-brand-700 border border-brand-200 font-mono font-bold text-[10px]">
@@ -195,11 +195,11 @@ export function AuditoriaTable({
                             Sem Lote
                           </span>
                         )}
-                        <span className="font-mono text-[11px] text-ink-500">
+                        <span className="font-mono text-[11px] text-ink-500 break-words">
                           Senha: <strong className="text-ink-800">{guia.numero_senha}</strong>
                         </span>
                       </div>
-                      <h3 className="font-mono font-bold text-sm text-ink-900 truncate">
+                      <h3 className="font-mono font-bold text-sm text-ink-900 break-words leading-snug">
                         Guia #{guia.numero_guia_prestador}
                       </h3>
                     </div>
@@ -218,19 +218,19 @@ export function AuditoriaTable({
                   </div>
 
                   {/* Paciente & Convênio */}
-                  <div className="p-3 rounded-xl bg-ink-50/70 border border-ink-100 space-y-2 text-xs">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="min-w-0">
-                        <span className="text-[10px] uppercase font-bold text-ink-400 block tracking-wider">
+                  <div className="p-3 rounded-xl bg-ink-50/70 border border-ink-100 space-y-2.5 text-xs">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <span className="text-[10px] uppercase font-bold text-ink-400 tracking-wider">
                           Paciente
                         </span>
-                        <p className="font-bold text-ink-900 text-sm truncate">
-                          {guia.paciente?.nome || 'Paciente não identificado'}
-                        </p>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white border border-ink-200 text-ink-700 font-semibold text-[10px] shrink-0 shadow-2xs">
+                          {guia.plano?.operadora?.nome || 'Convênio'} • TISS {guia.versao_tiss}
+                        </span>
                       </div>
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white border border-ink-200 text-ink-700 font-semibold text-[10px] shrink-0">
-                        {guia.plano?.operadora?.nome || 'Convênio'} • TISS {guia.versao_tiss}
-                      </span>
+                      <p className="font-bold text-ink-900 text-sm leading-tight break-words">
+                        {guia.paciente?.nome || 'Paciente não identificado'}
+                      </p>
                     </div>
 
                     {/* Procedimento e Sessões */}
@@ -239,10 +239,10 @@ export function AuditoriaTable({
                         <i className="ph ph-activity text-sm"></i>
                         <span>{guia.codigo_tuss}</span>
                       </div>
-                      <p className="text-[11px] text-ink-600 truncate mt-0.5">
+                      <p className="text-xs text-ink-700 font-medium mt-1 leading-snug break-words">
                         {guia.descricao_termo}
                       </p>
-                      <p className="text-[10px] font-mono text-ink-500 mt-1">
+                      <p className="text-[10px] font-mono text-ink-500 mt-1 leading-normal break-words">
                         {sessoes.length} data(s):{' '}
                         {sessoes
                           .slice(0, 3)
@@ -253,35 +253,38 @@ export function AuditoriaTable({
                     </div>
 
                     {/* Terapeuta */}
-                    <div className="pt-2 border-t border-ink-200/60 flex items-center justify-between gap-2 flex-wrap">
-                      <div className="text-[11px] min-w-0">
-                        <span className="text-ink-400">Designado: </span>
-                        <strong className="text-ink-800">{terDesignado}</strong>
+                    <div className="pt-2 border-t border-ink-200/60 space-y-1 text-xs">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-ink-400 text-[11px] shrink-0">Designado:</span>
+                        <strong className="text-ink-900 text-[11px] text-right break-words">{terDesignado}</strong>
                       </div>
-                      <div
-                        className={`text-[11px] font-medium ${
-                          terDivergente ? 'text-red-700 font-bold' : 'text-emerald-700'
-                        }`}
-                      >
-                        Exec.: {terExecutante}
-                        {terDivergente && (
-                          <span className="ml-1 px-1.5 py-0.2 rounded bg-red-100 text-red-800 text-[9px] font-bold">
-                            Divergente!
-                          </span>
-                        )}
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-ink-400 text-[11px] shrink-0">Executante:</span>
+                        <span
+                          className={`text-[11px] font-semibold flex items-center justify-end gap-1.5 text-right ${
+                            terDivergente ? 'text-red-700 font-bold' : 'text-emerald-700'
+                          }`}
+                        >
+                          <span className="break-words">{terExecutante}</span>
+                          {terDivergente && (
+                            <span className="px-1.5 py-0.5 rounded bg-red-100 text-red-800 text-[9px] font-bold uppercase tracking-wider shrink-0">
+                              Divergente!
+                            </span>
+                          )}
+                        </span>
                       </div>
                     </div>
 
                     {/* Valores */}
                     <div className="pt-2 border-t border-ink-200/60 flex items-center justify-between gap-2 flex-wrap font-mono">
-                      <div className="text-[11px]">
+                      <div className="text-[11px] break-words">
                         <span className="text-ink-400">Cobrado: </span>
                         <strong className="text-ink-900">
                           R$ {vlrCobrado.toFixed(2).replace('.', ',')}
                         </strong>
                         {vlrTabela !== null && vlrTabela !== undefined && (
                           <span
-                            className={`ml-1.5 ${
+                            className={`ml-1.5 inline-block ${
                               Math.abs(vlrCobrado - vlrTabela) > 0.009
                                 ? 'text-red-600 font-bold'
                                 : 'text-ink-400'
@@ -292,7 +295,7 @@ export function AuditoriaTable({
                         )}
                       </div>
 
-                      <div className="text-brand-700 font-bold text-xs">
+                      <div className="text-brand-700 font-bold text-xs shrink-0">
                         Total: R${' '}
                         {Number(guia.valor_total_guia || 0)
                           .toFixed(2)
