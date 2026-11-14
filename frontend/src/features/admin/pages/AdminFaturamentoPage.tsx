@@ -242,7 +242,7 @@ export function AdminFaturamentoPage() {
       className="view-section fade-in w-full min-w-0 max-w-7xl mx-auto flex flex-col h-full min-h-[700px] space-y-4 sm:space-y-6 pb-10"
     >
       {/* Cabeçalho Principal */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 sm:gap-4 print:hidden">
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-3 sm:gap-4 print:hidden">
         <div>
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-50 text-brand-700 border border-brand-200 mb-2">
             <i className="ph ph-receipt"></i>
@@ -256,14 +256,14 @@ export function AdminFaturamentoPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:flex sm:flex-wrap gap-2 sm:gap-3 w-full sm:w-auto">
+        <div className="grid grid-cols-1 sm:flex items-center gap-2.5 sm:gap-3 w-full xl:w-auto shrink-0">
           <button
             type="button"
             onClick={() => setIsModalPrecosOpen(true)}
-            className="px-4 py-2.5 rounded-full text-xs font-semibold text-ink-700 bg-white border border-ink-200 hover:bg-ink-50 transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer w-full sm:w-auto"
+            className="h-10 px-4 rounded-full text-xs font-semibold text-ink-700 bg-white border border-ink-200 hover:bg-ink-50 hover:border-ink-300 transition-all flex items-center justify-center gap-2 shadow-2xs cursor-pointer whitespace-nowrap"
           >
-            <i className="ph ph-currency-circle-dollar text-base text-brand-600"></i>
-            Tabela TUSS & Contratos
+            <i className="ph ph-currency-circle-dollar text-base text-brand-600 shrink-0"></i>
+            <span>Tabela TUSS & Contratos</span>
           </button>
 
           <button
@@ -272,19 +272,19 @@ export function AdminFaturamentoPage() {
               setLoteParaXml(null);
               setIsModalXmlOpen(true);
             }}
-            className="px-4 py-2.5 rounded-full text-xs font-semibold text-brand-800 bg-brand-50 border border-brand-200 hover:bg-brand-100 transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer w-full sm:w-auto"
+            className="h-10 px-4 rounded-full text-xs font-semibold text-brand-800 bg-brand-50 border border-brand-200 hover:bg-brand-100 transition-all flex items-center justify-center gap-2 shadow-2xs cursor-pointer whitespace-nowrap"
           >
-            <i className="ph ph-file-code text-base text-brand-600"></i>
-            Exportar XML TISS
+            <i className="ph ph-file-code text-base text-brand-600 shrink-0"></i>
+            <span>Exportar XML TISS</span>
           </button>
 
           <button
             type="button"
             onClick={handleAbrirNovaDigitacao}
-            className="bg-ink-900 hover:bg-ink-800 text-white font-semibold py-2.5 px-5 rounded-full transition-all text-xs flex items-center justify-center gap-2 shadow-soft cursor-pointer w-full sm:w-auto"
+            className="h-10 px-5 rounded-full text-xs font-semibold text-white bg-ink-900 hover:bg-ink-800 transition-all flex items-center justify-center gap-2 shadow-soft cursor-pointer whitespace-nowrap"
           >
-            <i className="ph ph-plus-circle text-base text-brand-300"></i>
-            Digitar Guia de Atendimento
+            <i className="ph ph-plus-circle text-base text-brand-300 shrink-0"></i>
+            <span>Digitar Guia de Atendimento</span>
           </button>
         </div>
       </div>
@@ -391,36 +391,36 @@ export function AdminFaturamentoPage() {
       {/* Abas e Filtros */}
       <div className="bg-white p-3.5 sm:p-5 rounded-2xl border border-ink-100 shadow-card space-y-4 print:hidden w-full min-w-0">
         <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 sm:gap-4 border-b border-ink-100 pb-4 min-w-0">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full lg:w-auto min-w-0">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => setAbaAtiva('fila_guias')}
-              className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center sm:justify-start gap-2 cursor-pointer truncate ${
+              className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
                 abaAtiva === 'fila_guias'
                   ? 'bg-ink-900 text-white shadow-xs'
                   : 'bg-ink-50 text-ink-600 hover:bg-ink-100'
               }`}
             >
               <i className="ph ph-list-checks text-base shrink-0"></i>
-              <span className="truncate">Recebimento & Digitação ({guias.length})</span>
+              <span>Recebimento & Digitação ({guias.length})</span>
             </button>
 
             <button
               type="button"
               onClick={() => setAbaAtiva('lotes')}
-              className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center sm:justify-start gap-2 cursor-pointer truncate ${
+              className={`h-10 px-4 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
                 abaAtiva === 'lotes'
                   ? 'bg-ink-900 text-white shadow-xs'
                   : 'bg-ink-50 text-ink-600 hover:bg-ink-100'
               }`}
             >
               <i className="ph ph-package text-base shrink-0"></i>
-              <span className="truncate">Gestão de Lotes ({lotes.length})</span>
+              <span>Gestão de Lotes ({lotes.length})</span>
             </button>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full lg:w-auto min-w-0">
-            <div className="relative w-full sm:w-64 min-w-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full lg:w-auto min-w-0 justify-end">
+            <div className="relative w-full sm:w-60 md:w-64 min-w-0">
               <i className="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-ink-400 text-sm pointer-events-none"></i>
               <input
                 type="text"
@@ -653,16 +653,16 @@ export function AdminFaturamentoPage() {
               <table className="w-full text-left text-xs text-ink-700">
                 <thead>
                   <tr className="bg-ink-50/60 border-b border-ink-100 text-[11px] font-semibold text-ink-400 uppercase tracking-wider">
-                    <th className="p-3.5">Nº Guia / Senha</th>
-                    <th className="p-3.5">Paciente & Carteira</th>
-                    <th className="p-3.5">Operadora / TISS</th>
+                    <th className="p-3.5 whitespace-nowrap">Nº Guia / Senha</th>
+                    <th className="p-3.5 whitespace-nowrap">Paciente & Carteira</th>
+                    <th className="p-3.5 whitespace-nowrap">Operadora / TISS</th>
                     <th className="p-3.5">Termo Autorizado</th>
                     <th className="p-3.5">Terapeuta</th>
-                    <th className="p-3.5 text-center">Datas (Máx 10)</th>
-                    <th className="p-3.5 text-center">Nº Lote</th>
-                    <th className="p-3.5 text-right">Valor Guia</th>
-                    <th className="p-3.5">Status</th>
-                    <th className="p-3.5 text-right">Ações</th>
+                    <th className="p-3.5 text-center whitespace-nowrap">Datas (Máx 10)</th>
+                    <th className="p-3.5 text-center whitespace-nowrap">Nº Lote</th>
+                    <th className="p-3.5 text-right whitespace-nowrap">Valor Guia</th>
+                    <th className="p-3.5 whitespace-nowrap">Status</th>
+                    <th className="p-3.5 text-right whitespace-nowrap">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-ink-100">
@@ -732,34 +732,34 @@ export function AdminFaturamentoPage() {
                               Campo 4: {formatarDataBr(guia.data_autorizacao_campo4)}
                             </span>
                           </td>
-                          <td className="p-3.5 text-center">
-                            <span className="px-2.5 py-1 rounded-full font-mono font-bold bg-ink-100 text-ink-800">
+                          <td className="p-3.5 text-center whitespace-nowrap">
+                            <span className="inline-flex items-center justify-center px-2.5 py-1 rounded-full font-mono font-bold bg-ink-100 text-ink-800 whitespace-nowrap">
                               {qtdDatas} / 10
                             </span>
                           </td>
-                          <td className="p-3.5 text-center">
+                          <td className="p-3.5 text-center whitespace-nowrap">
                             {guia.numero_lote ? (
-                              <span className="px-2.5 py-1 rounded-lg font-mono font-bold bg-brand-50 text-brand-700 border border-brand-200">
+                              <span className="inline-block px-2.5 py-1 rounded-lg font-mono font-bold bg-brand-50 text-brand-700 border border-brand-200 whitespace-nowrap">
                                 #{guia.numero_lote}
                               </span>
                             ) : (
                               <span className="text-ink-300">—</span>
                             )}
                           </td>
-                          <td className="p-3.5 text-right font-mono font-bold text-ink-900">
+                          <td className="p-3.5 text-right font-mono font-bold text-ink-900 whitespace-nowrap">
                             {vlrTotal > 0
                               ? `R$ ${Number(vlrTotal).toFixed(2).replace('.', ',')}`
                               : 'A calcular'}
                           </td>
-                          <td className="p-3.5">
+                          <td className="p-3.5 whitespace-nowrap">
                             {renderStatusBadge(guia.status_guia)}
                           </td>
-                          <td className="p-3.5 text-right">
-                            <div className="flex justify-end gap-1.5">
+                          <td className="p-3.5 text-right whitespace-nowrap">
+                            <div className="flex justify-end gap-1.5 whitespace-nowrap">
                               <button
                                 type="button"
                                 onClick={() => handleReceberGuiaTerapeuta(guia)}
-                                className="px-3 py-1.5 rounded-xl bg-ink-900 hover:bg-ink-800 text-white font-semibold text-[11px] flex items-center gap-1 cursor-pointer"
+                                className="px-3 py-1.5 rounded-xl bg-ink-900 hover:bg-ink-800 text-white font-semibold text-[11px] flex items-center gap-1 cursor-pointer whitespace-nowrap"
                               >
                                 <i className="ph ph-check-square-offset"></i>
                                 {guia.numero_lote ? 'Editar Lote/Datas' : 'Conferir & Lote'}
@@ -946,20 +946,20 @@ export function AdminFaturamentoPage() {
                                 <th className="py-2 px-3">Paciente</th>
                                 <th className="py-2 px-3">Nº Autorização</th>
                                 <th className="py-2 px-3">Termo Autorizado</th>
-                                <th className="py-2 px-3">Datas Realizadas (Máx 10)</th>
-                                <th className="py-2 px-3 text-right">Valor da Guia</th>
+                                <th className="py-2 px-3 whitespace-nowrap">Datas Realizadas (Máx 10)</th>
+                                <th className="py-2 px-3 text-right whitespace-nowrap">Valor da Guia</th>
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-ink-100">
                               {(lote.guias || []).map((g) => (
                                 <tr key={g.id}>
-                                  <td className="py-2.5 px-3 font-mono font-bold text-ink-900">
+                                  <td className="py-2.5 px-3 font-mono font-bold text-ink-900 whitespace-nowrap">
                                     #{g.numero_guia_prestador}
                                   </td>
                                   <td className="py-2.5 px-3 font-semibold text-ink-900">
                                     {g.paciente?.nome}
                                   </td>
-                                  <td className="py-2.5 px-3 font-mono">
+                                  <td className="py-2.5 px-3 font-mono whitespace-nowrap">
                                     {g.numero_senha}
                                   </td>
                                   <td className="py-2.5 px-3">
@@ -973,7 +973,7 @@ export function AdminFaturamentoPage() {
                                       .map((s) => formatarDataBr(s.data_realizacao))
                                       .join(', ')}
                                   </td>
-                                  <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-700">
+                                  <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-700 whitespace-nowrap">
                                     R${' '}
                                     {Number(g.valor_total_guia || 0)
                                       .toFixed(2)
